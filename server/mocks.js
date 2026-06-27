@@ -132,4 +132,39 @@ export const mocks = {
     ],
     disclaimer: "Sehat is not a doctor. This is general information — confirm any change with your doctor or pharmacist. Prices are rough estimates.",
   },
+
+  lekhak: {
+    _mock: true,
+    title: "Complaint Letter — Wrong Electricity Bill",
+    to: "The Executive Engineer, Electricity Board",
+    subject: "Complaint regarding incorrect electricity bill for consumer no. [Consumer Number]",
+    letter:
+      "To,\nThe Executive Engineer,\n[Electricity Board Office Address]\n\nSubject: Complaint regarding incorrect electricity bill\n\nRespected Sir/Madam,\n\nI am [Your Name], residing at [Your Address], holding consumer number [Consumer Number]. My electricity bill for the month of [Month] shows an amount of ₹[Amount], which is far higher than my usual monthly bill of around ₹[Usual Amount].\n\nI believe there has been an error in the meter reading or billing. I request you to kindly review my meter reading and issue a corrected bill at the earliest.\n\nI am attaching a copy of the disputed bill for your reference. Kindly do the needful.\n\nThank you.\n\nYours faithfully,\n[Your Name]\n[Phone Number]\n[Date]",
+    attachments: ["Copy of the disputed bill", "Copy of a previous normal bill", "ID proof"],
+    tips: ["Keep a copy of this letter and note down the complaint number you receive.", "You can also file this on the board's online portal or helpline."],
+  },
+
+  vyapaar: {
+    _mock: true,
+    title: "Diwali Offer — WhatsApp Message",
+    content:
+      "🪔 *Diwali Dhamaka at [Shop Name]!* 🪔\n\nMake this festival sweeter — *20% OFF* on all sweets & dry fruits! 🎉\n\n✨ Fresh, pure & made with love\n📍 Visit us at [Area] or message to order\n🛵 Home delivery available\n\nOffer till [Date]. Happy Diwali to you and your family! 🙏",
+    variations: [
+      "🎉 This Diwali, gift health & taste! Flat 20% off on premium dry fruits at [Shop Name]. Order on WhatsApp now! 🪔",
+      "Sweeten your celebrations 🍬 20% off all mithai this Diwali at [Shop Name]. Limited time — visit today!",
+    ],
+    hashtags: ["#DiwaliOffer", "#[ShopName]", "#Sweets", "#ShopLocal", "#FestiveSale"],
+    tips: ["Send between 10am–12pm or 6–8pm for best response.", "Add one clear photo of your product to double replies."],
+  },
+
+  naukri: {
+    _mock: true,
+    title: "Resume — Retail Sales Associate",
+    summary: "Here's a clean, ready-to-use resume based on your details. Tailor the [brackets] before sending.",
+    output:
+      "[YOUR NAME]\n[City] · [Phone] · [Email]\n\nOBJECTIVE\nHardworking and customer-friendly sales associate with 2 years of retail experience, seeking a role where I can grow and deliver great service.\n\nSKILLS\n• Customer service & billing\n• Stock management\n• Spoken Hindi & English\n• Basic computer / UPI handling\n\nEXPERIENCE\nSales Associate — [Shop/Company], [City] (2022–2024)\n• Handled daily sales and billing for 50+ customers\n• Managed stock and reduced shortages\n\nEDUCATION\n12th Pass — [School/Board], [Year]",
+    highlights: ["2 years retail experience", "Customer service & billing", "Bilingual (Hindi/English)"],
+    whereToLook: ["National Career Service — ncs.gov.in", "Your state Rojgar / Sewayojan portal", "Apna app for local jobs", "Employment News (weekly)"],
+    tips: ["Keep your resume to one page.", "Carry 2-3 printed copies and a soft copy on your phone."],
+  },
 };

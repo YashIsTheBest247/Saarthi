@@ -342,12 +342,13 @@ function AgentsGrid({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
 function TeamPanel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
   const tabs = [
-    { id: "all", label: t("team.tabAll"), keys: ["kavach", "samajh", "haq", "sehat"] },
-    { id: "protect", label: t("team.tabProtect"), keys: ["kavach", "samajh"] },
-    { id: "save", label: t("team.tabSave"), keys: ["haq", "sehat"] },
+    { id: "all", label: t("team.tabAll"), match: (_: FeatureMeta) => true },
+    { id: "protect", label: t("team.tabProtect"), match: (f: FeatureMeta) => f.group === "protect" },
+    { id: "save", label: t("team.tabSave"), match: (f: FeatureMeta) => f.group === "claim" },
+    { id: "automate", label: t("team.tabAutomate"), match: (f: FeatureMeta) => f.group === "automate" },
   ];
   const [tab, setTab] = useState(tabs[0]);
-  const members = FEATURES.filter((f) => tab.keys.includes(f.key));
+  const members = FEATURES.filter(tab.match);
 
   return (
     <section id="team" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-14">

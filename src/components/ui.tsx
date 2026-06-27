@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Mic, Square, Sparkles, Check, AlertTriangle, ArrowRight } from "lucide-react";
-import { ReactNode } from "react";
+import { Mic, Square, Sparkles, Check, AlertTriangle, ArrowRight, Copy } from "lucide-react";
+import { ReactNode, useState } from "react";
+import { useApp } from "../app/AppContext";
 
 /* ---------- Motion reveal ---------- */
 export function Reveal({
@@ -144,6 +145,31 @@ export function MockNote({ text }: { text: string }) {
     <div className="mt-4 flex items-center gap-2 rounded-xl border border-dashed border-amber2/40 bg-amber2/5 px-3 py-2 text-xs text-amber2">
       <AlertTriangle className="h-3.5 w-3.5" />
       {text}
+    </div>
+  );
+}
+
+/* ---------- Copyable text block ---------- */
+export function CopyBlock({ text }: { text: string }) {
+  const { t } = useApp();
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(text).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+  return (
+    <div className="relative rounded-2xl border border-line bg-mist">
+      <button
+        onClick={copy}
+        className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-medium text-graphite shadow-soft hover:text-ink"
+      >
+        {copied ? <Check className="h-3.5 w-3.5 text-verdant" /> : <Copy className="h-3.5 w-3.5" />}
+        {copied ? t("common.copied") : t("common.copy")}
+      </button>
+      <pre className="deva max-h-[28rem] overflow-auto whitespace-pre-wrap p-5 pr-24 font-sans text-[15px] leading-relaxed text-graphite">
+        {text}
+      </pre>
     </div>
   );
 }

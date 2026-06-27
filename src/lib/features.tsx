@@ -1,5 +1,7 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, PenLine, Megaphone, Briefcase, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
+
+export type Group = "protect" | "claim" | "automate";
 
 export interface Stat {
   v: string;
@@ -18,6 +20,7 @@ export interface FeatureMeta {
   tint: string;
   photo: string;
   index: string;
+  group: Group;
   badge?: string; // e.g. "New"
   stats: Stat[]; // shown in the mega-menu "Powered by AI" panel
 }
@@ -35,6 +38,7 @@ export const FEATURES: FeatureMeta[] = [
     tint: "#E8F0FE",
     photo: "/agents/kavach.jpg",
     index: "01",
+    group: "protect",
     stats: [
       { v: "₹22,800Cr", l: "lost to cyber fraud in India yearly" },
       { v: "60 sec", l: "to check any message or call" },
@@ -54,6 +58,7 @@ export const FEATURES: FeatureMeta[] = [
     tint: "#FBEEDD",
     photo: "/agents/samajh.jpg",
     index: "02",
+    group: "protect",
     stats: [
       { v: "30 sec", l: "to decode any document" },
       { v: "100%", l: "plain-language, no jargon" },
@@ -73,7 +78,7 @@ export const FEATURES: FeatureMeta[] = [
     tint: "#E4F3EC",
     photo: "/agents/haq.jpg",
     index: "03",
-    badge: "New",
+    group: "claim",
     stats: [
       { v: "₹ Lakhs Cr", l: "welfare unclaimed every year" },
       { v: "500+", l: "central & state schemes known" },
@@ -93,12 +98,75 @@ export const FEATURES: FeatureMeta[] = [
     tint: "#FBE9EA",
     photo: "/agents/sehat.jpg",
     index: "04",
-    badge: "New",
+    group: "claim",
     stats: [
       { v: "50–90%", l: "saved with generic medicines" },
       { v: "₹540/mo", l: "typical prescription saving" },
       { v: "Jan Aushadhi", l: "nearest-store guidance" },
       { v: "24×7", l: "safe health guidance" },
+    ],
+  },
+  {
+    key: "lekhak",
+    icon: PenLine,
+    nameKey: "l.name",
+    tagKey: "l.tag",
+    descKey: "l.desc",
+    personaKey: "l.persona",
+    accent: "#5A57A6",
+    accentDark: "#403E7A",
+    tint: "#ECEBF6",
+    photo: "/agents/lekhak.jpg",
+    index: "05",
+    group: "automate",
+    badge: "New",
+    stats: [
+      { v: "2 min", l: "to a ready-to-send letter" },
+      { v: "RTI · complaint", l: "any official letter or form" },
+      { v: "10", l: "Indian languages" },
+      { v: "₹0", l: "no typist or agent needed" },
+    ],
+  },
+  {
+    key: "vyapaar",
+    icon: Megaphone,
+    nameKey: "v.name",
+    tagKey: "v.tag",
+    descKey: "v.desc",
+    personaKey: "v.persona",
+    accent: "#1F7A6E",
+    accentDark: "#145247",
+    tint: "#E1F1EE",
+    photo: "/agents/vyapaar.jpg",
+    index: "06",
+    group: "automate",
+    badge: "New",
+    stats: [
+      { v: "WhatsApp-ready", l: "messages & festive offers" },
+      { v: "5+", l: "fresh variations each time" },
+      { v: "63M", l: "small businesses in India" },
+      { v: "seconds", l: "to a caption that sells" },
+    ],
+  },
+  {
+    key: "naukri",
+    icon: Briefcase,
+    nameKey: "n.name",
+    tagKey: "n.tag",
+    descKey: "n.desc",
+    personaKey: "n.persona",
+    accent: "#9A6324",
+    accentDark: "#774B19",
+    tint: "#F4E9D6",
+    photo: "/agents/naukri.jpg",
+    index: "07",
+    group: "automate",
+    badge: "New",
+    stats: [
+      { v: "resume + apply", l: "in minutes, not days" },
+      { v: "NCS · Rojgar", l: "real job sources" },
+      { v: "step-by-step", l: "application guidance" },
+      { v: "10", l: "Indian languages" },
     ],
   },
 ];

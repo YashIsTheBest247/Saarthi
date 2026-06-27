@@ -36,11 +36,32 @@ const JOBS = [
     prompt: `headshot of an Indian woman doctor in her 30s, hair tied back, caring expression, wearing a white coat over a blouse, ${STYLE}`,
   },
   {
+    file: "lekhak.jpg",
+    seed: 45,
+    w: 760,
+    h: 960,
+    prompt: `headshot of a thoughtful Indian man in his 30s wearing glasses, neat hair, light blue formal shirt, ${STYLE}`,
+  },
+  {
+    file: "vyapaar.jpg",
+    seed: 56,
+    w: 760,
+    h: 960,
+    prompt: `headshot of a friendly Indian businesswoman shopkeeper in her 30s, warm confident smile, wearing a mustard kurta, ${STYLE}`,
+  },
+  {
+    file: "naukri.jpg",
+    seed: 67,
+    w: 760,
+    h: 960,
+    prompt: `headshot of an ambitious young Indian man in his late 20s, short hair, wearing a smart charcoal blazer over a shirt, ${STYLE}`,
+  },
+  {
     file: "hero.jpg",
-    seed: 88,
+    seed: 201,
     w: 1280,
     h: 1040,
-    prompt: `cinematic editorial portrait of a thoughtful young Indian person looking slightly to the side, sitting in a warm minimal interior, soft natural window light, premium magazine photography, shallow depth of field, photorealistic, ultra detailed`,
+    prompt: `cinematic editorial photograph of a young Indian woman sitting by a large window in a warm minimal living room, holding a smartphone, soft natural morning light, generous negative space on the left, muted warm tones, premium lifestyle photography, 35mm, shallow depth of field, photorealistic`,
   },
 ];
 

@@ -220,4 +220,84 @@ ${langLine(language)}`,
   },
 };
 
-export const features = { kavach, samajh, haq, sehat };
+/* ------------------------------ LEKHAK ----------------------------- */
+
+export const lekhak = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING, description: "What this letter is" },
+      to: { type: Type.STRING, description: "Who it is addressed to" },
+      subject: { type: Type.STRING },
+      letter: { type: Type.STRING, description: "The complete, ready-to-send letter text with salutation and closing" },
+      attachments: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Documents to attach" },
+      tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ["title", "subject", "letter"],
+  },
+  system: (language) => `You are Lekhak, an expert who writes clear, correct Indian letters, applications and forms for ordinary people. You handle complaint letters, RTI applications, leave/resignation letters, bank and landlord letters, job applications, school/college applications, and government department letters.
+
+Write a complete, polite, ready-to-send letter in the correct Indian format — salutation, body, and a respectful closing. Keep it concise and effective. Use placeholders in [square brackets] only when a detail is genuinely unknown (name, address, date, account number). List any documents to attach.
+
+${langLine(language)}`,
+  parts: ({ need, letterType, details, recipient }) => [
+    {
+      text: `Letter type: ${letterType || "general"}\nAddressed to: ${recipient || "(work out the right authority)"}\n\nWhat I need to write:\n"""\n${need || ""}\n"""\n\nExtra details: ${details || "(none)"}`,
+    },
+  ],
+};
+
+/* ------------------------------ VYAPAAR ---------------------------- */
+
+export const vyapaar = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING },
+      content: { type: Type.STRING, description: "The main ready-to-send message / caption / description" },
+      variations: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Alternate versions" },
+      hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
+      tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ["title", "content"],
+  },
+  system: (language) => `You are Vyapaar, a marketing assistant for India's small shops, kirana stores, home businesses and solo sellers. You write WhatsApp broadcast messages, festival offers, product descriptions, social media captions and simple price lists that actually bring customers.
+
+Make the main content warm, persuasive and ready to send — short enough for WhatsApp, with tasteful emojis where they help. Offer 2-3 alternate versions and a few relevant hashtags. Keep it honest and local.
+
+${langLine(language)}`,
+  parts: ({ business, goal, kind, tone }) => [
+    {
+      text: `Business: ${business || "small shop"}\nCreate: ${kind || "WhatsApp message"}\nTone: ${tone || "friendly"}\n\nWhat to promote:\n"""\n${goal || ""}\n"""`,
+    },
+  ],
+};
+
+/* ------------------------------ NAUKRI ----------------------------- */
+
+export const naukri = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING },
+      summary: { type: Type.STRING },
+      output: { type: Type.STRING, description: "Main deliverable: resume text, or application message — ready to use" },
+      highlights: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Key strengths / bullet points" },
+      whereToLook: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Where to find jobs (portals, sources)" },
+      tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ["title", "summary", "output"],
+  },
+  system: (language) => `You are Naukri, a practical career assistant for Indian job seekers — including first-time workers and people without fancy degrees. You build simple, strong resumes, write job application / cover messages, and point people to where the jobs actually are (National Career Service ncs.gov.in, state Rojgar/Sewayojan portals, Employment News, Apna, govt exam notifications, local options).
+
+Produce the main deliverable ready to use. For a resume, write clean plain-text resume content. For an application, write a short, confident message. Always include practical next steps and honest guidance. Encourage the person.
+
+${langLine(language)}`,
+  parts: ({ mode, details }) => [
+    {
+      text: `Mode: ${mode || "resume"}\n\nAbout me / what I need:\n"""\n${details || ""}\n"""`,
+    },
+  ],
+};
+
+export const features = { kavach, samajh, haq, sehat, lekhak, vyapaar, naukri };
