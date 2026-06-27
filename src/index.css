@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: rgba(181, 97, 59, 0.18);
+    color: #1a1714;
+  }
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cdc6b8;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #b8b0a0;
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .page-bg {
+    background-color: #ffffff;
+  }
+
+  .glass {
+    background: rgba(250, 248, 243, 0.8);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .card {
+    @apply rounded-3xl bg-paper border border-line shadow-card;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-linen px-3 py-1 text-xs font-medium text-graphite;
+  }
+
+  /* small floating member chip (Lattice style) */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-paper/95 px-2.5 py-1.5 shadow-chip backdrop-blur-sm;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+  /* primary = dark pill (Lattice "Build career") */
+  .btn-primary {
+    @apply btn bg-ink text-linen px-5 py-3 hover:bg-graphite hover:-translate-y-0.5 shadow-soft;
+  }
+  /* light = bordered pill (Lattice "Contact us") */
+  .btn-light {
+    @apply btn bg-paper text-ink border border-line px-5 py-3 hover:bg-linen hover:-translate-y-0.5;
+  }
+  /* warm accent action */
+  .btn-accent {
+    @apply btn bg-clay-500 text-white px-5 py-3 hover:bg-clay-600 hover:-translate-y-0.5 shadow-soft;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-paper text-graphite px-5 py-3 hover:bg-linen hover:border-faint;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-line bg-mist px-4 py-3 text-ink placeholder:text-faint
+           outline-none transition-all focus:border-clay-300 focus:bg-paper focus:ring-4 focus:ring-clay-50;
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0
+           after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100;
+  }
+
+  /* round icon arrow button (Lattice cards) */
+  .arrow-btn {
+    @apply flex h-9 w-9 items-center justify-center rounded-full border border-line bg-paper text-ink transition-all hover:bg-ink hover:text-linen;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .display {
+    font-family: "Familjen Grotesk", "Hanken Grotesk", system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .serif-italic {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .deva {
+    font-family: "Hanken Grotesk", "Noto Sans Devanagari", sans-serif;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
