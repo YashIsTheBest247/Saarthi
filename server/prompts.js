@@ -300,4 +300,70 @@ ${langLine(language)}`,
   ],
 };
 
-export const features = { kavach, samajh, haq, sehat, lekhak, vyapaar, naukri };
+/* ------------------------------- SAMAY ----------------------------- */
+
+export const samay = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      summary: { type: Type.STRING, description: "Encouraging overview of the plan" },
+      topPriority: { type: Type.STRING, description: "The single most important thing to do first, with why" },
+      tasks: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            deadline: { type: Type.STRING, description: "Realistic deadline relative to today" },
+            priority: { type: Type.STRING, enum: ["High", "Medium", "Low"] },
+            estimate: { type: Type.STRING, description: "Rough time needed, e.g. '2 hrs'" },
+            category: { type: Type.STRING },
+            why: { type: Type.STRING, description: "Why this priority" },
+            firstStep: { type: Type.STRING, description: "The concrete next action to start now" },
+            draft: { type: Type.STRING, description: "For writing/deliverable tasks, a starter draft or outline" },
+          },
+          required: ["title", "priority", "firstStep"],
+        },
+      },
+      schedule: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            block: { type: Type.STRING, description: "When, e.g. 'Today 4–6 PM' or 'Tomorrow morning'" },
+            task: { type: Type.STRING },
+            focus: { type: Type.STRING, description: "What to get done in this block" },
+          },
+          required: ["block", "task"],
+        },
+        description: "Focus blocks scheduled to finish everything before deadlines",
+      },
+    },
+    required: ["summary", "topPriority", "tasks"],
+  },
+  system: (language) => `You are Samay, an autonomous AI chief of staff for busy Indian students, professionals and entrepreneurs. People dump their commitments on you — typed, pasted from an email or syllabus, photographed from handwritten notes, or spoken. You go far beyond reminders.
+
+Do ALL of this:
+1) Extract EVERY task and commitment from the dump — leave nothing out.
+2) Infer a realistic deadline for each (relative to the given today's date).
+3) Prioritise by urgency + importance (High / Medium / Low) and explain why in one line.
+4) Estimate the time each needs and give a concrete first step to start right now.
+5) For writing/deliverable tasks (emails, essays, decks, applications), draft a starter — an outline or first version they can build on.
+6) Build a realistic focus plan: schedule focus blocks across the available time so everything gets done before its deadline, front-loading what's urgent. Account for a human's limited daily focus hours.
+
+Be specific, realistic and genuinely motivating — like a sharp chief of staff who has your back.
+
+${langLine(language)}`,
+  parts: ({ text, image, today }) => {
+    const parts = [];
+    if (image && image.data) {
+      parts.push({ inlineData: { mimeType: image.mimeType || "image/jpeg", data: image.data } });
+    }
+    parts.push({
+      text: `Today's date: ${today || "today"}.\n\nMy commitments / tasks (extract everything, including from any image):\n"""\n${text || "(see image)"}\n"""`,
+    });
+    return parts;
+  },
+};
+
+export const features = { kavach, samajh, haq, sehat, lekhak, vyapaar, naukri, samay };

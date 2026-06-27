@@ -57,6 +57,13 @@ const JOBS = [
     prompt: `headshot of an ambitious young Indian man in his late 20s, short hair, wearing a smart charcoal blazer over a shirt, ${STYLE}`,
   },
   {
+    file: "samay.jpg",
+    seed: 79,
+    w: 760,
+    h: 960,
+    prompt: `headshot of a sharp, organized Indian woman professional in her early 30s, confident calm expression, hair neatly tied back, wearing a dark navy blazer, ${STYLE}`,
+  },
+  {
     file: "hero.jpg",
     seed: 201,
     w: 1280,

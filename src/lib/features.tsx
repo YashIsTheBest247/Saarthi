@@ -1,4 +1,4 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, PenLine, Megaphone, Briefcase, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, PenLine, Megaphone, Briefcase, Target, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
 
 export type Group = "protect" | "claim" | "automate";
@@ -104,6 +104,27 @@ export const FEATURES: FeatureMeta[] = [
       { v: "₹540/mo", l: "typical prescription saving" },
       { v: "Jan Aushadhi", l: "nearest-store guidance" },
       { v: "24×7", l: "safe health guidance" },
+    ],
+  },
+  {
+    key: "samay",
+    icon: Target,
+    nameKey: "sm.name",
+    tagKey: "sm.tag",
+    descKey: "sm.desc",
+    personaKey: "sm.persona",
+    accent: "#2E3A7B",
+    accentDark: "#1F2A5E",
+    tint: "#E7E9F4",
+    photo: "/agents/samay.jpg",
+    index: "05",
+    group: "automate",
+    badge: "New",
+    stats: [
+      { v: "plans & does", l: "goes beyond reminders" },
+      { v: "focus blocks", l: "auto-scheduled to hit deadlines" },
+      { v: "snap · talk · paste", l: "capture tasks any way" },
+      { v: "first draft", l: "deliverables started for you" },
     ],
   },
   {

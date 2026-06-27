@@ -48,6 +48,7 @@ app.post("/api/sehat", makeHandler("sehat"));
 app.post("/api/lekhak", makeHandler("lekhak"));
 app.post("/api/vyapaar", makeHandler("vyapaar"));
 app.post("/api/naukri", makeHandler("naukri"));
+app.post("/api/samay", makeHandler("samay"));
 
 app.listen(PORT, () => {
   console.log(`\n  ⚡ Saarthi API on http://localhost:${PORT}`);

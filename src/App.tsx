@@ -10,6 +10,7 @@ import { Sehat } from "./features/Sehat";
 import { Lekhak } from "./features/Lekhak";
 import { Vyapaar } from "./features/Vyapaar";
 import { Naukri } from "./features/Naukri";
+import { Samay } from "./features/Samay";
 import { FeatureKey } from "./lib/api";
 
 type View = "home" | FeatureKey;
@@ -39,6 +40,7 @@ function Shell() {
           {view === "lekhak" && <Lekhak key="lekhak" onBack={back} />}
           {view === "vyapaar" && <Vyapaar key="vyapaar" onBack={back} />}
           {view === "naukri" && <Naukri key="naukri" onBack={back} />}
+          {view === "samay" && <Samay key="samay" onBack={back} />}
         </AnimatePresence>
       </main>
     </div>
