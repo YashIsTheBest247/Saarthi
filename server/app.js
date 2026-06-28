@@ -8,6 +8,7 @@ import { getNews } from "./news.js";
 import { getJobs } from "./jobs.js";
 import { handleTelegram } from "./telegram.js";
 import { handleResumePdf } from "./resumePdf.js";
+import { runWorkflow, runStep, planWorkflow, workflowList } from "./workflows.js";
 
 /**
  * The Express app, with no `listen()` — so it can be used both by the local
@@ -70,6 +71,30 @@ app.get("/api/news", async (_req, res) => {
     res.json(await getNews());
   } catch (err) {
     res.json({ items: [], live: false, _error: String(err?.message || err) });
+  }
+});
+
+app.get("/api/workflows", (_req, res) => res.json({ workflows: workflowList() }));
+
+app.post("/api/workflow", async (req, res) => {
+  try {
+    const { id, text = "", image, language = "English", today = "today" } = req.body || {};
+    const wid = id === "auto" || !id ? await planWorkflow(text, language) : id;
+    const out = await runWorkflow(wid, { text, image }, language, today);
+    res.json(out);
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
+  }
+});
+
+// Live, client-driven run: execute ONE step at a time so the UI can show the chain in action.
+app.post("/api/workflow/step", async (req, res) => {
+  try {
+    const { id, index = 0, seed = {}, results = {}, language = "English", today = "today" } = req.body || {};
+    const out = await runStep(id, index, seed, results, language, today);
+    res.json(out);
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
   }
 });
 

@@ -14,10 +14,11 @@ import { KrishiConsole } from "./features/console/KrishiConsole";
 import { KarConsole } from "./features/console/KarConsole";
 import { RaahatConsole } from "./features/console/RaahatConsole";
 import { DishaConsole } from "./features/console/DishaConsole";
+import { WorkflowsView } from "./features/WorkflowsView";
 import { FloatingChat } from "./components/FloatingChat";
 import { FeatureKey } from "./lib/api";
 
-type View = "home" | FeatureKey;
+type View = "home" | FeatureKey | "workflows";
 
 function Shell() {
   const { lang } = useApp();
@@ -36,6 +37,13 @@ function Shell() {
     if (a && valid.includes(a)) setView(a as FeatureKey);
     else if (q) window.dispatchEvent(new CustomEvent("saarthi:openchat", { detail: { q } }));
     if (a || q) window.history.replaceState({}, "", window.location.pathname);
+  }, []);
+
+  // open the agentic workflows view from anywhere (nav, landing)
+  useEffect(() => {
+    const h = () => { homeScroll.current = window.scrollY; setView("workflows"); };
+    window.addEventListener("saarthi:workflows", h);
+    return () => window.removeEventListener("saarthi:workflows", h);
   }, []);
 
   const open = (k?: FeatureKey) => {
@@ -73,6 +81,7 @@ function Shell() {
           {view === "kar" && <KarConsole key={`kar-${L}`} onBack={back} />}
           {view === "raahat" && <RaahatConsole key={`raahat-${L}`} onBack={back} />}
           {view === "disha" && <DishaConsole key={`disha-${L}`} onBack={back} />}
+          {view === "workflows" && <WorkflowsView key={`workflows-${L}`} onBack={back} />}
         </AnimatePresence>
       </main>
 

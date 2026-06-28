@@ -7,6 +7,9 @@ import {
   Globe,
   Mic,
   Camera,
+  Siren,
+  CloudRain,
+  Workflow,
   Languages as LangIcon,
   MessageSquare,
   CheckCircle2,
@@ -451,6 +454,75 @@ function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
         </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+/* -------------------------- Truly Agentic -------------------------- */
+const FLOWS = [
+  { title: "Weather → Crop → Schemes → Budget → Plan", desc: "The biggest chain: live weather drives crop advice, then schemes, an input budget and a full season plan.", accent: "#4B7A2B", agents: ["weather", "krishi", "haq", "paisa", "samay"] },
+  { title: "Decode → Complaint → Schedule", desc: "A confusing notice becomes a filed complaint with deadlines.", accent: "#2F6F8F", agents: ["samajh", "setu", "samay"] },
+  { title: "Check scam → Act → Report", desc: "Verify a message, get urgent steps, draft the report.", accent: "#2D6BFF", agents: ["kavach", "emergency", "setu"] },
+  { title: "Tailor résumé → Interview → Plan", desc: "From background to tailored résumé, mock interview and a plan.", accent: "#6D4AA7", agents: ["disha", "disha", "samay"] },
+  { title: "Analyse spends → Plan savings", desc: "Make sense of money, then schedule what actually saves it.", accent: "#138A72", agents: ["paisa", "samay"] },
+  { title: "Decode Rx → Refill reminders", desc: "Cheaper generics, then timely refill reminders.", accent: "#C0453B", agents: ["sehat", "samay"] },
+];
+
+function FlowChain({ agents }: { agents: string[] }) {
+  const { t } = useApp();
+  return (
+    <div className="no-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto">
+      {agents.map((a, i) => {
+        const m = FEATURES.find((f) => f.key === a);
+        return (
+          <div key={i} className="flex flex-none items-center gap-2">
+            {m ? (
+              <span className="flex items-center gap-1.5 rounded-full border border-line bg-paper py-1 pl-1 pr-2.5">
+                <AgentAvatar photo={m.photo} name={t(m.nameKey)} tint={m.tint} accent={m.accent} rounded="rounded-full" className="h-6 w-6 flex-none" />
+                <span className="whitespace-nowrap text-xs font-semibold text-ink deva">{t(m.nameKey)}</span>
+              </span>
+            ) : a === "weather" ? (
+              <span className="flex items-center gap-1.5 rounded-full border border-line bg-paper py-1 pl-2 pr-2.5 text-[#0E8FA8]"><CloudRain className="h-4 w-4" /><span className="text-xs font-semibold">Weather</span></span>
+            ) : (
+              <span className="flex items-center gap-1.5 rounded-full border border-line bg-paper py-1 pl-2 pr-2.5 text-[#C0453B]"><Siren className="h-4 w-4" /><span className="text-xs font-semibold">SOS</span></span>
+            )}
+            {i < agents.length - 1 && <ArrowRight className="h-3.5 w-3.5 flex-none text-faint" />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function TrulyAgentic() {
+  const open = () => window.dispatchEvent(new Event("saarthi:workflows"));
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <Reveal className="max-w-2xl">
+        <Eyebrow>Truly Agentic</Eyebrow>
+        <h2 className="display mt-4 text-balance text-4xl font-bold tracking-tight deva sm:text-5xl">One ask, a whole team of agents.</h2>
+        <p className="mt-4 text-lg text-muted deva">Not one model answering — Saarthi <b>chains specialists end-to-end</b>, each agent's output feeding the next. An AI planner picks the right chain for your problem.</p>
+      </Reveal>
+
+      <div className="mt-10 grid gap-4 lg:grid-cols-2">
+        {FLOWS.map((fl, i) => (
+          <Reveal key={fl.title} delay={(i % 2) * 0.06}>
+            <button onClick={open} className="group flex h-full w-full flex-col rounded-2xl border border-line bg-paper p-5 text-left transition-all hover:-translate-y-1 hover:shadow-float">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg text-white" style={{ background: fl.accent }}><Workflow className="h-4 w-4" /></span>
+                <span className="display text-lg font-bold deva">{fl.title}</span>
+                <ArrowUpRight className="ml-auto h-4 w-4 text-faint transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-muted deva">{fl.desc}</p>
+              <div className="mt-4"><FlowChain agents={fl.agents} /></div>
+            </button>
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal className="mt-8">
+        <button onClick={open} className="btn-primary text-[15px]"><Workflow className="h-4 w-4" /> Run an agentic workflow <ArrowRight className="h-4 w-4" /></button>
+      </Reveal>
     </section>
   );
 }
@@ -906,6 +978,7 @@ export function Landing({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
       <FlagshipCarousel onOpen={(k) => onOpen(k)} />
       <Capabilities />
       <TeamPanel onOpen={(k) => onOpen(k)} />
+      <TrulyAgentic />
       <QuietJobs />
       <Closing />
       <Footer onOpen={onOpen} />

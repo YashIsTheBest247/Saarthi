@@ -7,6 +7,7 @@ const en: Dict = {
   "nav.features": "Tools",
   "nav.how": "How it works",
   "nav.helplines": "Helplines",
+  "nav.workflows": "Workflows",
   "nav.languages": "Languages",
   "nav.try": "Talk to Saarthi",
   "brand.tag": "Your everyday AI saathis",
@@ -127,7 +128,7 @@ const en: Dict = {
 
   "kflag.eyebrow": "Flagship platform",
   "kflag.title": "Abhay — Digital Public Safety Intelligence",
-  "kflag.body": "Not one tool but nine cooperating modules — digital-arrest detection, agentic threat fusion, voice-deepfake forensics, fraud-network graphs, counterfeit screening, a live crime map, reproducible metrics and a scam-news watch.",
+  "kflag.body": "Not one tool but eleven operating modules — digital-arrest detection, agentic threat fusion, voice-deepfake forensics, fraud-network graphs, counterfeit screening, a live crime map, reproducible metrics and a scam-news watch.",
   "kflag.cta": "Open the platform",
 
   "kv.platform": "Digital Public Safety Platform",
@@ -326,7 +327,7 @@ const en: Dict = {
   "cta.btn": "Start with any tool",
 
   "footer.headline": "Everyday India, made simple.",
-  "footer.tagline": "Nine AI agents that read, decide and act for everyday India — in your language.",
+  "footer.tagline": "Eleven agents that read, decide and act for everyday India — in your language.",
   "footer.agents": "Agents",
   "footer.explore": "Explore",
   "footer.company": "Company",
@@ -443,6 +444,7 @@ const hi: Dict = {
   "nav.features": "टूल",
   "nav.how": "कैसे काम करता है",
   "nav.helplines": "हेल्पलाइन",
+  "nav.workflows": "वर्कफ़्लो",
   "nav.languages": "भाषाएँ",
   "nav.try": "सारथी से बात करें",
   "brand.tag": "आपके रोज़मर्रा के AI साथी",

@@ -18,6 +18,7 @@ safe in a disaster, and get you hired. By **voice or text, in English and Hindi*
 ## Highlights
 
 - **11 specialist agents**, each with a photoreal face, its own console + dashboard, and real tools.
+- **Agentic workflows** — one ask runs a **chain of agents** (e.g. decode → draft complaint → schedule), with an AI **planner** that auto-picks the chain.
 - **Floating AI assistant** that understands your problem and routes you to the right agent.
 - **Telegram bot** with the same brain — chat, get full answers, and deep-link back into the app.
 - **"Already affected?" emergency mode** on every agent — calm worst-case next steps + real helplines.
@@ -52,6 +53,11 @@ helplines), a ready script, and what the agent will do for you.
 
 ## Cross-cutting features
 
+- **Agentic workflows** (the **AI-native workflow** layer) — the **Workflows** tab runs a
+  multi-agent **chain** where each agent's output feeds the next: *Decode → Complaint → Schedule*
+  (Vidya → Adhrit → Smriti), *Check scam → Act → Report* (Abhay → Emergency → Adhrit),
+  *Tailor résumé → Interview → Plan* (Disha → Disha → Smriti), *Analyse spends → Plan savings*,
+  *Decode Rx → Refill reminders*. An AI **planner** picks the right chain from a free-text problem.
 - **AI assistant (floating chat)** — bottom-right on every page. Describe your problem; it
   classifies it (Gemini router + an instant offline keyword fallback) and offers **"Talk to
   {agent}"**. Supports voice input.
