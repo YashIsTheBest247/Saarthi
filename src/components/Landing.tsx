@@ -94,7 +94,7 @@ function Hero(_: { onOpen: (k?: FeatureKey) => void }) {
       <div className="relative mx-auto max-w-6xl px-5 pb-10 pt-24 sm:pb-14 sm:pt-28">
         <motion.h1
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }}
-          className="display max-w-2xl text-[2.7rem] font-bold leading-[0.98] tracking-tight sm:text-[4.6rem]"
+          className="display max-w-2xl text-[2.1rem] font-bold leading-[1.02] tracking-tight sm:text-[4.6rem]"
         >
           <span className="deva">{t("hero.titleA")}</span>
           <br />

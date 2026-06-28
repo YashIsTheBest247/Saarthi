@@ -9,10 +9,13 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   body {
     @apply bg-canvas text-ink font-sans antialiased;
     overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
   }
   /* native controls (selects, checkboxes, radios, range, dropdown highlight) follow the app's blue */
   select, input, textarea, button {
