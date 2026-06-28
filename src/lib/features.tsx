@@ -1,4 +1,4 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LifeBuoy, Briefcase, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LifeBuoy, Briefcase, GraduationCap, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
 
 export type Group = "protect" | "claim" | "automate";
@@ -167,6 +167,19 @@ export const FEATURES: FeatureMeta[] = [
       { v: "flood & wildfire", l: "risk predicted area-by-area" },
       { v: "safe routes", l: "evacuation & shelter guidance" },
       { v: "resource plan", l: "boats, kits & medics allocated" },
+    ],
+  },
+  {
+    key: "study",
+    icon: GraduationCap,
+    nameKey: "ac.name", tagKey: "ac.tag", descKey: "ac.desc", personaKey: "ac.persona",
+    accent: "#7A4FB0", accentDark: "#553487", tint: "#EFE9F8",
+    photo: "/agents/lekhak.jpg", index: "12", group: "automate", badge: "New",
+    stats: [
+      { v: "essays & reports", l: "written to your brief" },
+      { v: "Times New Roman 12", l: "professional formatting" },
+      { v: "PDF · Word · PPT", l: "export in any format" },
+      { v: "set a deadline", l: "Smriti reminds you to submit" },
     ],
   },
 ];

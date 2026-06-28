@@ -7,11 +7,13 @@ import { FeatureKey } from "../lib/api";
 import { LanguagePicker } from "../components/LanguagePicker";
 import { AgentAvatar } from "../components/AgentAvatar";
 import { CopyBlock, ListBlock } from "../components/ui";
+import { notify } from "../lib/reminders";
 
 interface WfMeta { id: string; title: string; desc: string; accent: string; seedLabel: string; agents: string[]; example: string }
 
 const WF: WfMeta[] = [
   { id: "kisan-cycle", title: "Weather → Crop → Schemes → Budget → Plan", desc: "Saarthi's biggest chain: live weather feeds weather-aware crop advice, then farm schemes, an input budget and a full sowing schedule — five agents, one ask.", accent: "#4B7A2B", agents: ["weather", "krishi", "haq", "paisa", "samay"], seedLabel: "Your crop, place & problem (e.g. tomato in Nashik, leaves yellowing)", example: "Tomato crop in Nashik, leaves turning yellow with spots. Small farmer, half acre." },
+  { id: "homework-to-submission", title: "Write homework → Schedule submission", desc: "Acharya writes the assignment to your brief; Smriti schedules review time and reminds you to submit before the deadline.", accent: "#7A4FB0", agents: ["study", "samay"], seedLabel: "What to write + when it's due", example: "Write a history essay on the Salt March of 1930 — causes, the march, and why it mattered. Due Friday 5pm." },
   { id: "resolve-grievance", title: "Decode → Complaint → Schedule", desc: "Turn a confusing notice or problem into a filed complaint with follow-up deadlines.", accent: "#2F6F8F", agents: ["samajh", "setu", "samay"], seedLabel: "Paste the notice / describe the problem", example: "I ordered a phone for ₹15,000; it came damaged and the seller refuses a refund." },
   { id: "scam-to-safety", title: "Check scam → Act → Report", desc: "Verify a suspicious message, get urgent next steps, and draft the report to file.", accent: "#2D6BFF", agents: ["kavach", "emergency", "setu"], seedLabel: "Paste the suspicious SMS / call / email", example: "Your electricity will be disconnected tonight. Pay now or call 9xxxxxxxxx immediately." },
   { id: "land-a-job", title: "Tailor résumé → Interview → Plan", desc: "From your background to a tailored résumé, a mock interview, and an application plan.", accent: "#6D4AA7", agents: ["disha", "disha", "samay"], seedLabel: "Your background + target role", example: "2 yrs as a sales exec in Pune, B.Com; want to move into a customer-success role." },
@@ -77,6 +79,13 @@ function StepBody({ agent, data }: { agent: string; data: any }) {
       {agent === "sehat" && data.medicines?.length ? (
         <ListBlock title="Cheaper generics" items={data.medicines.map((m: any) => `${m.brandName} → ${m.genericName}${m.savingsNote ? ` (${m.savingsNote})` : ""}`)} accent="#C0453B" />
       ) : null}
+      {agent === "study" && (
+        <div className="space-y-2">
+          {data.wordCount ? <div className="text-sm text-muted">{data.kind ? `${data.kind} · ` : ""}~{data.wordCount} words written.</div> : null}
+          {data.sections?.[0]?.paragraphs?.[0] && <p className="text-sm leading-relaxed text-graphite deva line-clamp-3">{data.sections[0].paragraphs[0]}</p>}
+          <div className="text-xs text-faint">Open Acharya to export as PDF / Word / PPT.</div>
+        </div>
+      )}
       {agent === "samay" && data.tasks?.length ? <ListBlock title="Scheduled actions" items={data.tasks.map((tk: any) => `${tk.title}${tk.deadline ? ` — ${tk.deadline}` : ""}`)} tone="good" /> : null}
     </div>
   );
@@ -132,6 +141,7 @@ export function WorkflowsView({ onBack, initialId }: { onBack: () => void; initi
         setSteps([...acc]);
       }
       setDone(true);
+      notify("Workflow complete ✅", `${wf.title} — ${acc.length} agents finished.`);
     } catch {
       setError("Couldn't finish the workflow. Please try again.");
     } finally {

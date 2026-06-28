@@ -1,9 +1,9 @@
 # सारथी · Saarthi
 
-**An all-in-one AI copilot for everyday life in India** — eleven specialist AI agents that
+**An all-in-one AI copilot for everyday life in India** — twelve specialist AI agents that
 spot scams, decode documents, claim government benefits, save on health, make sense of
 money, file taxes, plan your work, fight unfair treatment, protect your crop, keep you
-safe in a disaster, and get you hired. By **voice or text, in English and Hindi**, on web **and Telegram**.
+safe in a disaster, write your homework, and get you hired. By **voice or text, in English and Hindi**, on web **and Telegram**.
 
 > Hackathon track: *Challenge 3 — Improve Everyday Life with AI.*
 > Real AI (Google **Gemini 2.5 Flash**), premium responsive UI, deterministic on-device
@@ -17,7 +17,7 @@ safe in a disaster, and get you hired. By **voice or text, in English and Hindi*
 
 ## Highlights
 
-- **11 specialist agents**, each with a photoreal face, its own console + dashboard, and real tools.
+- **12 specialist agents**, each with a photoreal face, its own console + dashboard, and real tools.
 - **Agentic workflows** — one ask runs a **chain of agents** (e.g. decode → draft complaint → schedule), with an AI **planner** that auto-picks the chain.
 - **Floating AI assistant** that understands your problem and routes you to the right agent.
 - **Telegram bot** with the same brain — chat, get full answers, and deep-link back into the app.
@@ -44,6 +44,7 @@ safe in a disaster, and get you hired. By **voice or text, in English and Hindi*
 | **Adhrit** | Grievance Autopilot | Describe a problem → the right authority, a ready complaint, the escalation ladder, and a rights library. |
 | **Bhupati** | Kisan Saathi | Snap a crop photo → diagnosis, action plan, farm schemes, timely advisory. |
 | **Narayan** | Disaster Response | Fuse **live** weather + river-discharge + earthquake feeds → flood/wildfire/quake risk scored per city, safe routes, resource allocation, live hazard map (with an "updated" timestamp). |
+| **Acharya** | Study & Homework | Set a topic and a deadline → a properly structured, human-sounding essay / journal / report / speech / notes / presentation, exported as **PDF, Word (.docx) or PowerPoint (.pptx)** in **Times New Roman 12pt**, then handed to **Smriti** with an **.ics reminder** so the submission is never missed. |
 
 Every agent also has an **"Already affected?"** tab: describe the worst case (you were scammed,
 got a notice, lost a crop…) and it returns urgent next steps, exactly who to contact (real
@@ -54,10 +55,16 @@ helplines), a ready script, and what the agent will do for you.
 ## Cross-cutting features
 
 - **Agentic workflows** (the **AI-native workflow** layer) — the **Workflows** tab runs a
-  multi-agent **chain** where each agent's output feeds the next: *Decode → Complaint → Schedule*
-  (Vidya → Adhrit → Smriti), *Check scam → Act → Report* (Abhay → Emergency → Adhrit),
-  *Tailor résumé → Interview → Plan* (Disha → Disha → Smriti), *Analyse spends → Plan savings*,
-  *Decode Rx → Refill reminders*. An AI **planner** picks the right chain from a free-text problem.
+  multi-agent **chain** where each agent's output feeds the next, **visualised live** as each
+  step runs: *Weather → Crop → Schemes → Budget → Plan* (live **Open-Meteo** weather → Bhupati →
+  Haq → Nidhi → Smriti — the biggest chain), *Write homework → Schedule submission* (Acharya →
+  Smriti), *Decode → Complaint → Schedule* (Vidya → Adhrit → Smriti), *Check scam → Act → Report*
+  (Abhay → Emergency → Adhrit), *Tailor résumé → Interview → Plan* (Disha → Disha → Smriti),
+  *Analyse spends → Plan savings*, *Decode Rx → Refill reminders*. An AI **planner** picks the
+  right chain from a free-text problem, and finishing a chain fires a **completion reminder**.
+- **Smriti as manager** — Smriti reviews your task board, **delegates** each task to the right
+  specialist agent, brings back the **finished deliverable** (e.g. Adhrit drafts the email), and
+  shows it under *Completed by your team*; tasks with deadlines export to **.ics** with alarms.
 - **AI assistant (floating chat)** — bottom-right on every page. Describe your problem; it
   classifies it (Gemini router + an instant offline keyword fallback) and offers **"Talk to
   {agent}"**. Supports voice input.

@@ -64,6 +64,16 @@ export const WORKFLOWS = {
       { key: "remind", agent: "samay", label: "Smriti sets refill reminders", input: (c) => ({ text: `Set reminders to take and refill these medicines on time: ${(c.results.rx?.medicines || []).map((m) => m.brandName || m.genericName).join(", ")}.`, today: c.today }) },
     ],
   },
+  "homework-to-submission": {
+    title: "Write homework → Schedule submission",
+    desc: "Acharya writes the assignment to your brief; Smriti schedules review time and reminds you to submit before the deadline.",
+    seedLabel: "What to write + when it's due (e.g. history essay on the Salt March, due Friday 5pm)",
+    accent: "#7A4FB0",
+    steps: [
+      { key: "draft", agent: "study", label: "Acharya writes it", input: (c) => ({ topic: c.seed.text, kind: "essay", level: "high school", length: "about 600 words", tone: "formal academic", today: c.today }) },
+      { key: "schedule", agent: "samay", label: "Smriti schedules submission", input: (c) => ({ text: `Plan time to review and submit this assignment on time: "${c.results.draft?.title || c.seed.text}". Add a clear reminder before the deadline.`, today: c.today }) },
+    ],
+  },
   "kisan-cycle": {
     title: "Weather → Crop → Schemes → Budget → Plan",
     desc: "A full-season co-pilot: live weather, weather-aware crop advice, farm schemes, an input budget, and a sowing/spraying schedule.",

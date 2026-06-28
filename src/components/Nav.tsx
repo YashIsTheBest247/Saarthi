@@ -223,10 +223,10 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
           </div>
           <a
             href="#agents"
-            className={`hidden md:inline-flex btn px-4 py-2.5 text-sm ${dark ? "bg-white text-ink hover:-translate-y-0.5 shadow-soft" : "bg-ink text-linen hover:bg-graphite hover:-translate-y-0.5 shadow-soft"}`}
+            className={`hidden md:inline-flex btn whitespace-nowrap px-4 py-2.5 text-sm ${dark ? "bg-white text-ink hover:-translate-y-0.5 shadow-soft" : "bg-ink text-linen hover:bg-graphite hover:-translate-y-0.5 shadow-soft"}`}
           >
             {t("nav.try")}
-            <ArrowUpRight className="h-4 w-4" />
+            <ArrowUpRight className="h-4 w-4 flex-none" />
           </a>
           <button
             onClick={() => setMobile((m) => !m)}

@@ -17,7 +17,7 @@ const en: Dict = {
   "hero.titleB": "for",
   "hero.titleC": "everyday India",
   "hero.sub":
-    "Eleven AI companions that protect you from scams, explain any document, find the schemes you deserve, save you money on health, and even get you hired — in your language, by voice or text.",
+    "Twelve AI companions that protect you from scams, explain any document, find the schemes you deserve, save you money on health, write your homework, and even get you hired — in your language, by voice or text.",
   "hero.cta1": "Meet the agents",
   "hero.cta2": "See how it works",
   "hero.trust1": "No login needed",
@@ -45,7 +45,7 @@ const en: Dict = {
   "team.region": "Pan-India",
   "team.title": "Helping India handle the confusing, costly and scary parts of everyday life.",
   "team.body":
-    "Eleven specialists, one Saarthi. Together they cover scams, paperwork, schemes, health, money, taxes, work and careers — so no one has to face the hard parts alone.",
+    "Twelve specialists, one Saarthi. Together they cover scams, paperwork, schemes, health, money, taxes, study, work and careers — so no one has to face the hard parts alone.",
   "team.cta": "Meet the whole team",
 
   "cap.title": "Agent capabilities",
@@ -178,7 +178,7 @@ const en: Dict = {
   "sv.visit.symptoms": "Symptoms & questions for the doctor", "sv.visit.generate": "Build visit summary", "sv.visit.empty": "Add medicines, vitals or notes first.", "sv.visit.title2": "Your visit summary",
 
   "quiet.eyebrow": "Saarthi · your everyday companion",
-  "quiet.titleA": "Eleven quiet jobs.",
+  "quiet.titleA": "Twelve quiet jobs.",
   "quiet.titleB": "One calm app.",
   "quiet.sub": "Saarthi quietly handles the confusing, costly and scary parts of everyday Indian life — one calm app, in your language.",
   "quiet.cta": "Meet the agents",
@@ -249,6 +249,10 @@ const en: Dict = {
   "ds.tag": "Career Copilot",
   "ds.desc": "Disha builds a job-ready résumé, finds openings that fit you, runs mock interviews, and maps the exact skills to learn next — your career, with direction.",
   "ds.persona": "I help you get hired — a sharp résumé, the right openings, interview practice, and a skill plan that moves you forward.",
+  "ac.name": "Acharya",
+  "ac.tag": "Study & Homework",
+  "ac.desc": "Acharya writes your essays, journals, reports, speeches and presentations to your brief — properly structured, in a natural human voice — and exports them as a polished PDF, Word or PowerPoint file.",
+  "ac.persona": "Give me the topic and the deadline. I'll write it well, format it professionally, and hand it to Smriti so you never miss the submission.",
   "ds.ph": "Tell me about yourself & your goal… e.g. 2 yrs as a sales exec in Pune, want a customer-success role; or paste a job description to tailor to",
   "ds.output": "Your draft",
   "ds.highlights": "Your strengths",
@@ -316,7 +320,7 @@ const en: Dict = {
   "how.s1.t": "Tell any agent",
   "how.s1.d": "Paste a message, snap a bill or letter, or just speak — in English or Hindi.",
   "how.s2.t": "The right specialist takes over",
-  "how.s2.d": "Eleven expert agents — Disha, Abhay, Nidhi, Asha and more — pick up exactly what you need.",
+  "how.s2.d": "Twelve expert agents — Disha, Abhay, Nidhi, Acharya and more — pick up exactly what you need.",
   "how.s3.t": "Real AI, verified math",
   "how.s3.d": "Gemini reads and reasons; built-in engines compute taxes, EMIs and risk scores — accurately.",
   "how.s4.t": "Act from your dashboard",
@@ -327,7 +331,7 @@ const en: Dict = {
   "cta.btn": "Start with any tool",
 
   "footer.headline": "Everyday India, made simple.",
-  "footer.tagline": "Eleven agents that read, decide and act for everyday India — in your language.",
+  "footer.tagline": "Twelve agents that read, decide and act for everyday India — in your language.",
   "footer.agents": "Agents",
   "footer.explore": "Explore",
   "footer.company": "Company",
@@ -454,7 +458,7 @@ const hi: Dict = {
   "hero.titleB": "हर दिन के",
   "hero.titleC": "भारत के लिए",
   "hero.sub":
-    "ग्यारह AI साथी जो आपको ठगी से बचाते हैं, किसी भी दस्तावेज़ को समझाते हैं, आपके हक़ की योजनाएँ ढूँढते हैं, सेहत पर पैसे बचाते हैं, और नौकरी तक दिलाते हैं — आपकी भाषा में, बोलकर या लिखकर।",
+    "बारह AI साथी जो आपको ठगी से बचाते हैं, किसी भी दस्तावेज़ को समझाते हैं, आपके हक़ की योजनाएँ ढूँढते हैं, सेहत पर पैसे बचाते हैं, होमवर्क लिखते हैं, और नौकरी तक दिलाते हैं — आपकी भाषा में, बोलकर या लिखकर।",
   "hero.cta1": "एजेंट से मिलें",
   "hero.cta2": "कैसे काम करता है देखें",
   "hero.trust1": "कोई लॉगिन नहीं",
@@ -482,7 +486,7 @@ const hi: Dict = {
   "team.region": "पूरे भारत में",
   "team.title": "रोज़मर्रा की ज़िंदगी के उलझे, महँगे और डरावने हिस्सों में भारत की मदद।",
   "team.body":
-    "ग्यारह माहिर, एक सारथी। मिलकर ये ठगी, कागज़ी कार्रवाई, योजनाएँ, सेहत, पैसा, टैक्स, काम और करियर संभालते हैं — ताकि किसी को मुश्किल अकेले न झेलनी पड़े।",
+    "बारह माहिर, एक सारथी। मिलकर ये ठगी, कागज़ी कार्रवाई, योजनाएँ, सेहत, पैसा, टैक्स, पढ़ाई, काम और करियर संभालते हैं — ताकि किसी को मुश्किल अकेले न झेलनी पड़े।",
   "team.cta": "पूरी टीम से मिलें",
 
   "cap.title": "एजेंट की काबिलियत",
@@ -686,6 +690,10 @@ const hi: Dict = {
   "ds.tag": "करियर सहायक",
   "ds.desc": "दिशा नौकरी के लायक रेज़्यूमे बनाती है, आपके लिए सही ओपनिंग ढूँढती है, मॉक इंटरव्यू कराती है, और बताती है आगे कौन-से स्किल सीखने हैं — आपके करियर को दिशा देती है।",
   "ds.persona": "मैं आपको नौकरी दिलाने में मदद करती हूँ — दमदार रेज़्यूमे, सही ओपनिंग, इंटरव्यू की तैयारी, और आगे बढ़ने का स्किल प्लान।",
+  "ac.name": "आचार्य",
+  "ac.tag": "पढ़ाई और होमवर्क",
+  "ac.desc": "आचार्य आपके निबंध, जर्नल, रिपोर्ट, भाषण और प्रेज़ेंटेशन आपकी ज़रूरत के अनुसार लिखता है — सही ढाँचे में, असली इंसानी भाषा में — और उन्हें सुंदर PDF, Word या PowerPoint फ़ाइल के रूप में देता है।",
+  "ac.persona": "बस विषय और डेडलाइन बताइए। मैं अच्छा लिखूँगा, पेशेवर ढंग से फ़ॉर्मेट करूँगा, और स्मृति को सौंप दूँगा ताकि सबमिशन कभी न छूटे।",
   "ds.ph": "अपने बारे में और लक्ष्य बताएँ… जैसे पुणे में 2 साल सेल्स एग्ज़ीक्यूटिव, अब कस्टमर-सक्सेस रोल चाहिए; या जॉब डिस्क्रिप्शन पेस्ट करें",
   "ds.output": "आपका ड्राफ़्ट",
   "ds.highlights": "आपकी ख़ूबियाँ",

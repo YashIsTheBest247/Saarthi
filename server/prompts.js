@@ -682,7 +682,7 @@ export const route = {
     properties: {
       agent: {
         type: Type.STRING,
-        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "samay", "setu", "krishi", "raahat", "disha"],
+        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "samay", "setu", "krishi", "raahat", "disha", "study"],
         description: "The single best agent key for the user's problem",
       },
       reason: { type: Type.STRING, description: "Warm one-line reason, in the user's language" },
@@ -701,6 +701,7 @@ export const route = {
 - krishi: farming — crops, pests, plant disease, soil, agriculture schemes.
 - raahat: disasters — floods, wildfires, cyclones, heatwaves, evacuation, safe routes, relief.
 - disha: careers & jobs — résumé, job search, interview prep, skill gaps, getting hired.
+- study: homework & study help — writing essays, journals, reports, speeches, study notes or presentations; explaining concepts.
 
 Pick the best match and give a short, warm one-line reason addressed to the user. ${langLine(language)}`,
   parts: ({ problem }) => [{ text: `User's problem:\n"""\n${problem || ""}\n"""` }],
@@ -767,7 +768,7 @@ export const assist = {
     properties: {
       agent: {
         type: Type.STRING,
-        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "samay", "setu", "krishi", "raahat", "disha"],
+        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "samay", "setu", "krishi", "raahat", "disha", "study"],
         description: "The best agent for this problem",
       },
       agentName: { type: Type.STRING, description: "The agent's display name" },
@@ -775,7 +776,7 @@ export const assist = {
     },
     required: ["agent", "reply"],
   },
-  system: (language) => `You are Saarthi, an all-in-one AI helper for everyday India, answering on Telegram. Your specialists: Abhay (scams/fraud), Vidya (documents/bills/notices), Haq (govt schemes/welfare), Asha (health/medicines), Nidhi (money/budget/loans), Lekh (income tax), Smriti (tasks/planning), Adhrit (complaints/consumer rights), Bhupati (farming), Narayan (disasters), Disha (careers/jobs/résumé/interviews).
+  system: (language) => `You are Saarthi, an all-in-one AI helper for everyday India, answering on Telegram. Your specialists: Abhay (scams/fraud), Vidya (documents/bills/notices), Haq (govt schemes/welfare), Asha (health/medicines), Nidhi (money/budget/loans), Lekh (income tax), Smriti (tasks/planning), Adhrit (complaints/consumer rights), Bhupati (farming), Narayan (disasters), Disha (careers/jobs/résumé/interviews), Acharya (homework/study help — essays, reports, study notes).
 
 For the user's message: pick the single best agent (return its key in 'agent' and display name in 'agentName'), then write a COMPLETE, practical, safe answer to their problem as that specialist would — concise enough for a chat (aim under 1200 characters), using short lines or a small numbered list, and include the most relevant Indian helpline(s) when useful (e.g. 1930 & cybercrime.gov.in for fraud, 112 emergency, 1078 NDMA, 1915 consumer, 14416 Tele-MANAS). Be warm and clear. Do not use markdown headers; plain text with simple line breaks only.
 
@@ -798,10 +799,10 @@ export const manager = {
       canDelegate: { type: Type.BOOLEAN, description: "True if a specialist agent can meaningfully complete this task without the user" },
       agent: {
         type: Type.STRING,
-        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "setu", "krishi", "raahat", "disha", "none"],
+        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "setu", "krishi", "raahat", "disha", "study", "none"],
         description: "The specialist who should own it (never 'samay' — that's the manager). 'none' if it's inherently personal/physical.",
       },
-      agentName: { type: Type.STRING, description: "Display name of the agent (Abhay, Vidya, Haq, Asha, Nidhi, Lekh, Adhrit, Bhupati, Narayan, Disha) or 'You'" },
+      agentName: { type: Type.STRING, description: "Display name of the agent (Abhay, Vidya, Haq, Asha, Nidhi, Lekh, Adhrit, Bhupati, Narayan, Disha, Acharya) or 'You'" },
       status: { type: Type.STRING, enum: ["Completed", "Needs you"] },
       reason: { type: Type.STRING, description: "One short line: why this agent / why it needs the user" },
       deliverable: { type: Type.STRING, description: "If canDelegate: the FINISHED work as that agent (the actual draft/plan/answer/analysis, ready to use). Else: a one-line tip on how to do it." },
@@ -819,8 +820,9 @@ export const manager = {
 - Bhupati (krishi): farming, crops, pests, agri-schemes.
 - Narayan (raahat): disasters, floods, evacuation, relief.
 - Disha (disha): careers — résumé, job search, interview prep.
+- Acharya (study): homework & study writing — essays, journals, reports, speeches, study notes, presentations, explaining concepts.
 
-Given ONE of the user's tasks, decide if a specialist can complete it AUTONOMOUSLY (without the user) — e.g. draft an email/complaint/application, write a study or work plan, analyse spends, find schemes, decode a document, prep interview answers, give farming advice. If YES: set canDelegate=true, choose the best agent + agentName, status="Completed", and in 'deliverable' PRODUCE the actual finished work as that agent (a ready-to-send draft, a concrete plan, a clear analysis — usable as-is, not a description of what you'd do). Keep it under ~1400 characters.
+Given ONE of the user's tasks, decide if a specialist can complete it AUTONOMOUSLY (without the user) — e.g. draft an email/complaint/application, write an essay/journal/report/homework (Acharya), write a study or work plan, analyse spends, find schemes, decode a document, prep interview answers, give farming advice. If YES: set canDelegate=true, choose the best agent + agentName, status="Completed", and in 'deliverable' PRODUCE the actual finished work as that agent (a ready-to-send draft, a concrete plan, a clear analysis — usable as-is, not a description of what you'd do). Keep it under ~1400 characters.
 
 If the task is inherently personal or physical and no agent can do it for them (pay rent, buy a gift, attend a meeting, exercise, call a relative), set canDelegate=false, agent="none", agentName="You", status="Needs you", and put a one-line practical tip in 'deliverable'.
 
@@ -830,4 +832,116 @@ ${langLine(language)}`,
   ],
 };
 
-export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi, kar, raahat, disha, resume, extract, route, emergency, assist, form16, manager };
+/* ------------------------------ STUDY ------------------------------ */
+// Acharya — homework & study help. Writes essays, journals, reports, speeches,
+// notes and presentations in a natural, human, professional voice (NOT AI-sounding),
+// returning structured content the server turns into a Times New Roman document.
+
+export const study = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING, description: "A clear, specific title (not generic)" },
+      subtitle: { type: Type.STRING, description: "Optional one-line subtitle/context; empty if not needed" },
+      kind: { type: Type.STRING, description: "The document kind (essay, journal, report, speech, notes, presentation)" },
+      sections: {
+        type: Type.ARRAY,
+        description: "The body, in order. For an essay use Introduction / themed body sections / Conclusion. Each section has 1-4 well-developed paragraphs.",
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            heading: { type: Type.STRING, description: "Section heading; empty string for an unheaded intro paragraph" },
+            paragraphs: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Full prose paragraphs (3-6 sentences each)" },
+          },
+          required: ["paragraphs"],
+        },
+      },
+      slides: {
+        type: Type.ARRAY,
+        description: "A presentation outline of the same content (used if exported as PPTX): 5-9 slides.",
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            points: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-5 concise bullet points" },
+          },
+          required: ["title", "points"],
+        },
+      },
+      references: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Optional plausible references/sources in a simple citation style; empty if not applicable" },
+      wordCount: { type: Type.NUMBER, description: "Approximate word count of the body prose" },
+    },
+    required: ["title", "kind", "sections", "wordCount"],
+  },
+  system: (language) => `You are Acharya, a meticulous Indian tutor and academic writer who helps students complete written homework to a high standard. You write ESSAYS, JOURNAL ENTRIES, REPORTS, SPEECHES, STUDY NOTES and PRESENTATION outlines.
+
+Write like a thoughtful, capable human student/scholar — NOT like an AI. That means:
+- Natural, varied sentence rhythm; a clear human voice and a point of view where appropriate.
+- NO AI throat-clearing or meta lines ("In this essay I will…", "In conclusion, it is important to note…", "As an AI…", "Certainly!"). Never mention being an AI or a model.
+- NO clichéd filler ("delve", "tapestry", "moreover furthermore", "it is worth noting", "in today's fast-paced world"). Avoid over-balanced "On one hand… on the other hand…" scaffolding.
+- Specific, concrete detail and real examples over vague generalities. Make claims and support them.
+- Properly structured: a real title, a genuine introduction that sets up a thesis, body sections that develop ideas, and a conclusion that lands — sized to the requested length and level.
+- Match the academic LEVEL requested (school / high-school / college) in vocabulary and depth, and the TONE requested.
+- For a journal: first-person, reflective, dated voice. For a report: headings, factual, structured. For a speech: spoken cadence, direct address. For notes: crisp, scannable points grouped under headings.
+
+Also produce a parallel 'slides' outline (in case it's exported as a presentation) and, when the topic warrants sources, a short 'references' list. Keep everything original and plagiarism-safe. ${langLine(language)}`,
+  parts: ({ topic, kind, level, length, tone, deadline, today }) => [
+    {
+      text: `Assignment to complete:
+Kind: ${kind || "essay"}
+Topic / prompt: """${topic || ""}"""
+Academic level: ${level || "high school"}
+Target length: ${length || "about 600 words"}
+Tone: ${tone || "formal academic"}
+${deadline ? `Due: ${deadline}` : ""}
+Today: ${today || ""}
+
+Write the complete, polished piece now — ready to submit.`,
+    },
+  ],
+};
+
+/* ------------------------------ INTAKE ----------------------------- */
+// Smriti's intake: read an uploaded document / photo (homework, syllabus, notice,
+// bill, worksheet) plus the user's note, and extract concrete, prioritised tasks
+// — each tagged with the specialist who should handle it.
+
+export const intake = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      summary: { type: Type.STRING, description: "One line: what this document is and what needs doing" },
+      tasks: {
+        type: Type.ARRAY,
+        description: "Concrete, actionable tasks extracted from the document + the user's note, ordered most-urgent first.",
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING, description: "A clear, specific task (e.g. 'Write a 600-word history essay on the Salt March')" },
+            detail: { type: Type.STRING, description: "Key instructions/specifics from the document the agent needs to do it well" },
+            priority: { type: Type.STRING, enum: ["High", "Medium", "Low"] },
+            estimateMins: { type: Type.NUMBER, description: "Rough minutes of work" },
+            suggestedAgent: {
+              type: Type.STRING,
+              enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "setu", "krishi", "raahat", "disha", "study", "none"],
+              description: "Best specialist: 'study' for homework/essays, 'setu' for letters/complaints, etc. 'none' if only the user can do it.",
+            },
+          },
+          required: ["title", "priority"],
+        },
+      },
+    },
+    required: ["summary", "tasks"],
+  },
+  system: (language) => `You are Smriti, the user's AI chief-of-staff. The user has uploaded a document or photo (often homework, a worksheet, a syllabus, an assignment brief, a notice or a bill) and may add a note with a deadline. Read everything carefully (including text in the image) and extract a clean, prioritised list of concrete tasks to get it done.
+
+For each task: write a specific, self-contained title; capture the important instructions/specifics in 'detail' (topic, word count, format, questions to answer, sections required) so a specialist can complete it without seeing the original; set an honest priority and a rough time estimate; and suggest the best specialist to own it — use 'study' (Acharya) for essays/journals/reports/homework writing, 'setu' (Adhrit) for letters/complaints, 'kar' for tax, 'paisa' for money, 'haq' for schemes, 'sehat' for health, 'krishi' for farming, and 'none' for things only the user can physically do. Keep it focused — split a big assignment into the few real tasks, not dozens. ${langLine(language)}`,
+  parts: ({ text, image, deadline, today }) => {
+    const parts = [];
+    if (image && image.data) parts.push({ inlineData: { mimeType: image.mimeType || "image/jpeg", data: image.data } });
+    parts.push({ text: `Today: ${today || ""}${deadline ? `\nUser's deadline for this work: ${deadline}` : ""}\n\nUser's note:\n"""${text || "(none — work it out from the document)"}"""\n\nExtract the prioritised tasks.` });
+    return parts;
+  },
+};
+
+export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi, kar, raahat, disha, resume, extract, route, emergency, assist, form16, manager, study, intake };

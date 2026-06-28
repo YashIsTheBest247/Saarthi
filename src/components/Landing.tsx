@@ -461,6 +461,7 @@ function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
 /* -------------------------- Truly Agentic -------------------------- */
 const FLOWS = [
   { id: "kisan-cycle", title: "Weather → Crop → Schemes → Budget → Plan", desc: "The biggest chain: live weather drives crop advice, then schemes, an input budget and a full season plan.", accent: "#4B7A2B", agents: ["weather", "krishi", "haq", "paisa", "samay"] },
+  { id: "homework-to-submission", title: "Write homework → Schedule submission", desc: "Acharya writes the assignment to your brief; Smriti schedules it and reminds you to submit on time.", accent: "#7A4FB0", agents: ["study", "samay"] },
   { id: "resolve-grievance", title: "Decode → Complaint → Schedule", desc: "A confusing notice becomes a filed complaint with deadlines.", accent: "#2F6F8F", agents: ["samajh", "setu", "samay"] },
   { id: "scam-to-safety", title: "Check scam → Act → Report", desc: "Verify a message, get urgent steps, draft the report.", accent: "#2D6BFF", agents: ["kavach", "emergency", "setu"] },
   { id: "land-a-job", title: "Tailor résumé → Interview → Plan", desc: "From background to tailored résumé, mock interview and a plan.", accent: "#6D4AA7", agents: ["disha", "disha", "samay"] },

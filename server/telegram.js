@@ -21,6 +21,7 @@ const AGENTS = [
   { key: "krishi", name: "Bhupati · Farming" },
   { key: "raahat", name: "Narayan · Disaster" },
   { key: "disha", name: "Disha · Careers" },
+  { key: "study", name: "Acharya · Study" },
 ];
 const NAME = Object.fromEntries(AGENTS.map((a) => [a.key, a.name.split(" · ")[0]]));
 

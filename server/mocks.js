@@ -391,6 +391,36 @@ export const mocks = {
     note: "Parsed from a sample Form-16.",
   },
 
+  intake: {
+    _mock: true,
+    summary: "A history homework brief — one essay to write before the deadline.",
+    tasks: [
+      { title: "Write a 600-word history essay on the Salt March of 1930", detail: "Cover the causes, the march to Dandi, and why it mattered. Formal academic tone, school level.", priority: "High", estimateMins: 45, suggestedAgent: "study" },
+      { title: "Make a short presentation summarising the essay", detail: "5-6 slides with key points for class.", priority: "Medium", estimateMins: 20, suggestedAgent: "study" },
+    ],
+  },
+
+  study: {
+    _mock: true,
+    title: "The Salt March and the Power of Symbolic Protest",
+    subtitle: "A short history essay",
+    kind: "essay",
+    wordCount: 320,
+    sections: [
+      { heading: "", paragraphs: ["When Mohandas Gandhi set out for the coastal village of Dandi in March 1930, he was carrying very little — a walking staff, a change of clothes, and an idea that would unsettle an empire. The Salt March was not a battle in any conventional sense. It was a deliberate, almost theatrical act of disobedience, and its genius lay in how ordinary it looked."] },
+      { heading: "A tax on the unavoidable", paragraphs: ["Salt was the perfect target. Every household needed it, and the British monopoly meant that even the poorest Indian paid a tax on something pulled freely from the sea. By choosing salt, Gandhi tied a grand political argument to a daily kitchen necessity. The injustice was no longer abstract; it could be tasted at every meal."] },
+      { heading: "Symbol over force", paragraphs: ["The march covered nearly 240 miles over twenty-four days, and at each stop the crowds grew. When Gandhi finally bent down and scooped a handful of salt-crusted mud, he broke the law with his bare hands and dared the state to respond. The mass arrests that followed only widened the movement, because the world could now see clearly who was the aggressor and who was not."] },
+      { heading: "Conclusion", paragraphs: ["The Salt March mattered less for the salt it produced than for the confidence it gave a nation. It showed that resistance did not require weapons, only discipline and a shared sense of wrong. In turning an everyday substance into a banner, Gandhi proved that the smallest acts, repeated by millions, can carry enormous weight."] },
+    ],
+    slides: [
+      { title: "The Salt March, 1930", points: ["Gandhi marches 240 miles to Dandi", "A protest against the British salt monopoly", "Symbolic, non-violent civil disobedience"] },
+      { title: "Why salt?", points: ["A daily necessity for every household", "Taxed even for the poorest Indians", "Made injustice tangible and personal"] },
+      { title: "Symbol over force", points: ["24 days, growing crowds", "Breaking the law with bare hands", "Mass arrests exposed the state"] },
+      { title: "Why it mattered", points: ["Gave the nation confidence", "Resistance without weapons", "Small acts × millions = power"] },
+    ],
+    references: ["Brown, J. M. (1989). Gandhi: Prisoner of Hope. Yale University Press.", "Dalton, D. (1993). Mahatma Gandhi: Nonviolent Power in Action. Columbia University Press."],
+  },
+
   manager: {
     _mock: true,
     canDelegate: true,

@@ -8,6 +8,7 @@ import { getNews } from "./news.js";
 import { getJobs } from "./jobs.js";
 import { handleTelegram } from "./telegram.js";
 import { handleResumePdf } from "./resumePdf.js";
+import { buildDoc, MIME, slug } from "./docgen.js";
 import { runWorkflow, runStep, planWorkflow, workflowList } from "./workflows.js";
 
 /**
@@ -65,6 +66,24 @@ app.post("/api/extract", makeHandler("extract"));
 app.post("/api/route", makeHandler("route"));
 app.post("/api/emergency", makeHandler("emergency"));
 app.post("/api/manager", makeHandler("manager"));
+app.post("/api/study", makeHandler("study"));
+app.post("/api/intake", makeHandler("intake"));
+
+// Export Acharya's content as a real document: Times New Roman, 12pt, formatted.
+app.post("/api/study/export", async (req, res) => {
+  try {
+    const { content, format = "pdf", font = "Times New Roman", size = 12 } = req.body || {};
+    if (!content || !content.title) return res.status(400).json({ error: "Missing content." });
+    const fmt = ["pdf", "docx", "pptx"].includes(format) ? format : "pdf";
+    const buf = await buildDoc(fmt, content, { font, size });
+    res.setHeader("Content-Type", MIME[fmt]);
+    res.setHeader("Content-Disposition", `attachment; filename="${slug(content.title)}.${fmt}"`);
+    res.send(Buffer.from(buf));
+  } catch (err) {
+    console.error("[study/export]", err?.message || err);
+    res.status(500).json({ error: String(err?.message || err) });
+  }
+});
 app.post("/api/form16", makeHandler("form16"));
 
 app.get("/api/news", async (_req, res) => {

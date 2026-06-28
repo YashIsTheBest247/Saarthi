@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   LayoutDashboard, Target, ListTodo, Timer, Trophy, Plus, Trash2, Check, Flag,
   CalendarPlus, Download, Play, Pause, RotateCcw, AlertTriangle, LifeBuoy, Flame, X,
-  Users, Loader2, Sparkles, CheckCircle2, UserCheck, RefreshCw,
+  Users, Loader2, Sparkles, CheckCircle2, UserCheck, RefreshCw, ImagePlus, FileText, Paperclip,
 } from "lucide-react";
 import { AgentConsole, ConsoleModule } from "./AgentConsole";
 import { Siren } from "lucide-react";
@@ -12,7 +12,7 @@ import { Select } from "../../components/Select";
 import { useLocal, H, Wrap, StatTiles, uid } from "./kit";
 import { Samay } from "../Samay";
 import { useApp } from "../../app/AppContext";
-import { callFeature } from "../../lib/api";
+import { callFeature, fileToInlineData } from "../../lib/api";
 import { FEATURES } from "../../lib/features";
 import { AgentAvatar } from "../../components/AgentAvatar";
 import { CopyBlock } from "../../components/ui";
@@ -64,6 +64,15 @@ function ManagerTab({ tasks, setTasks, delegated, setDelegated, accent }: {
   const [running, setRunning] = useState(false);
   const [autoRan, setAutoRan] = useState(false);
 
+  // intake: upload homework / a document, set a deadline, let Smriti extract & delegate
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [upText, setUpText] = useState("");
+  const [upFile, setUpFile] = useState<{ mimeType: string; data: string } | null>(null);
+  const [upName, setUpName] = useState("");
+  const [upPreview, setUpPreview] = useState("");
+  const [upDeadline, setUpDeadline] = useState("");
+  const [intaking, setIntaking] = useState(false);
+
   const pending = tasks.filter((tk) => !delegated[tk.id]);
   const completed = tasks.filter((tk) => delegated[tk.id]?.status === "Completed");
   const needsYou = tasks.filter((tk) => delegated[tk.id]?.status === "Needs you");
@@ -102,6 +111,46 @@ function ManagerTab({ tasks, setTasks, delegated, setDelegated, accent }: {
     setTasks((p) => p.map((x) => (x.id === id ? { ...x, done: false } : x)));
   }
 
+  async function onUpFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUpFile(await fileToInlineData(file));
+    setUpName(file.name);
+    setUpPreview(file.type.startsWith("image/") ? URL.createObjectURL(file) : "");
+  }
+  function clearUpFile() {
+    setUpFile(null); setUpName(""); setUpPreview("");
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  // Upload homework / a document + deadline → Smriti extracts, prioritises, then delegates.
+  async function runIntake() {
+    if (!upText.trim() && !upFile) return;
+    setIntaking(true);
+    try {
+      const r = await callFeature<any>("intake", { text: upText, image: upFile, deadline: upDeadline || "", today: new Date().toDateString(), language: lang.name });
+      const newTasks: Task[] = (r.tasks || []).map((tk: any) => ({
+        id: uid(),
+        title: tk.detail ? `${tk.title} — ${tk.detail}` : tk.title,
+        priority: (["High", "Medium", "Low"].includes(tk.priority) ? tk.priority : "High") as Task["priority"],
+        done: false,
+        deadline: upDeadline || undefined,
+        estimateMins: tk.estimateMins,
+        recur: "none",
+      }));
+      if (newTasks.length) setTasks((p) => [...p, ...newTasks]);
+      setUpText(""); clearUpFile(); setUpDeadline("");
+      // delegate the freshly extracted tasks to their agents
+      setRunning(true);
+      for (const tk of newTasks) await delegateOne(tk);
+      setRunning(false);
+    } catch {
+      /* ignore — keep the console calm */
+    } finally {
+      setIntaking(false);
+    }
+  }
+
   // automatically allot pending tasks the first time the manager opens
   useEffect(() => {
     if (!autoRan && pending.length) { setAutoRan(true); delegateAll(); }
@@ -137,7 +186,43 @@ function ManagerTab({ tasks, setTasks, delegated, setDelegated, accent }: {
 
   return (
     <Wrap>
-      <H title="Smriti — your manager" sub="Smriti reviews every task, hands each to the right specialist agent, and brings back finished work." />
+      <H title="Smriti — your manager" sub="Upload your homework or any document, set a deadline, and Smriti extracts the tasks, prioritises them, and hands each to the right specialist (Acharya, Adhrit, Nidhi…)." />
+
+      {/* INTAKE: upload homework / a document + deadline */}
+      <div className="card mb-5 p-5">
+        <div className="mb-3 flex items-center gap-2">
+          <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl text-white" style={{ background: accent }}><Paperclip className="h-4 w-4" /></span>
+          <div className="text-sm font-semibold text-ink">Upload homework or a document</div>
+        </div>
+
+        {upPreview && (
+          <div className="relative mb-3 inline-block">
+            <img src={upPreview} alt="upload" className="max-h-40 rounded-2xl border border-line" />
+            <button onClick={clearUpFile} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-white"><X className="h-4 w-4" /></button>
+          </div>
+        )}
+        {upFile && !upPreview && (
+          <div className="mb-3 inline-flex items-center gap-2 rounded-2xl border border-line bg-mist px-4 py-2.5">
+            <FileText className="h-5 w-5" style={{ color: accent }} />
+            <span className="max-w-[14rem] truncate text-sm font-medium text-graphite">{upName || "Document"}</span>
+            <button onClick={clearUpFile} className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-white"><X className="h-3.5 w-3.5" /></button>
+          </div>
+        )}
+
+        <textarea value={upText} onChange={(e) => setUpText(e.target.value)} rows={2} placeholder="What is this and what do you need? e.g. ‘My history homework — write the essay and a short presentation’" className="field resize-none deva" />
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" onChange={onUpFile} className="hidden" />
+          <button onClick={() => fileRef.current?.click()} className="btn-ghost text-sm"><ImagePlus className="h-4 w-4" /> Photo / PDF</button>
+          <label className="inline-flex items-center gap-2 text-sm text-muted">
+            <CalendarPlus className="h-4 w-4" style={{ color: accent }} />
+            <input type="datetime-local" value={upDeadline} onChange={(e) => setUpDeadline(e.target.value)} className="rounded-lg border border-line px-2.5 py-1.5 text-sm" />
+          </label>
+          <button onClick={runIntake} disabled={intaking || running || (!upText.trim() && !upFile)} className="btn-accent ml-auto text-[15px]" style={{ background: accent }}>
+            {intaking ? <><Loader2 className="h-4 w-4 animate-spin" /> Reading…</> : <><Sparkles className="h-4 w-4" /> Hand to Smriti</>}
+          </button>
+        </div>
+      </div>
 
       <div className="card mb-5 flex flex-wrap items-center gap-3 p-5">
         <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white" style={{ background: accent }}><Users className="h-5 w-5" /></span>
