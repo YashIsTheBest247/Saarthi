@@ -2,8 +2,8 @@
 
 **An all-in-one AI copilot for everyday life in India** — twelve specialist AI agents that
 spot scams, decode documents, claim government benefits, save on health, make sense of
-money, file taxes, plan your work, fight unfair treatment, protect your crop, keep you
-safe in a disaster, write your homework, and get you hired. By **voice or text, in English and Hindi**, on web **and Telegram**.
+money, file taxes, plan your work, fight unfair treatment, protect your crop, stand up
+for women's safety, write your homework, and get you hired. By **voice or text, in English and Hindi**, on web **and Telegram**.
 
 > Hackathon track: *Challenge 3 — Improve Everyday Life with AI.*
 > Real AI (Google **Gemini 2.5 Flash**), premium responsive UI, deterministic on-device
@@ -43,7 +43,7 @@ safe in a disaster, write your homework, and get you hired. By **voice or text, 
 | **Smriti** | Chief of Staff | Dump tasks by text/photo/voice → plan, prioritise, schedule focus blocks, forecast deadlines, Pomodoro, goals & habits, calendar/ICS export. |
 | **Adhrit** | Grievance Autopilot | Describe a problem → the right authority, a ready complaint, the escalation ladder, and a rights library. |
 | **Bhupati** | Kisan Saathi | Snap a crop photo → diagnosis, action plan, farm schemes, timely advisory. |
-| **Narayan** | Disaster Response | Fuse **live** weather + river-discharge + earthquake feeds → flood/wildfire/quake risk scored per city, safe routes, resource allocation, live hazard map (with an "updated" timestamp). |
+| **Nirbhaya** | Women's Safety | Describe any unsafe situation (harassment, stalking, an unsafe commute, domestic or workplace abuse) → a calm risk read, ordered safety steps, the right Indian helplines (**112 · 1091 · 181**, NCW, cyber 1930), your legal rights (POSH, PWDVA, Zero-FIR, NALSA), and a tap-to-call helpline directory. |
 | **Acharya** | Study & Homework | Set a topic and a deadline → a properly structured, human-sounding essay / journal / report / speech / notes / presentation, exported as **PDF, Word (.docx) or PowerPoint (.pptx)** in **Times New Roman 12pt**, then handed to **Smriti** with an **.ics reminder** so the submission is never missed. |
 
 Every agent also has an **"Already affected?"** tab: describe the worst case (you were scammed,
@@ -72,12 +72,10 @@ helplines), a ready script, and what the agent will do for you.
   helplines (1930, 112, 1098, 1078, 1915, 14416 Tele-MANAS, …), tap-to-call.
 - **Deep links** — `?agent=kavach` opens that console, `?q=…` opens the chat pre-filled
   (used by the Telegram bot to hand off into the web app).
-- **Live data feeds (keyless)** — Narayan pulls **real** weather + river-discharge from
-  [Open-Meteo](https://open-meteo.com) and **live earthquakes** from
-  [USGS](https://earthquake.usgs.gov), scoring risk on-device; Abhay's ticker streams **live
+- **Live data feeds (keyless)** — the **Weather** workflow source & the *Kisan cycle* chain pull
+  **real** forecasts from [Open-Meteo](https://open-meteo.com); Abhay's ticker streams **live
   scam-news** via RSS; Disha's Job search pulls **real openings** from
-  [Remotive](https://remotive.com) (Arbeitnow fallback). (Satellite imagery & social signals are
-  simulated — no free keyless source — and the app falls back to sample data if a feed is unreachable.)
+  [Remotive](https://remotive.com) (Arbeitnow fallback). (The app falls back to sample data if a feed is unreachable.)
 - **Deterministic engines** — tax, EMI/SIP, the scam classifier, Smriti's forecasts/ICS, and
   Narayan's risk & resource maths run **on-device** for reproducible, defensible numbers; the
   LLM is used for understanding, extraction and language.

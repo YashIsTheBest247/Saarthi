@@ -1,290 +1,202 @@
-import { useEffect, useRef, useState } from "react";
-import * as L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { LayoutDashboard, LifeBuoy, Siren, Map as MapIcon, Activity, Boxes } from "lucide-react";
+import { useRef, useState } from "react";
+import { LayoutDashboard, ShieldCheck, Siren, Phone, BookOpen, Send, ImagePlus, X, FileText, AlertTriangle } from "lucide-react";
 import { AgentConsole, ConsoleModule } from "./AgentConsole";
 import { Emergency } from "../Emergency";
-import { Select } from "../../components/Select";
-import { useLocal, H, Wrap, StatTiles } from "./kit";
-import { Raahat } from "../Raahat";
-import {
-  ALERTS, band, floodRisk, wildfireRisk, allocate, hazardColor,
-  fetchLiveAlerts, fetchEarthquakes,
-  type Area, type ResourcePool, type Alert,
-} from "./raahatLib";
+import { H, Wrap } from "./kit";
+import { useApp } from "../../app/AppContext";
+import { callFeature, fileToInlineData } from "../../lib/api";
+import { featureByKey } from "../../lib/features";
+import { useVoice } from "../../hooks/useVoice";
+import { Thinking, ListBlock, MockNote } from "../../components/ui";
 
-const ACCENT = "#0E8FA8";
+const ACCENT = "#C0397B";
 
-/* ----------------------------- helpers ----------------------------- */
-function Gauge({ score, label }: { score: number; label: string }) {
-  const b = band(score);
-  return (
-    <div>
-      <div className="flex items-baseline justify-between">
-        <span className="text-sm font-medium text-graphite">{label}</span>
-        <span className="text-sm font-bold" style={{ color: b.color }}>{score} · {b.label}</span>
-      </div>
-      <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-mist">
-        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${score}%`, background: b.color }} />
-      </div>
-    </div>
-  );
+const riskTone = (level: string) =>
+  level === "Emergency" ? { c: "#B23A2E", bg: "#F7E7E5" }
+    : level === "High risk" ? { c: "#B23A2E", bg: "#F7E7E5" }
+    : level === "Be cautious" ? { c: "#B07A1E", bg: "#F7EEDB" }
+    : { c: "#2E6F52", bg: "#E4F1EA" };
+
+// India women's-safety directory (tap-to-call)
+const DIRECTORY: { name: string; number: string; note: string }[] = [
+  { name: "National Emergency", number: "112", note: "Police · ambulance · fire — one number, 24×7 (112 India app has SOS)." },
+  { name: "Women in Distress", number: "1091", note: "Dedicated women's emergency helpline." },
+  { name: "Women Helpline", number: "181", note: "Support, counselling & guidance for women in distress." },
+  { name: "Police", number: "100", note: "Local police control room." },
+  { name: "Childline (minors)", number: "1098", note: "For anyone under 18 in danger or distress." },
+  { name: "NCW WhatsApp", number: "7827170170", note: "National Commission for Women — report harassment (ncw.nic.in)." },
+  { name: "Cyber Crime", number: "1930", note: "Online harassment, blackmail, image abuse — also cybercrime.gov.in." },
+  { name: "Free Legal Aid (NALSA)", number: "15100", note: "Free legal help and advice." },
+];
+
+interface SafetyResult {
+  summary: string;
+  riskLevel: string;
+  immediateSteps?: { step: string; detail?: string }[];
+  helplines?: { name: string; number: string; why?: string }[];
+  rights?: string[];
+  safetyTips?: string[];
+  disclaimer?: string;
+  _mock?: boolean;
 }
 
-function Slider({ label, value, set, min, max, unit }: { label: string; value: number; set: (n: number) => void; min: number; max: number; unit: string }) {
-  return (
-    <label className="block">
-      <div className="flex justify-between text-sm">
-        <span className="text-graphite">{label}</span>
-        <span className="font-semibold text-ink">{value}{unit}</span>
-      </div>
-      <input type="range" min={min} max={max} value={value} onChange={(e) => set(Number(e.target.value))} className="mt-2 w-full" style={{ accentColor: ACCENT }} />
-    </label>
-  );
-}
+function HelpTool() {
+  const { t, lang } = useApp();
+  const meta = featureByKey("raahat");
+  const [text, setText] = useState("");
+  const [image, setImage] = useState<{ mimeType: string; data: string } | null>(null);
+  const [preview, setPreview] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<SafetyResult | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const voice = useVoice(lang.speech, setText);
 
-/* ------------------------------- map ------------------------------- */
-function HazardMap({ alerts, live, updated }: { alerts: Alert[]; live: boolean; updated?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const layerRef = useRef<L.LayerGroup | null>(null);
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImage(await fileToInlineData(file));
+    setFileName(file.name);
+    setPreview(file.type.startsWith("image/") ? URL.createObjectURL(file) : "");
+  }
+  function clearFile() { setImage(null); setPreview(""); setFileName(""); if (fileRef.current) fileRef.current.value = ""; }
 
-  useEffect(() => {
-    if (!ref.current || mapRef.current) return;
-    const map = L.map(ref.current, { scrollWheelZoom: false, zoomControl: true }).setView([22.8, 80.5], 4.4);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
-    layerRef.current = L.layerGroup().addTo(map);
-    mapRef.current = map;
-    const tid = setTimeout(() => map.invalidateSize(), 280);
-    return () => { clearTimeout(tid); map.remove(); mapRef.current = null; layerRef.current = null; };
-  }, []);
+  async function run() {
+    if (!text.trim() && !image) return;
+    setLoading(true); setResult(null);
+    try {
+      setResult(await callFeature<SafetyResult>("raahat", { text, image, language: lang.name }));
+    } catch { /* mock fallback */ } finally { setLoading(false); }
+  }
 
-  // (re)draw markers whenever the alerts change (e.g. live data arrives)
-  useEffect(() => {
-    const lg = layerRef.current;
-    if (!lg) return;
-    lg.clearLayers();
-    alerts.forEach((a) => {
-      const c = hazardColor[a.type] ?? "#16140F";
-      const radius = 8 + (a.level / 100) * 22;
-      L.circleMarker([a.lat, a.lng], { radius, color: c, weight: 1.5, fillColor: c, fillOpacity: 0.35 })
-        .addTo(lg)
-        .bindPopup(`<b>${a.city}${a.state ? ", " + a.state : ""}</b><br>${a.type} · level ${a.level}<br>${a.note}`)
-        .bindTooltip(`${a.city} · ${a.type} ${a.level}`, { direction: "top", offset: [0, -4] });
-    });
-  }, [alerts]);
+  const tone = result ? riskTone(result.riskLevel) : null;
 
   return (
     <Wrap>
-      <H title="Live hazard map" sub="Live weather, river-discharge and earthquake feeds fused into area risk across India." />
-      <div className="mb-3 flex flex-wrap items-center gap-3">
-        <LiveBadge live={live} updated={updated} />
-        {Object.entries(hazardColor).map(([k, c]) => (
-          <span key={k} className="inline-flex items-center gap-1.5 text-xs font-medium text-graphite">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: c }} /> {k}
-          </span>
-        ))}
+      <H title={t("rh.tag")} sub={t("rh.desc")} />
+
+      <div className="card p-6">
+        {preview && (
+          <div className="relative mb-4 inline-block">
+            <img src={preview} alt="evidence" className="max-h-44 rounded-2xl border border-line" />
+            <button onClick={clearFile} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-white"><X className="h-4 w-4" /></button>
+          </div>
+        )}
+        {image && !preview && (
+          <div className="relative mb-4 inline-flex items-center gap-2 rounded-2xl border border-line bg-mist px-4 py-3">
+            <FileText className="h-5 w-5" style={{ color: ACCENT }} />
+            <span className="max-w-[14rem] truncate text-sm font-medium text-graphite deva">{fileName || "Document"}</span>
+            <button onClick={clearFile} className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-white"><X className="h-3.5 w-3.5" /></button>
+          </div>
+        )}
+
+        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t("rh.ph")} rows={4} className="field resize-none deva" />
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <button onClick={run} disabled={loading || (!text.trim() && !image)} className="btn-accent text-[15px]" style={{ background: ACCENT }}><Send className="h-4 w-4" />{t("common.run")}</button>
+          <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" onChange={onFile} className="hidden" />
+          <button onClick={() => fileRef.current?.click()} className="btn-ghost text-sm"><ImagePlus className="h-4 w-4" />{t("common.upload")} <span className="ml-1 text-faint">(photo / PDF)</span></button>
+          {voice.supported && <button onClick={() => (voice.listening ? voice.stop() : voice.start(text))} className="btn-ghost text-sm">{voice.listening ? t("common.listening") : t("common.speak")}</button>}
+        </div>
+
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-[#F7E7E5] px-4 py-3 text-sm text-[#B23A2E]">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-none" />
+          <span className="deva">In immediate danger? Call <a href="tel:112" className="font-bold underline">112</a> or <a href="tel:1091" className="font-bold underline">1091</a> right now.</span>
+        </div>
       </div>
-      <div className="card overflow-hidden p-2">
-        <div ref={ref} className="h-[480px] w-full rounded-2xl" style={{ zIndex: 0 }} />
-      </div>
+
+      {loading && <div className="card mt-6 p-8"><Thinking label={t("common.running")} /></div>}
+
+      {result && !loading && (
+        <div className="mt-6 space-y-5">
+          <div className="card p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="display text-lg font-semibold leading-snug text-ink deva">{result.summary}</p>
+              {tone && <span className="rounded-full px-3 py-1 text-xs font-bold" style={{ background: tone.bg, color: tone.c }}>{result.riskLevel}</span>}
+            </div>
+            {result._mock && <MockNote text={t("common.sample")} />}
+          </div>
+
+          {result.immediateSteps?.length ? (
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("rh.steps")}</h3>
+              <div className="space-y-2">
+                {result.immediateSteps.map((s, i) => (
+                  <div key={i} className="flex gap-3 rounded-2xl border border-line bg-paper p-4 deva">
+                    <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-xs font-bold text-white" style={{ background: ACCENT }}>{i + 1}</span>
+                    <div><div className="font-semibold text-ink">{s.step}</div>{s.detail && <p className="mt-0.5 text-sm text-muted">{s.detail}</p>}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {result.helplines?.length ? (
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("rh.helplines")}</h3>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {result.helplines.map((h, i) => (
+                  <a key={i} href={`tel:${h.number.replace(/[^\d]/g, "")}`} className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-4 transition-all hover:-translate-y-0.5 hover:shadow-soft">
+                    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white" style={{ background: ACCENT }}><Phone className="h-5 w-5" /></span>
+                    <div className="min-w-0"><div className="font-semibold text-ink deva">{h.name} · {h.number}</div>{h.why && <p className="truncate text-xs text-muted deva">{h.why}</p>}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {result.rights?.length ? <ListBlock title={t("rh.rights")} items={result.rights} accent={ACCENT} /> : null}
+          {result.safetyTips?.length ? <ListBlock title={t("rh.tips")} items={result.safetyTips} tone="good" /> : null}
+
+          {result.disclaimer && <p className="text-xs text-faint deva">{result.disclaimer}</p>}
+        </div>
+      )}
     </Wrap>
   );
 }
 
-function LiveBadge({ live, updated }: { live: boolean; updated?: string }) {
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${live ? "border-[#138A72]/30 bg-[#138A72]/10 text-[#138A72]" : "border-line bg-mist text-faint"}`}>
-        <span className="relative flex h-2 w-2">
-          {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#138A72] opacity-70" />}
-          <span className={`relative inline-flex h-2 w-2 rounded-full ${live ? "bg-[#138A72]" : "bg-faint"}`} />
-        </span>
-        {live ? "Live data" : "Sample data"}
-      </span>
-      {live && updated && <span className="text-[11px] text-faint">Updated {updated}</span>}
-    </span>
-  );
-}
-
-/* ----------------------------- console ----------------------------- */
 export function RaahatConsole({ onBack }: { onBack: () => void }) {
-  // live feeds (Open-Meteo weather + flood, USGS earthquakes); fall back to samples
-  const [liveAlerts, setLiveAlerts] = useState<Alert[] | null>(null);
-  const [updatedAt, setUpdatedAt] = useState("");
-  useEffect(() => {
-    let on = true;
-    Promise.all([fetchLiveAlerts().catch(() => []), fetchEarthquakes().catch(() => [])])
-      .then(([w, q]) => {
-        if (on && (w.length || q.length)) {
-          setLiveAlerts([...w, ...q]);
-          setUpdatedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-        }
-      })
-      .catch(() => {});
-    return () => { on = false; };
-  }, []);
-  const isLive = liveAlerts != null;
-  const alerts = liveAlerts ?? ALERTS;
-  const sorted = [...alerts].sort((a, b) => b.level - a.level);
-  const severe = alerts.filter((a) => a.level >= 75).length;
-  const types = new Set(alerts.map((a) => a.type)).size;
+  const { t } = useApp();
 
-  // risk model state
-  const [rainfall, setRainfall] = useState(180);
-  const [riverLevel, setRiverLevel] = useState(78);
-  const [soil, setSoil] = useState(70);
-  const [drainage, setDrainage] = useState(40);
-  const [temp, setTemp] = useState(38);
-  const [humidity, setHumidity] = useState(28);
-  const [wind, setWind] = useState(34);
-  const [dryness, setDryness] = useState(72);
-  const flood = floodRisk({ rainfall, riverLevel, soil, drainage });
-  const fire = wildfireRisk({ temp, humidity, wind, dryness });
+  const directory = (
+    <Wrap>
+      <H title={t("rh.directory")} sub="Tap to call. Save the key ones to your phone's emergency contacts." />
+      <div className="grid gap-2 sm:grid-cols-2">
+        {DIRECTORY.map((d) => (
+          <a key={d.number} href={`tel:${d.number.replace(/[^\d]/g, "")}`} className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-4 transition-all hover:-translate-y-0.5 hover:shadow-soft">
+            <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl text-white" style={{ background: ACCENT }}><Phone className="h-5 w-5" /></span>
+            <div className="min-w-0">
+              <div className="font-semibold text-ink">{d.name} · <span style={{ color: ACCENT }}>{d.number}</span></div>
+              <p className="text-xs text-muted">{d.note}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </Wrap>
+  );
 
-  // resource allocation state
-  const [areas, setAreas] = useLocal<Area[]>("saarthi.raahat.areas", [
-    { name: "Eastern wards (riverbank)", affected: 12000, severity: 3 },
-    { name: "Central market area", affected: 6000, severity: 2 },
-    { name: "Northern suburb", affected: 3000, severity: 1 },
-  ]);
-  const [pool, setPool] = useLocal<ResourcePool>("saarthi.raahat.pool", { boats: 40, foodKits: 5000, medkits: 800, shelters: 25 });
-  const plan = allocate(areas, pool);
-  const setArea = (i: number, patch: Partial<Area>) => setAreas(areas.map((a, k) => (k === i ? { ...a, ...patch } : a)));
+  const dashboard = (go: (id: string) => void) => (
+    <Wrap>
+      <H title="Nirbhaya — women's safety" sub="Describe any unsafe situation and get calm, India-specific steps, the right helplines and your rights." />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <button onClick={() => go("help")} className="card p-6 text-left transition-all hover:-translate-y-1 hover:shadow-float">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl text-white" style={{ background: ACCENT }}><ShieldCheck className="h-5 w-5" /></span>
+          <div className="mt-3 display text-lg font-bold deva">{t("rh.tag")}</div>
+          <p className="mt-1 text-sm text-muted deva">Tell Nirbhaya what's happening — get steps, helplines and your rights.</p>
+        </button>
+        <button onClick={() => go("directory")} className="card p-6 text-left transition-all hover:-translate-y-1 hover:shadow-float">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl text-white" style={{ background: ACCENT }}><Phone className="h-5 w-5" /></span>
+          <div className="mt-3 display text-lg font-bold deva">{t("rh.directory")}</div>
+          <p className="mt-1 text-sm text-muted deva">112, 1091, 181 and more — tap to call.</p>
+        </button>
+      </div>
+    </Wrap>
+  );
 
   const modules: ConsoleModule[] = [
-    {
-      id: "dashboard", label: "Dashboard", icon: LayoutDashboard,
-      render: (go) => (
-        <Wrap>
-          <div className="mb-3"><LiveBadge live={isLive} updated={updatedAt} /></div>
-          <H title="Disaster operating picture" sub="Live weather + river-discharge + earthquake feeds, scored into area risk right now." />
-          <StatTiles accent={ACCENT} tiles={[
-            { v: ALERTS.length, l: "Active alerts" },
-            { v: severe, l: "Severe (≥75)" },
-            { v: sorted[0]?.city ?? "—", l: "Highest risk now" },
-            { v: types, l: "Hazard types tracked" },
-          ]} />
-          <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-            <div className="card p-6">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Active alerts</h3>
-              <div className="space-y-2">
-                {sorted.map((a) => {
-                  const b = band(a.level);
-                  return (
-                    <div key={a.city} className="flex items-start gap-3 rounded-2xl border border-line bg-paper p-3">
-                      <span className="mt-1 h-2.5 w-2.5 flex-none rounded-full" style={{ background: hazardColor[a.type] }} />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-semibold text-ink">{a.city}{a.state ? `, ${a.state}` : ""}</span>
-                          <span className="rounded-full px-2.5 py-0.5 text-xs font-bold text-white" style={{ background: b.color }}>{a.type} {a.level}</span>
-                        </div>
-                        <p className="mt-0.5 text-sm text-muted">{a.note}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="card flex flex-col justify-between p-6">
-              <div>
-                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Assess a situation</h3>
-                <p className="text-[15px] text-graphite">Paste a live report — weather, river/forest status, news and what locals are posting — and Narayan predicts the hazards, safe routes and resource plan.</p>
-              </div>
-              <button onClick={() => go("assess")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>New assessment</button>
-            </div>
-          </div>
-        </Wrap>
-      ),
-    },
-    { id: "assess", label: "Assess situation", icon: LifeBuoy, render: () => <Wrap><Raahat embedded /></Wrap> },
-    { id: "map", label: "Live map", icon: MapIcon, render: () => <HazardMap alerts={alerts} live={isLive} updated={updatedAt} /> },
-    {
-      id: "risk", label: "Risk model", icon: Activity,
-      render: () => (
-        <Wrap>
-          <H title="Risk model" sub="Reproducible flood & wildfire scores computed on-device from weather and terrain signals — not by AI." />
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="card p-6">
-              <div className="mb-4 inline-flex items-center gap-2 font-semibold text-ink"><Siren className="h-4 w-4" style={{ color: ACCENT }} /> Flood</div>
-              <div className="space-y-4">
-                <Slider label="Rainfall (24h)" value={rainfall} set={setRainfall} min={0} max={300} unit=" mm" />
-                <Slider label="River level" value={riverLevel} set={setRiverLevel} min={0} max={100} unit="%" />
-                <Slider label="Soil saturation" value={soil} set={setSoil} min={0} max={100} unit="%" />
-                <Slider label="Drainage capacity" value={drainage} set={setDrainage} min={0} max={100} unit="%" />
-              </div>
-              <div className="mt-5"><Gauge score={flood} label="Flood risk" /></div>
-            </div>
-            <div className="card p-6">
-              <div className="mb-4 inline-flex items-center gap-2 font-semibold text-ink"><Activity className="h-4 w-4" style={{ color: ACCENT }} /> Wildfire</div>
-              <div className="space-y-4">
-                <Slider label="Temperature" value={temp} set={setTemp} min={0} max={50} unit="°C" />
-                <Slider label="Humidity" value={humidity} set={setHumidity} min={0} max={100} unit="%" />
-                <Slider label="Wind speed" value={wind} set={setWind} min={0} max={80} unit=" km/h" />
-                <Slider label="Vegetation dryness" value={dryness} set={setDryness} min={0} max={100} unit="%" />
-              </div>
-              <div className="mt-5"><Gauge score={fire} label="Wildfire risk" /></div>
-            </div>
-          </div>
-          <p className="mt-4 text-xs text-faint">Decision-support only — always follow official NDMA / SDMA warnings.</p>
-        </Wrap>
-      ),
-    },
-    {
-      id: "resources", label: "Resource plan", icon: Boxes,
-      render: () => (
-        <Wrap>
-          <H title="Resource allocation" sub="Allocates rescue resources by affected population × severity. Edit the figures — the split recomputes instantly." />
-          <div className="card p-6">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Available resources</h3>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {([["boats", "Boats"], ["foodKits", "Food kits"], ["medkits", "Med kits"], ["shelters", "Shelters"]] as const).map(([k, label]) => (
-                <label key={k} className="block">
-                  <span className="text-xs text-muted">{label}</span>
-                  <input type="number" min={0} value={pool[k]} onChange={(e) => setPool({ ...pool, [k]: Math.max(0, Number(e.target.value)) })} className="field mt-1" />
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 card overflow-x-auto p-0">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead>
-                <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="p-3">Affected area</th>
-                  <th className="p-3">People</th>
-                  <th className="p-3">Severity</th>
-                  <th className="p-3">Share</th>
-                  <th className="p-3">Boats</th>
-                  <th className="p-3">Food</th>
-                  <th className="p-3">Medics</th>
-                  <th className="p-3">Shelters</th>
-                </tr>
-              </thead>
-              <tbody>
-                {plan.map((p, i) => (
-                  <tr key={i} className="border-b border-line/60">
-                    <td className="p-3 font-medium text-ink">{p.name}</td>
-                    <td className="p-3"><input type="number" min={0} value={areas[i].affected} onChange={(e) => setArea(i, { affected: Math.max(0, Number(e.target.value)) })} className="w-24 rounded-lg border border-line bg-paper px-2 py-1" /></td>
-                    <td className="p-3">
-                      <Select value={String(areas[i].severity)} onChange={(v) => setArea(i, { severity: Number(v) })} ariaLabel="Severity" className="w-32"
-                        options={[{ value: "1", label: "1 · Low" }, { value: "2", label: "2 · High" }, { value: "3", label: "3 · Severe" }]} />
-                    </td>
-                    <td className="p-3 font-semibold" style={{ color: ACCENT }}>{Math.round(p.share * 100)}%</td>
-                    <td className="p-3">{p.boats}</td>
-                    <td className="p-3">{p.foodKits}</td>
-                    <td className="p-3">{p.medkits}</td>
-                    <td className="p-3">{p.shelters}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Wrap>
-      ),
-    },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, render: (go) => dashboard(go) },
+    { id: "help", label: t("rh.tag"), icon: ShieldCheck, render: () => <HelpTool /> },
+    { id: "directory", label: t("rh.helplines"), icon: BookOpen, render: () => directory },
+    { id: "sos", label: "Already affected?", icon: Siren, render: () => <Emergency agentKey="raahat" /> },
   ];
-
-  modules.push({ id: "sos", label: "Already affected?", icon: Siren, render: () => <Emergency agentKey="raahat" /> });
-  return <AgentConsole agentKey="raahat" platform="Disaster Response" badge={LifeBuoy} modules={modules} onBack={onBack} />;
+  return <AgentConsole agentKey="raahat" platform={t("rh.tag")} badge={ShieldCheck} modules={modules} onBack={onBack} />;
 }

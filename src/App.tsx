@@ -16,10 +16,11 @@ import { RaahatConsole } from "./features/console/RaahatConsole";
 import { DishaConsole } from "./features/console/DishaConsole";
 import { StudyConsole } from "./features/study/StudyConsole";
 import { WorkflowsView } from "./features/WorkflowsView";
+import { Orchestrator } from "./features/Orchestrator";
 import { FloatingChat } from "./components/FloatingChat";
 import { FeatureKey } from "./lib/api";
 
-type View = "home" | FeatureKey | "workflows";
+type View = "home" | FeatureKey | "workflows" | "orchestrator";
 
 function Shell() {
   const { lang } = useApp();
@@ -53,6 +54,13 @@ function Shell() {
     };
     window.addEventListener("saarthi:workflows", h);
     return () => window.removeEventListener("saarthi:workflows", h);
+  }, [view]);
+
+  // open the Smriti-led orchestrator view (Closing CTA)
+  useEffect(() => {
+    const h = () => { if (view === "home") homeScroll.current = window.scrollY; setView("orchestrator"); };
+    window.addEventListener("saarthi:orchestrator", h);
+    return () => window.removeEventListener("saarthi:orchestrator", h);
   }, [view]);
 
   const open = (k?: FeatureKey) => {
@@ -92,6 +100,7 @@ function Shell() {
           {view === "disha" && <DishaConsole key={`disha-${L}`} onBack={back} />}
           {view === "study" && <StudyConsole key={`study-${L}`} onBack={back} />}
           {view === "workflows" && <WorkflowsView key={`workflows-${L}`} onBack={back} initialId={wfInitial} initialBuild={wfBuild} />}
+          {view === "orchestrator" && <Orchestrator key={`orchestrator-${L}`} onBack={back} />}
         </AnimatePresence>
       </main>
 

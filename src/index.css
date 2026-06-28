@@ -18,6 +18,15 @@
   select, input, textarea, button {
     accent-color: #2D6BFF;
   }
+  /* date/time pickers should feel clickable */
+  input[type="date"], input[type="datetime-local"], input[type="time"], input[type="month"], select {
+    cursor: pointer;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
   ::selection {
     background: rgba(45, 107, 255, 0.18);
     color: #1a1714;

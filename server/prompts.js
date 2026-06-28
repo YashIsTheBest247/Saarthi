@@ -560,42 +560,50 @@ export const raahat = {
   schema: {
     type: Type.OBJECT,
     properties: {
-      summary: { type: Type.STRING, description: "Plain-language situation overview" },
-      overallLevel: { type: Type.STRING, enum: ["Minimal", "Low", "Moderate", "High", "Severe"] },
-      hazards: {
+      summary: { type: Type.STRING, description: "Calm, supportive one-line read of the situation" },
+      riskLevel: { type: Type.STRING, enum: ["Safe", "Be cautious", "High risk", "Emergency"] },
+      immediateSteps: {
         type: Type.ARRAY,
         items: {
           type: Type.OBJECT,
           properties: {
-            type: { type: Type.STRING, enum: ["Flood", "Wildfire", "Cyclone", "Heatwave", "Landslide", "Other"] },
-            level: { type: Type.STRING, enum: ["Low", "Moderate", "High", "Severe"] },
-            window: { type: Type.STRING, description: "When it may peak, e.g. 'next 24-48 hrs'" },
-            rationale: { type: Type.STRING, description: "Why — tie to weather/satellite/news/social signals" },
+            step: { type: Type.STRING },
+            detail: { type: Type.STRING },
           },
-          required: ["type", "level", "rationale"],
+          required: ["step"],
         },
+        description: "Concrete, ordered safety actions to take now",
       },
-      immediateActions: { type: Type.ARRAY, items: { type: Type.STRING }, description: "What authorities & residents should do now" },
-      safeRoutes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Evacuation routing & shelter guidance" },
-      resourcePlan: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Where to send boats, food, medics, shelters and why" },
-      vulnerableGroups: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Who is most at risk and needs priority" },
-      advisory: { type: Type.STRING, description: "Official helplines & sources (NDMA 1078, emergency 112, IMD, SDMA)" },
+      helplines: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            number: { type: Type.STRING, description: "Real Indian helpline number or official contact" },
+            why: { type: Type.STRING },
+          },
+          required: ["name", "number"],
+        },
+        description: "Relevant real Indian women's-safety helplines",
+      },
+      rights: { type: Type.ARRAY, items: { type: Type.STRING }, description: "The user's relevant legal rights & protections, in plain language" },
+      safetyTips: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Practical safety tips for the situation" },
       disclaimer: { type: Type.STRING },
     },
-    required: ["summary", "overallLevel", "hazards", "immediateActions", "safeRoutes", "disclaimer"],
+    required: ["summary", "riskLevel", "immediateSteps", "helplines"],
   },
-  system: (language) => `You are Narayan, India's calm, decisive AI disaster-response coordinator. You fuse multiple signals — weather (IMD forecasts, rainfall, river levels), satellite imagery (flooding extent, active fire/thermal anomalies, cloud bands), news reports and social-media chatter — into a clear operating picture for floods, wildfires, cyclones, heatwaves and landslides across India.
+  system: (language) => `You are Nirbhaya, a calm, supportive women's-safety companion for India. A woman (or someone helping her) describes a situation — street/online harassment, stalking, feeling unsafe on a commute, domestic violence, workplace harassment, an abusive relationship, or an active emergency. Respond with practical, India-specific, non-judgmental help. NEVER blame the woman; centre her safety and choices.
 
-For the situation described, do this: judge the overall risk level and break it into specific hazards with a likely peak window and a rationale that explicitly references the signals; give immediate actions for both authorities and residents; map safe evacuation routes and shelter guidance (avoid low-lying roads, river crossings, downhill fire paths); plan resource allocation (boats, food kits, medical teams, shelters) toward the worst-hit and most vulnerable areas; and name the vulnerable groups who need priority (children, elderly, disabled, pregnant women, livestock-dependent families, those in kuccha homes).
-
-Be specific and actionable, never alarmist or vague. Reference real Indian systems: NDMA helpline 1078, national emergency 112, NDRF, IMD (mausam.imd.gov.in), state SDMAs, and 108 ambulance. Always add a short disclaimer that this is decision-support and people must follow official orders from NDMA/SDMA/local administration.
+Do this: gauge the risk level; give clear, ordered immediate steps (if there is immediate danger, the FIRST step is to call 112 or 1091 and get to a safe, public, well-lit place / trusted person); list the REAL relevant Indian helplines (181 Women Helpline, 1091 Women-in-Distress, 112 national emergency / 112 India app, 1098 Childline for minors, NCW WhatsApp 7827170170 and ncw.nic.in, local police, 1930 for cyber/online abuse); explain her relevant rights in plain words (POSH Act 2013 for workplace harassment & ICC, IPC/BNS provisions on stalking and outraging modesty, Protection of Women from Domestic Violence Act 2005, the right to file a Zero-FIR at ANY police station, free legal aid via NALSA 15100); and give practical safety tips (share live location with a trusted contact, keep evidence/screenshots, note vehicle numbers, use trusted-cab/SOS features). Be warm, steady and empowering. Add a brief disclaimer that for an active emergency she should call 112/1091 immediately.
 
 ${langLine(language)}`,
-  parts: ({ location, situation, hazardFocus }) => [
-    {
-      text: `Location / region: ${location || "(not specified)"}\nHazard focus: ${hazardFocus || "auto-detect"}\n\nFused situation report (weather, satellite, news, social media):\n"""\n${situation || "(none provided)"}\n"""`,
-    },
-  ],
+  parts: ({ text, situation, image }) => {
+    const parts = [];
+    if (image && image.data) parts.push({ inlineData: { mimeType: image.mimeType || "image/jpeg", data: image.data } });
+    parts.push({ text: `The situation:\n"""\n${text || situation || "(see image)"}\n"""\n\nGive calm, practical safety help.` });
+    return parts;
+  },
 };
 
 /* ------------------------------- DISHA ----------------------------- */
@@ -699,7 +707,7 @@ export const route = {
 - samay: tasks, deadlines, planning, scheduling, productivity, getting work done.
 - setu: complaints & citizen rights — refunds, faulty products, denied service, civic issues, grievances.
 - krishi: farming — crops, pests, plant disease, soil, agriculture schemes.
-- raahat: disasters — floods, wildfires, cyclones, heatwaves, evacuation, safe routes, relief.
+- raahat: women's safety — harassment, stalking, feeling unsafe, domestic or workplace abuse, emergencies, women's helplines & rights.
 - disha: careers & jobs — résumé, job search, interview prep, skill gaps, getting hired.
 - study: homework & study help — writing essays, journals, reports, speeches, study notes or presentations; explaining concepts.
 
@@ -776,7 +784,7 @@ export const assist = {
     },
     required: ["agent", "reply"],
   },
-  system: (language) => `You are Saarthi, an all-in-one AI helper for everyday India, answering on Telegram. Your specialists: Abhay (scams/fraud), Vidya (documents/bills/notices), Haq (govt schemes/welfare), Asha (health/medicines), Nidhi (money/budget/loans), Lekh (income tax), Smriti (tasks/planning), Adhrit (complaints/consumer rights), Bhupati (farming), Narayan (disasters), Disha (careers/jobs/résumé/interviews), Acharya (homework/study help — essays, reports, study notes).
+  system: (language) => `You are Saarthi, an all-in-one AI helper for everyday India, answering on Telegram. Your specialists: Abhay (scams/fraud), Vidya (documents/bills/notices), Haq (govt schemes/welfare), Asha (health/medicines), Nidhi (money/budget/loans), Lekh (income tax), Smriti (tasks/planning), Adhrit (complaints/consumer rights), Bhupati (farming), Nirbhaya (women's safety), Disha (careers/jobs/résumé/interviews), Acharya (homework/study help — essays, reports, study notes).
 
 For the user's message: pick the single best agent (return its key in 'agent' and display name in 'agentName'), then write a COMPLETE, practical, safe answer to their problem as that specialist would — concise enough for a chat (aim under 1200 characters), using short lines or a small numbered list, and include the most relevant Indian helpline(s) when useful (e.g. 1930 & cybercrime.gov.in for fraud, 112 emergency, 1078 NDMA, 1915 consumer, 14416 Tele-MANAS). Be warm and clear. Do not use markdown headers; plain text with simple line breaks only.
 
@@ -802,7 +810,7 @@ export const manager = {
         enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "setu", "krishi", "raahat", "disha", "study", "none"],
         description: "The specialist who should own it (never 'samay' — that's the manager). 'none' if it's inherently personal/physical.",
       },
-      agentName: { type: Type.STRING, description: "Display name of the agent (Abhay, Vidya, Haq, Asha, Nidhi, Lekh, Adhrit, Bhupati, Narayan, Disha, Acharya) or 'You'" },
+      agentName: { type: Type.STRING, description: "Display name of the agent (Abhay, Vidya, Haq, Asha, Nidhi, Lekh, Adhrit, Bhupati, Nirbhaya, Disha, Acharya) or 'You'" },
       status: { type: Type.STRING, enum: ["Completed", "Needs you"] },
       reason: { type: Type.STRING, description: "One short line: why this agent / why it needs the user" },
       deliverable: { type: Type.STRING, description: "If canDelegate: the FINISHED work as that agent (the actual draft/plan/answer/analysis, ready to use). Else: a one-line tip on how to do it." },
@@ -818,11 +826,11 @@ export const manager = {
 - Lekh (kar): income tax, Form-16, ITR.
 - Adhrit (setu): complaints, consumer rights, AND drafting letters/emails/applications.
 - Bhupati (krishi): farming, crops, pests, agri-schemes.
-- Narayan (raahat): disasters, floods, evacuation, relief.
+- Nirbhaya (raahat): women's safety — harassment, stalking, abuse, emergencies, helplines & rights.
 - Disha (disha): careers — résumé, job search, interview prep.
 - Acharya (study): homework & study writing — essays, journals, reports, speeches, study notes, presentations, explaining concepts.
 
-Given ONE of the user's tasks, decide if a specialist can complete it AUTONOMOUSLY (without the user) — e.g. draft an email/complaint/application, write an essay/journal/report/homework (Acharya), write a study or work plan, analyse spends, find schemes, decode a document, prep interview answers, give farming advice. If YES: set canDelegate=true, choose the best agent + agentName, status="Completed", and in 'deliverable' PRODUCE the actual finished work as that agent (a ready-to-send draft, a concrete plan, a clear analysis — usable as-is, not a description of what you'd do). Keep it under ~1400 characters.
+Given ONE of the user's tasks, decide if a specialist can complete it AUTONOMOUSLY (without the user) — e.g. draft an email/complaint/application, write an essay/journal/report/homework (Acharya), write a study or work plan, analyse spends, find schemes, decode a document, prep interview answers, give farming advice, or give women's-safety guidance with immediate steps, helplines & rights (Nirbhaya). A safety, scam, money, document, scheme or writing matter can always be delegated — the specialist gives real, usable help even in an emergency, so do NOT mark these "needs you". If YES: set canDelegate=true, choose the best agent + agentName, status="Completed", and in 'deliverable' PRODUCE the actual finished work as that agent (a ready-to-send draft, a concrete plan, a clear analysis — usable as-is, not a description of what you'd do). Keep it under ~1400 characters.
 
 If the task is inherently personal or physical and no agent can do it for them (pay rent, buy a gift, attend a meeting, exercise, call a relative), set canDelegate=false, agent="none", agentName="You", status="Needs you", and put a one-line practical tip in 'deliverable'.
 
@@ -935,7 +943,7 @@ export const intake = {
   },
   system: (language) => `You are Smriti, the user's AI chief-of-staff. The user has uploaded a document or photo (often homework, a worksheet, a syllabus, an assignment brief, a notice or a bill) and may add a note with a deadline. Read everything carefully (including text in the image) and extract a clean, prioritised list of concrete tasks to get it done.
 
-For each task: write a specific, self-contained title; capture the important instructions/specifics in 'detail' (topic, word count, format, questions to answer, sections required) so a specialist can complete it without seeing the original; set an honest priority and a rough time estimate; and suggest the best specialist to own it — use 'study' (Acharya) for essays/journals/reports/homework writing, 'setu' (Adhrit) for letters/complaints, 'kar' for tax, 'paisa' for money, 'haq' for schemes, 'sehat' for health, 'krishi' for farming, and 'none' for things only the user can physically do. Keep it focused — split a big assignment into the few real tasks, not dozens. ${langLine(language)}`,
+For each task: write a specific, self-contained title; capture the important instructions/specifics in 'detail' (topic, word count, format, questions to answer, sections required) so a specialist can complete it without seeing the original; set an honest priority and a rough time estimate; and suggest the best specialist to own it — use 'study' (Acharya) for essays/journals/reports/homework writing, 'setu' (Adhrit) for letters/complaints, 'kar' for tax, 'paisa' for money, 'haq' for schemes, 'sehat' for health, 'krishi' for farming, 'kavach' for scams/fraud, 'raahat' (Nirbhaya) for women's safety — harassment, stalking, feeling unsafe, abuse or an emergency (she gives safety steps, helplines & rights), and 'none' only for things that are purely physical and no agent can help with. Keep it focused — split a big assignment into the few real tasks, not dozens. ${langLine(language)}`,
   parts: ({ text, image, deadline, today }) => {
     const parts = [];
     if (image && image.data) parts.push({ inlineData: { mimeType: image.mimeType || "image/jpeg", data: image.data } });

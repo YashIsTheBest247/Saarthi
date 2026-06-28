@@ -28,7 +28,7 @@ export const EMERGENCY: Record<string, { domain: string; preset: string }> = {
   samay: { domain: "deadlines & work", preset: "I've badly missed a critical deadline at work and don't know how to recover or what to tell my boss." },
   setu: { domain: "consumer & citizen rights", preset: "I paid for a product, got cheated, and the company is completely ignoring my complaints." },
   krishi: { domain: "farming & crop loss", preset: "My crop is suddenly dying and I've suffered loss. What do I do now and what can I claim?" },
-  raahat: { domain: "disaster & safety", preset: "A flood is rising in my area right now and water is entering homes. How do I keep my family safe?" },
+  raahat: { domain: "women's safety", preset: "Someone is following me right now and I feel unsafe — what should I do this moment?" },
   disha: { domain: "jobs & careers", preset: "I was suddenly laid off / fired and I'm panicking about money and what to do next." },
 };
 

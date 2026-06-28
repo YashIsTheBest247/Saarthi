@@ -1,4 +1,4 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LifeBuoy, Briefcase, GraduationCap, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, Briefcase, GraduationCap, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
 
 export type Group = "protect" | "claim" | "automate";
@@ -27,11 +27,24 @@ export interface FeatureMeta {
 
 export const FEATURES: FeatureMeta[] = [
   {
+    key: "raahat",
+    icon: ShieldCheck,
+    nameKey: "rh.name", tagKey: "rh.tag", descKey: "rh.desc", personaKey: "rh.persona",
+    accent: "#C0397B", accentDark: "#962B5F", tint: "#FBE6F1",
+    photo: "/agents/suraksha.jpg", index: "01", group: "protect", badge: "New",
+    stats: [
+      { v: "112 · 1091 · 181", l: "the right helplines, built in" },
+      { v: "calm next steps", l: "what to do, in order" },
+      { v: "your rights", l: "POSH, PWDVA, Zero-FIR" },
+      { v: "24×7", l: "support, never judgement" },
+    ],
+  },
+  {
     key: "disha",
     icon: Briefcase,
     nameKey: "ds.name", tagKey: "ds.tag", descKey: "ds.desc", personaKey: "ds.persona",
     accent: "#6D4AA7", accentDark: "#4E3480", tint: "#EEE8F7",
-    photo: "/agents/disha.jpg", index: "01", group: "automate", badge: "New",
+    photo: "/agents/disha.jpg", index: "01", group: "automate",
     stats: [
       { v: "resume in minutes", l: "tailored to each job" },
       { v: "find openings", l: "where the jobs actually are" },
@@ -96,7 +109,7 @@ export const FEATURES: FeatureMeta[] = [
     icon: Wallet,
     nameKey: "pa.name", tagKey: "pa.tag", descKey: "pa.desc", personaKey: "pa.persona",
     accent: "#138A72", accentDark: "#0E6356", tint: "#E1F2EE",
-    photo: "/agents/paisa.jpg", index: "06", group: "claim", badge: "New",
+    photo: "/agents/paisa.jpg", index: "06", group: "claim",
     stats: [
       { v: "sorts your money", l: "in seconds, automatically" },
       { v: "finds leaks", l: "unused subs & extra charges" },
@@ -109,7 +122,7 @@ export const FEATURES: FeatureMeta[] = [
     icon: Calculator,
     nameKey: "tx.name", tagKey: "tx.tag", descKey: "tx.desc", personaKey: "tx.persona",
     accent: "#A06A1F", accentDark: "#7C5115", tint: "#F5ECD9",
-    photo: "/agents/kar.jpg", index: "07", group: "claim", badge: "New",
+    photo: "/agents/kar.jpg", index: "07", group: "claim",
     stats: [
       { v: "AY 2026-27", l: "new regime (FY 2025-26)" },
       { v: "Form-16 PDF", l: "auto-extracted by AI" },
@@ -122,7 +135,7 @@ export const FEATURES: FeatureMeta[] = [
     icon: Target,
     nameKey: "sm.name", tagKey: "sm.tag", descKey: "sm.desc", personaKey: "sm.persona",
     accent: "#2E3A7B", accentDark: "#1F2A5E", tint: "#E7E9F4",
-    photo: "/agents/samay.jpg", index: "08", group: "automate", badge: "New",
+    photo: "/agents/samay.jpg", index: "08", group: "automate",
     stats: [
       { v: "plans & does", l: "goes beyond reminders" },
       { v: "focus blocks", l: "auto-scheduled to hit deadlines" },
@@ -135,7 +148,7 @@ export const FEATURES: FeatureMeta[] = [
     icon: Scale,
     nameKey: "st.name", tagKey: "st.tag", descKey: "st.desc", personaKey: "st.persona",
     accent: "#2F6F8F", accentDark: "#1F4E66", tint: "#E4EEF3",
-    photo: "/agents/setu.jpg", index: "09", group: "automate", badge: "New",
+    photo: "/agents/setu.jpg", index: "09", group: "automate",
     stats: [
       { v: "the right authority", l: "found for your problem" },
       { v: "complaint drafted", l: "ready to file" },
@@ -148,7 +161,7 @@ export const FEATURES: FeatureMeta[] = [
     icon: Sprout,
     nameKey: "kr.name", tagKey: "kr.tag", descKey: "kr.desc", personaKey: "kr.persona",
     accent: "#4B7A2B", accentDark: "#355820", tint: "#EAF1E0",
-    photo: "/agents/krishi.jpg", index: "10", group: "automate", badge: "New",
+    photo: "/agents/krishi.jpg", index: "10", group: "automate",
     stats: [
       { v: "photo diagnosis", l: "pests & crop disease" },
       { v: "action plan", l: "what to do right now" },
@@ -157,24 +170,11 @@ export const FEATURES: FeatureMeta[] = [
     ],
   },
   {
-    key: "raahat",
-    icon: LifeBuoy,
-    nameKey: "rh.name", tagKey: "rh.tag", descKey: "rh.desc", personaKey: "rh.persona",
-    accent: "#0E8FA8", accentDark: "#0A6C80", tint: "#E2F3F7",
-    photo: "/agents/raahat.jpg", index: "11", group: "protect", badge: "New",
-    stats: [
-      { v: "weather · satellite", l: "fused with news & social signals" },
-      { v: "flood & wildfire", l: "risk predicted area-by-area" },
-      { v: "safe routes", l: "evacuation & shelter guidance" },
-      { v: "resource plan", l: "boats, kits & medics allocated" },
-    ],
-  },
-  {
     key: "study",
     icon: GraduationCap,
     nameKey: "ac.name", tagKey: "ac.tag", descKey: "ac.desc", personaKey: "ac.persona",
     accent: "#7A4FB0", accentDark: "#553487", tint: "#EFE9F8",
-    photo: "/agents/lekhak.jpg", index: "12", group: "automate", badge: "New",
+    photo: "/agents/lekhak.jpg", index: "12", group: "automate",
     stats: [
       { v: "essays & reports", l: "written to your brief" },
       { v: "Times New Roman 12", l: "professional formatting" },

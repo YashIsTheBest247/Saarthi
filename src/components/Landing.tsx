@@ -883,7 +883,7 @@ function Closing() {
           <div className="relative">
             <h2 className="display mx-auto max-w-3xl text-balance text-3xl font-bold leading-tight tracking-tight deva sm:text-5xl">{t("cta.title")}</h2>
             <p className="mx-auto mt-5 max-w-xl text-lg text-linen/60 deva">{t("cta.sub")}</p>
-            <button onClick={() => window.dispatchEvent(new Event("saarthi:openchat"))} className="btn mx-auto mt-8 bg-linen px-6 py-3.5 text-[15px] text-ink hover:-translate-y-0.5">
+            <button onClick={() => window.dispatchEvent(new Event("saarthi:orchestrator"))} className="btn mx-auto mt-8 bg-linen px-6 py-3.5 text-[15px] text-ink hover:-translate-y-0.5">
               {t("cta.btn")} <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>

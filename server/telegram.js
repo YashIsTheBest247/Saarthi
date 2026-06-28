@@ -19,7 +19,7 @@ const AGENTS = [
   { key: "samay", name: "Smriti · Tasks" },
   { key: "setu", name: "Adhrit · Complaints" },
   { key: "krishi", name: "Bhupati · Farming" },
-  { key: "raahat", name: "Narayan · Disaster" },
+  { key: "raahat", name: "Nirbhaya · Women's Safety" },
   { key: "disha", name: "Disha · Careers" },
   { key: "study", name: "Acharya · Study" },
 ];

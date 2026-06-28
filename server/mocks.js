@@ -278,36 +278,31 @@ export const mocks = {
 
   raahat: {
     _mock: true,
-    summary:
-      "Three days of intense rain over the upper catchment have pushed the Brahmaputra near its danger mark. Satellite imagery shows growing inundation in low-lying wards, and local posts report water entering homes in the eastern belt. Flood risk is High and rising over the next 24–48 hours.",
-    overallLevel: "High",
-    hazards: [
-      { type: "Flood", level: "Severe", window: "next 24-48 hrs", rationale: "River at/above danger level + saturated soil + continued IMD rain warning; satellite shows expanding water extent." },
-      { type: "Landslide", level: "Moderate", window: "next 72 hrs", rationale: "Saturated hill slopes around the catchment raise slip risk along highway cuttings." },
+    summary: "You're being followed on your way home and feel unsafe — let's get you to safety right now.",
+    riskLevel: "High risk",
+    immediateSteps: [
+      { step: "Get to a safe, public place", detail: "Walk into the nearest open shop, restaurant, bank or a group of people. Don't go home directly while being followed." },
+      { step: "Call for help", detail: "Dial 112 (national emergency) or 1091 (Women in Distress). Stay on the line and share your live location." },
+      { step: "Alert a trusted contact", detail: "Share your live location on WhatsApp with a family member or friend and keep them on call." },
+      { step: "Note details", detail: "Quietly note the person's appearance and any vehicle number — useful for a complaint later." },
     ],
-    immediateActions: [
-      "Move residents from low-lying eastern wards to higher-ground shelters before nightfall.",
-      "Stop vehicle movement on the riverside road and any submerged crossings.",
-      "Pre-position NDRF boats and pumps at the two worst-hit wards.",
-      "Broadcast alerts in local language via community radio and WhatsApp groups.",
+    helplines: [
+      { name: "National Emergency", number: "112", why: "Police/ambulance/fire — fastest response, also a 112 India app with SOS." },
+      { name: "Women in Distress", number: "1091", why: "Dedicated women's emergency helpline." },
+      { name: "Women Helpline", number: "181", why: "Support, counselling and guidance for women in distress." },
+      { name: "NCW WhatsApp", number: "7827170170", why: "National Commission for Women — report harassment; ncw.nic.in." },
     ],
-    safeRoutes: [
-      "Use the NH ring-road (higher elevation) for evacuation — avoid the riverside arterial which is flooding.",
-      "Nearest shelters: government school (Ward 12) and the community hall (Ward 9), both above the flood line.",
-      "Do not cross causeways where water is over the road — even shallow flow can sweep a person.",
+    rights: [
+      "You can file a Zero-FIR at ANY police station, regardless of where the incident happened.",
+      "Stalking is a punishable offence; you have the right to file a complaint and seek protection.",
+      "Free legal aid is available via NALSA (helpline 15100).",
     ],
-    resourcePlan: [
-      "Allocate ~60% of boats and medics to the eastern wards (highest affected population × severity).",
-      "Send food kits and clean-water units to the two largest shelters first.",
-      "Keep a medical reserve for snakebite and waterborne illness, which spike after floods.",
+    safetyTips: [
+      "Keep emergency contacts on speed-dial and enable your phone's SOS shortcut.",
+      "Prefer well-lit, busy routes; share your trip in trusted-cab apps.",
+      "Save screenshots/recordings as evidence if harassment is online or by message.",
     ],
-    vulnerableGroups: [
-      "Elderly and bed-ridden residents in kuccha homes near the bank.",
-      "Children and pregnant women in the inundated eastern belt.",
-      "Livestock-dependent families — plan cattle evacuation too.",
-    ],
-    advisory: "Follow NDMA helpline 1078 and emergency 112. Track IMD warnings at mausam.imd.gov.in and obey your State Disaster Management Authority's orders.",
-    disclaimer: "Narayan is decision-support, not an official warning. Always follow NDMA / SDMA / local administration instructions.",
+    disclaimer: "Nirbhaya offers guidance and support — if you are in immediate danger, call 112 or 1091 right now.",
   },
 
   disha: {
