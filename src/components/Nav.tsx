@@ -201,7 +201,7 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
                   color: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
                 }}
                 onClick={skipFlagship}
-                className="hidden items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full border border-line px-3.5 py-2 text-sm font-semibold shadow-soft sm:flex"
+                className="hidden items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full border border-line px-3.5 py-2 text-sm font-semibold shadow-soft md:flex"
               >
                 {t("flag.skip")} <ChevronDown className="h-4 w-4" />
               </motion.button>
@@ -210,19 +210,19 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
           <button
             onClick={() => setHelpOpen(true)}
             aria-label={t("help.title")}
-            className={`hidden h-10 items-center gap-2 rounded-full border px-3.5 transition-colors sm:flex ${
+            className={`hidden h-10 items-center gap-2 rounded-full border px-3.5 transition-colors md:flex ${
               dark ? "border-white/25 text-white hover:bg-white/10" : "border-line bg-paper text-graphite hover:text-ink"
             }`}
           >
             <Phone className="h-4 w-4" />
             <span className="hidden text-sm font-medium lg:inline">{t("nav.helplines")}</span>
           </button>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <LanguagePicker compact />
           </div>
           <a
             href="#agents"
-            className={`btn px-4 py-2.5 text-sm ${dark ? "bg-white text-ink hover:-translate-y-0.5 shadow-soft" : "bg-ink text-linen hover:bg-graphite hover:-translate-y-0.5 shadow-soft"}`}
+            className={`hidden md:inline-flex btn px-4 py-2.5 text-sm ${dark ? "bg-white text-ink hover:-translate-y-0.5 shadow-soft" : "bg-ink text-linen hover:bg-graphite hover:-translate-y-0.5 shadow-soft"}`}
           >
             {t("nav.try")}
             <ArrowUpRight className="h-4 w-4" />
@@ -244,33 +244,38 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-line bg-linen shadow-float md:hidden"
+            className="mx-auto mt-2 max-h-[78vh] max-w-6xl overflow-y-auto rounded-3xl border border-line bg-linen shadow-float md:hidden"
           >
             <div className="space-y-1 p-3">
+              {/* quick links */}
+              <a href="#how" onClick={() => setMobile(false)} className="block rounded-2xl px-3 py-2.5 text-[15px] font-medium text-graphite hover:bg-mist">{t("nav.how")}</a>
+              <a href="#team" onClick={() => setMobile(false)} className="block rounded-2xl px-3 py-2.5 text-[15px] font-medium text-graphite hover:bg-mist">{t("nav.features")}</a>
+              <button onClick={() => { setMobile(false); setHelpOpen(true); }} className="flex w-full items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-[15px] font-medium text-graphite hover:bg-mist">
+                <Phone className="h-4 w-4 flex-none" /> {t("nav.helplines")}
+              </button>
+
+              {/* agents */}
+              <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-faint">{t("nav.agents")}</div>
               {FEATURES.map((f) => (
                 <button
                   key={f.key}
-                  onClick={() => {
-                    setMobile(false);
-                    onOpen(f.key);
-                  }}
+                  onClick={() => { setMobile(false); onOpen(f.key); }}
                   className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left hover:bg-mist"
                 >
                   <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-full" className="h-9 w-9 flex-none" />
                   <span className="display font-bold deva">{t(f.nameKey)}</span>
-                  <span className="text-xs text-faint">{t(f.tagKey)}</span>
+                  <span className="ml-auto truncate text-xs text-faint deva">{t(f.tagKey)}</span>
                 </button>
               ))}
-              <button
-                onClick={() => { setMobile(false); setHelpOpen(true); }}
-                className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left hover:bg-mist"
+
+              <div className="px-1 pt-3"><LanguagePicker /></div>
+              <a
+                href="#agents"
+                onClick={() => setMobile(false)}
+                className="btn mt-2 w-full justify-center bg-ink py-3 text-sm text-linen"
               >
-                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-ink text-white"><Phone className="h-4 w-4" /></span>
-                <span className="display font-bold deva">{t("nav.helplines")}</span>
-              </button>
-              <div className="px-1 pt-2">
-                <LanguagePicker />
-              </div>
+                {t("nav.try")} <ArrowUpRight className="h-4 w-4" />
+              </a>
             </div>
           </motion.div>
         )}
