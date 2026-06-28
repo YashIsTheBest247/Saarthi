@@ -21,7 +21,7 @@ export function LanguagePicker({ compact = false }: { compact?: boolean }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`btn border border-line bg-paper text-graphite hover:border-clay-300 ${
+        className={`btn border border-line bg-paper text-graphite hover:border-[#2D6BFF] ${
           compact ? "px-3 py-2 text-sm" : "px-4 py-2.5"
         }`}
       >
@@ -50,7 +50,7 @@ export function LanguagePicker({ compact = false }: { compact?: boolean }) {
                       setOpen(false);
                     }}
                     className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition-colors ${
-                      active ? "bg-clay-50 text-clay-700" : "hover:bg-mist text-graphite"
+                      active ? "bg-[#E8F0FF] text-[#1A49BD]" : "hover:bg-mist text-graphite"
                     }`}
                   >
                     <span className="flex flex-col">

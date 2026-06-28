@@ -32,7 +32,7 @@ export function KrishiConsole({ onBack }: { onBack: () => void }) {
             { v: "₹0", l: "Free advice, any language" },
           ]} />
           <div className="mt-6 card flex flex-col justify-between p-6">
-            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Diagnose a crop problem</h3><p className="text-[15px] text-graphite">Snap a photo of your crop or describe the problem — Krishi diagnoses it and gives an action plan.</p></div>
+            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Diagnose a crop problem</h3><p className="text-[15px] text-graphite">Snap a photo of your crop or describe the problem — Bhupati diagnoses it and gives an action plan.</p></div>
             <button onClick={() => go("diagnose")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>Diagnose now</button>
           </div>
         </Wrap>

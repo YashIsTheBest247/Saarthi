@@ -26,7 +26,7 @@ export function SamajhConsole({ onBack }: { onBack: () => void }) {
             { v: "₹0", l: "No charge, no login" },
           ]} />
           <div className="mt-6 card flex flex-col justify-between p-6">
-            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Decode a document</h3><p className="text-[15px] text-graphite">Paste or snap any confusing document — Samajh explains it in plain words and flags hidden charges.</p></div>
+            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Decode a document</h3><p className="text-[15px] text-graphite">Paste or snap any confusing document — Vidya explains it in plain words and flags hidden charges.</p></div>
             <button onClick={() => go("decode")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>Decode a document</button>
           </div>
         </Wrap>

@@ -237,8 +237,8 @@ export function ThreatFusion() {
       ]
     : [];
 
-  const citizen = res ? `⚠️ Kavach alert: This looks like a ${res.verdict} (${topCat}). Do NOT pay, share OTP, or install any app. Cut the call and report to 1930 / cybercrime.gov.in.` : "";
-  const telecom = res ? `To: Telecom Nodal Officer\nRequest: Block & investigate number(s) linked to ${ringId} used in "${topCat}" fraud. Threat score ${res.score}. Attach CDR for correlation. — Kavach Fusion` : "";
+  const citizen = res ? `⚠️ Abhay alert: This looks like a ${res.verdict} (${topCat}). Do NOT pay, share OTP, or install any app. Cut the call and report to 1930 / cybercrime.gov.in.` : "";
+  const telecom = res ? `To: Telecom Nodal Officer\nRequest: Block & investigate number(s) linked to ${ringId} used in "${topCat}" fraud. Threat score ${res.score}. Attach CDR for correlation. — Abhay Fusion` : "";
   const ncrp = res ? `MHA / NCRP intelligence package\nIncident type: ${topCat}\nFused threat score: ${res.score} (${res.verdict})\nLinked ring: ${ringId}\nGeo cluster: ${hotspot.city}\nTactics: ${res.tactics.map((t) => t.category).join(", ") || "n/a"}\nRecommended action: freeze mule accounts, takedown numbers, victim outreach.` : "";
 
   return (

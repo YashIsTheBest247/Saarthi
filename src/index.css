@@ -14,10 +14,16 @@
     @apply bg-canvas text-ink font-sans antialiased;
     overflow-x: hidden;
   }
+  /* native controls (selects, checkboxes, radios, range, dropdown highlight) follow the app's blue */
+  select, input, textarea, button {
+    accent-color: #2D6BFF;
+  }
   ::selection {
-    background: rgba(181, 97, 59, 0.18);
+    background: rgba(45, 107, 255, 0.18);
     color: #1a1714;
   }
+  @keyframes dashflow { to { stroke-dashoffset: -14; } }
+  .flow-line { stroke-dasharray: 4 5; animation: dashflow 0.7s linear infinite; }
   ::-webkit-scrollbar {
     width: 11px;
     height: 11px;
@@ -82,7 +88,8 @@
 
   .field {
     @apply w-full rounded-2xl border border-line bg-mist px-4 py-3 text-ink placeholder:text-faint
-           outline-none transition-all focus:border-clay-300 focus:bg-paper focus:ring-4 focus:ring-clay-50;
+           outline-none transition-all focus:border-[#2D6BFF] focus:bg-paper focus:ring-4 focus:ring-[#2D6BFF]/15;
+    accent-color: #2D6BFF;
   }
 
   .link-underline {

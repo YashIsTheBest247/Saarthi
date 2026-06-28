@@ -1,4 +1,4 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LifeBuoy, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
 
 export type Group = "protect" | "claim" | "automate";
@@ -141,6 +141,19 @@ export const FEATURES: FeatureMeta[] = [
       { v: "action plan", l: "what to do right now" },
       { v: "farm schemes", l: "PM-KISAN · PMFBY · KCC" },
       { v: "₹0", l: "free advice, in any language" },
+    ],
+  },
+  {
+    key: "raahat",
+    icon: LifeBuoy,
+    nameKey: "rh.name", tagKey: "rh.tag", descKey: "rh.desc", personaKey: "rh.persona",
+    accent: "#0E8FA8", accentDark: "#0A6C80", tint: "#E2F3F7",
+    photo: "/agents/raahat.jpg", index: "09", group: "protect", badge: "New",
+    stats: [
+      { v: "weather · satellite", l: "fused with news & social signals" },
+      { v: "flood & wildfire", l: "risk predicted area-by-area" },
+      { v: "safe routes", l: "evacuation & shelter guidance" },
+      { v: "resource plan", l: "boats, kits & medics allocated" },
     ],
   },
 ];

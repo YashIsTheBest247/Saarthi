@@ -51,6 +51,7 @@ app.post("/api/samay", makeHandler("samay"));
 app.post("/api/setu", makeHandler("setu"));
 app.post("/api/krishi", makeHandler("krishi"));
 app.post("/api/kar", makeHandler("kar"));
+app.post("/api/raahat", makeHandler("raahat"));
 app.post("/api/form16", makeHandler("form16"));
 
 app.get("/api/news", async (_req, res) => {

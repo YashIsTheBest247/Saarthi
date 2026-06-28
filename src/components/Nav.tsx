@@ -113,31 +113,55 @@ function AgentsMega({ onOpen, dark }: { onOpen: (k: FeatureKey) => void; dark: b
 /* -------------------------------- Nav -------------------------------- */
 export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: FeatureKey) => void }) {
   const { t } = useApp();
-  const [scrolled, setScrolled] = useState(false);
+  const [darkZone, setDarkZone] = useState(true); // over a dark section (hero / footer)
   const [mobile, setMobile] = useState(false);
+  const [atFlagship, setAtFlagship] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const NAV = 72; // px from top the navbar occupies
+    const onScroll = () => {
+      const hero = document.getElementById("hero");
+      const footer = document.getElementById("site-footer");
+      const overHero = hero ? hero.getBoundingClientRect().bottom > NAV : window.scrollY < 200;
+      const overFooter = footer ? footer.getBoundingClientRect().top < NAV : false;
+      setDarkZone(overHero || overFooter);
+      const el = document.getElementById("flagship");
+      if (el) {
+        const r = el.getBoundingClientRect();
+        const mid = window.innerHeight / 2;
+        setAtFlagship(r.top < mid && r.bottom > mid); // section straddles viewport centre
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
-  const dark = !scrolled && !mobile; // light text over dark hero at top
+  const skipFlagship = () => {
+    const el = document.getElementById("flagship");
+    if (!el) return;
+    window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().bottom + 1, behavior: "smooth" });
+  };
+
+  const dark = darkZone && !mobile; // light text over dark hero / footer; solid over the white middle
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 sm:px-5">
       <div
         className={`mx-auto mt-3 grid max-w-6xl grid-cols-[1fr_auto] items-center gap-4 rounded-full border px-4 py-2.5 transition-colors duration-300 sm:mt-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] ${
-          scrolled || mobile
-            ? "border-line bg-linen/90 shadow-pill backdrop-blur-xl"
-            : "border-white/15 bg-white/10 backdrop-blur-md"
+          dark
+            ? "border-white/15 bg-white/10 backdrop-blur-md"
+            : "border-line bg-linen/90 shadow-pill backdrop-blur-xl"
         }`}
       >
         {/* logo */}
-        <button onClick={onHome} className="flex items-center gap-2.5">
-          <BrandMark className="h-9 w-9" />
-          <span className={`display text-xl font-bold tracking-tight ${dark ? "text-white" : "text-ink"}`}>Saarthi</span>
+        <button onClick={onHome} className={`flex items-center gap-2.5 ${dark ? "text-white" : "text-ink"}`}>
+          <BrandMark className="h-8 w-8" />
+          <span className="display text-xl font-bold tracking-tight">Saarthi</span>
         </button>
 
         {/* center nav */}
@@ -149,6 +173,30 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
 
         {/* right cluster */}
         <div className="flex items-center gap-2 justify-self-end">
+          <AnimatePresence>
+            {atFlagship && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.85, width: 0 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  width: "auto",
+                  backgroundColor: ["#16140F", "#FFFFFF", "#16140F"],
+                  color: ["#FFFFFF", "#16140F", "#FFFFFF"],
+                }}
+                exit={{ opacity: 0, scale: 0.85, width: 0 }}
+                transition={{
+                  default: { type: "spring", stiffness: 420, damping: 32 },
+                  backgroundColor: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
+                  color: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
+                }}
+                onClick={skipFlagship}
+                className="hidden items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full border border-line px-3.5 py-2 text-sm font-semibold shadow-soft sm:flex"
+              >
+                {t("flag.skip")} <ChevronDown className="h-4 w-4" />
+              </motion.button>
+            )}
+          </AnimatePresence>
           <a
             href="#agents"
             aria-label="Find help"

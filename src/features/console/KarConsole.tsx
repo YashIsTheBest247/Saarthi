@@ -32,7 +32,7 @@ export function KarConsole({ onBack }: { onBack: () => void }) {
             { v: "31 Jul", l: "Usual filing due date" },
           ]} />
           <div className="mt-6 card flex flex-col justify-between p-6">
-            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Calculate your tax</h3><p className="text-[15px] text-graphite">Upload your Form-16 or enter details — Kar computes your tax, compares regimes and exports a PDF.</p></div>
+            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Calculate your tax</h3><p className="text-[15px] text-graphite">Upload your Form-16 or enter details — Lekh computes your tax, compares regimes and exports a PDF.</p></div>
             <button onClick={() => go("calc")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>Open calculator</button>
           </div>
         </Wrap>

@@ -53,7 +53,7 @@ export function PaisaConsole({ onBack }: { onBack: () => void }) {
               {subs.length ? <ul className="space-y-2">{subs.slice(0, 6).map((s) => <li key={s.id} className="flex justify-between text-[15px] text-graphite"><span>{s.name}</span><span className="font-medium">{inr(parseFloat(s.amount) || 0)}</span></li>)}</ul> : <p className="text-sm text-muted">Add recurring spends in the Budget tab.</p>}
             </div>
             <div className="card flex flex-col justify-between p-6">
-              <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Analyse a month</h3><p className="text-[15px] text-graphite">Paste your bank SMS or spends and let Paisa find the leaks and build a save plan.</p></div>
+              <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Analyse a month</h3><p className="text-[15px] text-graphite">Paste your bank SMS or spends and let Nidhi find the leaks and build a save plan.</p></div>
               <button onClick={() => go("analyse")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>Analyse my spends</button>
             </div>
           </div>

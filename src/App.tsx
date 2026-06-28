@@ -12,6 +12,7 @@ import { SamayConsole } from "./features/console/SamayConsole";
 import { SetuConsole } from "./features/console/SetuConsole";
 import { KrishiConsole } from "./features/console/KrishiConsole";
 import { KarConsole } from "./features/console/KarConsole";
+import { RaahatConsole } from "./features/console/RaahatConsole";
 import { FeatureKey } from "./lib/api";
 
 type View = "home" | FeatureKey;
@@ -43,6 +44,7 @@ function Shell() {
           {view === "setu" && <SetuConsole key="setu" onBack={back} />}
           {view === "krishi" && <KrishiConsole key="krishi" onBack={back} />}
           {view === "kar" && <KarConsole key="kar" onBack={back} />}
+          {view === "raahat" && <RaahatConsole key="raahat" onBack={back} />}
         </AnimatePresence>
       </main>
     </div>

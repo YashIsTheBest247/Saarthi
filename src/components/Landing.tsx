@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef, ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Globe,
   Mic,
   Camera,
   Sparkles,
@@ -44,11 +45,42 @@ export function RiskRing({ value }: { value: number }) {
   );
 }
 
+/* ---------- Vertical marquee (rotating accent phrase) ---------- */
+const MARQUEE: Record<string, string[]> = {
+  en: ["everyday India ", "every Indian ", "your family ", "1.4 billion lives ", "real life ", "Bharat "],
+  hi: ["भारत के लिए", "हर भारतीय के लिए", "आपके परिवार के लिए", "1.4 अरब ज़िंदगियों के लिए", "असली ज़िंदगी के लिए", "हर घर के लिए"],
+};
+
+function VerticalMarquee({ iso }: { iso: string }) {
+  const phrases = MARQUEE[iso] ?? MARQUEE.en;
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((p) => (p + 1) % phrases.length), 2300);
+    return () => clearInterval(id);
+  }, [phrases.length]);
+  return (
+    <span className="relative inline-flex overflow-hidden align-bottom" style={{ height: "1.05em" }}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={i}
+          initial={{ y: "105%", opacity: 0 }}
+          animate={{ y: "0%", opacity: 1 }}
+          exit={{ y: "-105%", opacity: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="block whitespace-nowrap serif-italic font-normal text-white/55 deva"
+        >
+          {phrases[i]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 /* ------------------------------ Hero ------------------------------ */
 function Hero(_: { onOpen: (k?: FeatureKey) => void }) {
-  const { t } = useApp();
+  const { t, lang } = useApp();
   return (
-    <section className="relative isolate overflow-hidden bg-[#15110D] text-white">
+    <section id="hero" className="relative isolate overflow-hidden bg-[#15110D] text-white">
       {/* background portrait */}
       <div className="absolute inset-y-0 right-0 w-full sm:w-[58%]">
         <img src="/agents/hero.jpg" alt="" className="h-full w-full object-cover object-top" />
@@ -64,7 +96,7 @@ function Hero(_: { onOpen: (k?: FeatureKey) => void }) {
           <span className="deva">{t("hero.titleA")}</span>
           <br />
           <span>{t("hero.titleB")} </span>
-          <span className="serif-italic font-normal text-white/55 deva">{t("hero.titleC")}</span>
+          <VerticalMarquee iso={lang.iso} />
         </motion.h1>
 
         <motion.p
@@ -331,30 +363,57 @@ function FlagshipCard({ f, onOpen }: { f: FeatureMeta; onOpen: (k: FeatureKey) =
 
 function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
-  const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
   const count = FEATURES.length;
-  const go = (n: number) => setIdx(((n % count) + count) % count); // wraps both ways
+  const [idx, setIdx] = useState(0);
 
-  // auto-advance through the agents; pauses on hover/focus
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const hoverRef = useRef(false);
+  const idxRef = useRef(0);
+  const lockRef = useRef(false);
+  useEffect(() => { idxRef.current = idx; }, [idx]);
+
+  const go = (n: number) => setIdx(Math.max(0, Math.min(count - 1, n)));
+
+  // Only scrub the cards when the cursor is over them. The wheel then steps one
+  // card per gesture and the page stays pinned; at the first/last card (or when the
+  // cursor is anywhere else) the page scrolls normally.
   useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => setIdx((i) => (i + 1) % count), 4000);
-    return () => clearInterval(id);
-  }, [paused, count]);
+    const el = wrapRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!hoverRef.current) return;                 // not on cards → normal page scroll
+      const sec = sectionRef.current;
+      if (!sec) return;
+      const r = sec.getBoundingClientRect();
+      const centered = r.top <= 1 && r.bottom >= window.innerHeight - 1; // card pinned in centre
+      if (!centered) return;                         // bring the card to centre first
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const cur = idxRef.current;
+      if (dir > 0 && cur >= count - 1) return;       // past last → let page scroll on
+      if (dir < 0 && cur <= 0) return;               // before first → let page scroll on
+      e.preventDefault();
+      if (lockRef.current) return;                   // one card per gesture
+      lockRef.current = true;
+      setIdx((i) => Math.max(0, Math.min(count - 1, i + dir)));
+      setTimeout(() => (lockRef.current = false), 600);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [count]);
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-10">
-      <Reveal>
+    <section ref={sectionRef} id="flagship" className="relative" style={{ minHeight: "135vh" }}>
+      <div className="sticky top-0 mx-auto flex h-screen w-full max-w-6xl items-center px-5 py-24">
+        <div className="w-full">
         <div
+          ref={wrapRef}
           className="relative"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocusCapture={() => setPaused(true)}
-          onBlurCapture={() => setPaused(false)}
+          onMouseEnter={() => { hoverRef.current = true; }}
+          onMouseLeave={() => { hoverRef.current = false; }}
         >
           <div className="overflow-hidden">
-            <div className="flex" style={{ transform: `translateX(-${idx * 100}%)`, transition: "transform 0.5s cubic-bezier(.22,1,.36,1)" }}>
+            <div className="flex" style={{ transform: `translateX(-${idx * 100}%)`, transition: "transform 0.55s cubic-bezier(.22,1,.36,1)", willChange: "transform" }}>
               {FEATURES.map((f) => (
                 <div key={f.key} className="w-full flex-none">
                   <FlagshipCard f={f} onOpen={onOpen} />
@@ -384,22 +443,181 @@ function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
           {FEATURES.map((f, i) => (
             <button
               key={f.key}
-              onClick={() => setIdx(i)}
+              onClick={() => go(i)}
               aria-label={`Show ${t(f.nameKey)}`}
               className="h-2.5 rounded-full transition-all duration-300"
               style={{ width: i === idx ? 26 : 10, background: i === idx ? f.accent : "#D9D4CB" }}
             />
           ))}
         </div>
-      </Reveal>
+        </div>
+      </div>
     </section>
   );
 }
 
-/* ------------------------- Eight quiet jobs ------------------------ */
+/* ---------- Per-agent node-graph illustration ---------- */
+const AGENT_TASKS: Record<string, string[]> = {
+  kavach: ["Scan message", "Score risk", "Flag the scam"],
+  samajh: ["Read document", "Explain plainly", "Flag charges"],
+  haq: ["Match schemes", "Check eligibility", "How to apply"],
+  sehat: ["Read prescription", "Find generics", "Save money"],
+  paisa: ["Sort spends", "Find leaks", "Save plan"],
+  kar: ["Read Form-16", "Compute tax", "Compare regimes"],
+  samay: ["Capture tasks", "Prioritize", "Schedule"],
+  setu: ["Find authority", "Draft complaint", "Escalate"],
+  krishi: ["Diagnose crop", "Action plan", "Match schemes"],
+  raahat: ["Fuse signals", "Predict risk", "Plan relief"],
+};
+const AGENT_INPUTS: Record<string, string[]> = {
+  kavach: ["SMS / WhatsApp", "Call transcript", "Email"],
+  samajh: ["Bill / notice", "Photo scan", "PDF"],
+  haq: ["Your profile", "Income", "Location"],
+  sehat: ["Prescription", "Symptoms", "Photo"],
+  paisa: ["Bank SMS", "Bills", "Spends"],
+  kar: ["Form-16", "Salary", "Capital gains"],
+  samay: ["Tasks", "Email", "Voice note"],
+  setu: ["Complaint", "Proof photo", "Details"],
+  krishi: ["Crop photo", "Symptoms", "Location"],
+  raahat: ["Weather", "Satellite", "News & social"],
+};
+
+function AgentGraph({ f }: { f: FeatureMeta }) {
+  const { t } = useApp();
+  const tasks = AGENT_TASKS[f.key] ?? [];
+  const inputs = AGENT_INPUTS[f.key] ?? [];
+  const rows = [20, 50, 80];
+  const metric = f.stats[0]?.v ?? "Done";
+
+  return (
+    <div className="relative h-[420px] min-w-[940px] overflow-hidden rounded-[2rem] border border-line bg-paper"
+         style={{ backgroundImage: "radial-gradient(#E3DED3 1px, transparent 1px)", backgroundSize: "22px 22px" }}>
+      {/* hub glow */}
+      <div className="pointer-events-none absolute h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ left: "33%", top: "50%", background: f.accent, opacity: 0.12 }} />
+
+      {/* live label */}
+      <div className="absolute left-5 top-4 flex items-center gap-2 rounded-full border border-line bg-paper/80 px-3 py-1 text-[11px] font-semibold text-graphite backdrop-blur">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#138A72] opacity-70" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[#138A72]" />
+        </span>
+        Live agent pipeline
+      </div>
+
+      {/* connectors (animated flow) */}
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
+        <g className="flow-line" stroke={f.accent} strokeOpacity="0.55" strokeWidth="1" vectorEffect="non-scaling-stroke">
+          <path d="M13,24 C20,24 22,50 24,50" />
+          <path d="M13,50 L24,50" />
+          <path d="M13,76 C20,76 22,50 24,50" />
+          <path d="M42,50 C48,50 50,20 52,20" />
+          <path d="M42,50 L52,50" />
+          <path d="M42,50 C48,50 50,80 52,80" />
+          <path d="M68,20 C73,20 74,50 76,50" />
+          <path d="M68,50 L76,50" />
+          <path d="M68,80 C73,80 74,50 76,50" />
+          <path d="M86,50 L89,50" />
+        </g>
+      </svg>
+
+      {/* input nodes */}
+      {inputs.map((inp, i) => (
+        <div key={i} className="absolute w-[128px] -translate-x-1/2 -translate-y-1/2" style={{ left: "7%", top: `${[24, 50, 76][i]}%` }}>
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-paper px-2.5 py-2 shadow-soft">
+            <span className="h-1.5 w-1.5 flex-none rounded-full bg-faint" />
+            <span className="truncate text-[12px] font-medium text-graphite deva">{inp}</span>
+          </div>
+        </div>
+      ))}
+      <div className="absolute -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-faint" style={{ left: "7%", top: "8%", transform: "translate(-50%,-50%)" }}>Inputs</div>
+
+      {/* agent hub (AI core) */}
+      <div className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: "33%", top: "50%" }}>
+        <div className="relative rounded-2xl border-2 bg-paper p-3.5 shadow-float" style={{ borderColor: f.accent }}>
+          <div className="flex items-center gap-3">
+            <div className="relative flex-none">
+              <motion.span className="absolute inset-0 rounded-xl" style={{ background: f.accent }}
+                animate={{ scale: [1, 1.55], opacity: [0.4, 0] }} transition={{ duration: 1.9, repeat: Infinity, ease: "easeOut" }} />
+              <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-xl" className="relative h-12 w-12" />
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-[15px] font-bold text-ink deva">{t(f.nameKey)}</div>
+              <div className="truncate text-[11px] text-faint deva">{t(f.tagKey)}</div>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-mist px-2 py-1">
+            <Sparkles className="h-3 w-3 flex-none" style={{ color: f.accent }} />
+            <span className="text-[10px] font-medium text-graphite">reasoning · engine</span>
+            <Loader2 className="ml-auto h-3 w-3 flex-none animate-spin" style={{ color: f.accent }} />
+          </div>
+        </div>
+      </div>
+
+      {/* task nodes */}
+      {tasks.map((task, i) => (
+        <div key={i} className="absolute w-[156px] -translate-x-1/2 -translate-y-1/2" style={{ left: "60%", top: `${rows[i]}%` }}>
+          <div className="rounded-xl border border-line bg-paper p-2.5 shadow-soft">
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 flex-none items-center justify-center rounded-md text-[10px] font-bold text-white" style={{ background: f.accent }}>{i + 1}</span>
+              <span className="truncate text-[13px] font-semibold text-ink deva">{task}</span>
+              <span className="ml-auto h-1.5 w-1.5 flex-none animate-pulse rounded-full" style={{ background: f.accent }} />
+            </div>
+            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-mist">
+              <div className="h-full rounded-full" style={{ width: `${[88, 64, 76][i]}%`, background: f.accent, opacity: 0.6 }} />
+            </div>
+          </div>
+        </div>
+      ))}
+      <div className="absolute text-[10px] font-semibold uppercase tracking-wider text-faint" style={{ left: "60%", top: "8%", transform: "translate(-50%,-50%)" }}>Agent tasks</div>
+
+      {/* verify node */}
+      <div className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: "80%", top: "50%" }}>
+        <div className="flex items-center gap-2.5 rounded-2xl border border-line bg-paper p-3 shadow-float">
+          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-[#138A72] text-white"><CheckCircle2 className="h-4 w-4" /></span>
+          <div><div className="text-sm font-bold text-ink">Verified</div><div className="text-[11px] text-faint">on-device checks</div></div>
+        </div>
+      </div>
+
+      {/* done node */}
+      <div className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: "93%", top: "50%" }}>
+        <div className="rounded-2xl border-2 border-ink bg-ink p-3 text-white shadow-float">
+          <div className="text-[11px] text-white/60">Result</div>
+          <div className="display text-base font-bold leading-tight">{metric}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AgentGraphShowcase() {
+  const { t } = useApp();
+  const [sel, setSel] = useState<FeatureMeta>(FEATURES[0]);
+  return (
+    <div>
+      <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        {FEATURES.map((f) => {
+          const on = sel.key === f.key;
+          return (
+            <button key={f.key} onClick={() => setSel(f)}
+              className={`flex flex-none items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${on ? "text-white" : "border-line bg-paper text-graphite hover:bg-mist"}`}
+              style={on ? { background: f.accent, borderColor: f.accent } : undefined}>
+              <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-full" className="h-5 w-5 flex-none" />
+              <span className="deva">{t(f.nameKey)}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="no-scrollbar mt-4 overflow-x-auto">
+        <AgentGraph f={sel} />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------- Ten quiet jobs ------------------------ */
 function QuietJobs() {
   const { t } = useApp();
-  const roman = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"];
+  const roman = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x"];
   return (
     <section className="bg-mist py-20">
       <div className="mx-auto max-w-6xl px-5">
@@ -410,6 +628,8 @@ function QuietJobs() {
           </h2>
           <p className="mt-4 text-lg text-muted deva">{t("quiet.sub")}</p>
         </Reveal>
+
+        <Reveal className="mt-10"><AgentGraphShowcase /></Reveal>
 
         <div className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
           {roman.map((r, i) => (
@@ -708,17 +928,80 @@ function Closing({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-function Footer() {
-  const { t } = useApp();
+function FooterCol({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-muted sm:flex-row">
-        <div className="flex items-center gap-2">
-          <BrandMark className="h-7 w-7" />
-          <span className="display text-base font-bold text-ink">Saarthi</span>
-          <span className="text-faint deva">· {t("brand.tag")}</span>
+    <div>
+      <div className="display text-base font-bold text-[#2D6BFF]">{title}</div>
+      <div className="mt-4 flex flex-col items-start gap-3 text-[17px]">{children}</div>
+    </div>
+  );
+}
+
+function Footer({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
+  const { t } = useApp();
+  const link = "text-left text-linen/55 transition-colors hover:text-linen deva";
+  return (
+    <footer id="site-footer" className="relative overflow-hidden bg-ink text-linen">
+      {/* giant watermark */}
+      <div className="pointer-events-none absolute -top-6 left-1/2 w-full -translate-x-1/2 select-none overflow-hidden">
+        <div className="display whitespace-nowrap text-center font-bold leading-none text-white/[0.035]" style={{ fontSize: "24vw" }}>
+          Saarthi
         </div>
-        <p className="text-faint">Made for India · Powered by Gemini</p>
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-5">
+        {/* headline */}
+        <div className="pb-16 pt-24 sm:pt-32">
+          <h2 className="display max-w-2xl text-balance text-4xl font-bold leading-[1.05] tracking-tight deva sm:text-6xl">
+            {t("footer.headline")}
+          </h2>
+        </div>
+
+        <div className="h-px w-full bg-white/10" />
+
+        {/* link columns */}
+        <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <BrandMark className="h-9 w-9" />
+              <span className="display text-xl font-bold">Saarthi</span>
+            </div>
+            <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-linen/45 deva">{t("footer.tagline")}</p>
+          </div>
+
+          <FooterCol title={t("footer.agents")}>
+            {FEATURES.map((f) => (
+              <button key={f.key} onClick={() => onOpen(f.key)} className={link}>
+                {t(f.nameKey)}
+              </button>
+            ))}
+          </FooterCol>
+
+          <FooterCol title={t("footer.explore")}>
+            <a href="#how" className={link}>{t("nav.how")}</a>
+            <a href="#agents" className={link}>{t("nav.agents")}</a>
+            <a href="#team" className={link}>{t("nav.features")}</a>
+            <a href="#flagship" className={link}>{t("cap.title")}</a>
+          </FooterCol>
+        </div>
+
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-7 text-sm text-linen/40 sm:flex-row">
+          <span className="deva">© 2026 Saarthi · {t("footer.rights")}</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-medium text-linen/70">Connect with the developer</span>
+            <a href="https://yash-munshi.vercel.app/" target="_blank" rel="noreferrer"
+               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-linen/70 transition-colors hover:border-white/40 hover:text-linen">
+              <Globe className="h-4 w-4" /> Portfolio
+            </a>
+            <a href="https://github.com/YashIsTheBest247" target="_blank" rel="noreferrer"
+               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-linen/70 transition-colors hover:border-white/40 hover:text-linen">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.21.7.82.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z" />
+              </svg>
+              GitHub
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );
@@ -728,15 +1011,15 @@ export function Landing({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
   return (
     <>
       <Hero onOpen={onOpen} />
+      <Trusted />
       <AgentsGrid onOpen={(k) => onOpen(k)} />
       <How />
       <FlagshipCarousel onOpen={(k) => onOpen(k)} />
       <Capabilities />
       <TeamPanel onOpen={(k) => onOpen(k)} />
       <QuietJobs />
-      <Trusted />
       <Closing onOpen={() => onOpen()} />
-      <Footer />
+      <Footer onOpen={onOpen} />
     </>
   );
 }

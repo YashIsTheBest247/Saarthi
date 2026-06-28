@@ -229,7 +229,7 @@ function VisitPrep({ meds, vitals }: { meds: Med[]; vitals: Vital[] }) {
   function build() {
     const latest = vitals[vitals.length - 1];
     const lines = [
-      "VISIT SUMMARY — prepared with Saarthi · Sehat",
+      "VISIT SUMMARY — prepared with Saarthi · Asha",
       "",
       "Current medicines:",
       ...(meds.length ? meds.map((m) => `• ${m.name}${m.dose ? ` — ${m.dose}` : ""}${m.timing ? ` (${m.timing})` : ""}`) : ["• (none recorded)"]),

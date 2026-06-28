@@ -95,7 +95,7 @@ export function SamayConsole({ onBack }: { onBack: () => void }) {
   /* ----------------------------- TASKS TAB ----------------------------- */
   const TasksTab = (
     <Wrap>
-      <H title="Task board" sub="Add deadlines & estimates — Samay forecasts whether you'll make it." />
+      <H title="Task board" sub="Add deadlines & estimates — Smriti forecasts whether you'll make it." />
 
       {rc.total > 0 && (
         <div className="card mb-5 flex items-center gap-3 p-4">
@@ -294,7 +294,7 @@ export function SamayConsole({ onBack }: { onBack: () => void }) {
           <button onClick={() => go("tasks")} className="btn-accent mt-4 text-sm" style={{ background: ACCENT }}>Open task board</button>
         </div>
         <div className="card flex flex-col justify-between p-6">
-          <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Plan a brain-dump</h3><p className="text-[15px] text-graphite">Dump tasks, an email or syllabus and Samay prioritizes, schedules and drafts the work.</p></div>
+          <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Plan a brain-dump</h3><p className="text-[15px] text-graphite">Dump tasks, an email or syllabus and Smriti prioritizes, schedules and drafts the work.</p></div>
           <button onClick={() => go("plan")} className="btn-accent mt-4 w-fit text-sm" style={{ background: ACCENT }}>Plan my work</button>
         </div>
       </div>

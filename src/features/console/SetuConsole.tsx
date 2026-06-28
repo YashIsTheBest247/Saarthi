@@ -38,7 +38,7 @@ export function SetuConsole({ onBack }: { onBack: () => void }) {
             { v: cases.filter((c) => c.stage === 0).length, l: "Drafted, not filed" },
           ]} />
           <div className="mt-6 card flex flex-col justify-between p-6">
-            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Start a new complaint</h3><p className="text-[15px] text-graphite">Describe any problem and Setu finds the authority, drafts the complaint and maps the escalation path.</p></div>
+            <div><h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Start a new complaint</h3><p className="text-[15px] text-graphite">Describe any problem and Adhrit finds the authority, drafts the complaint and maps the escalation path.</p></div>
             <button onClick={() => go("new")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>New complaint</button>
           </div>
         </Wrap>

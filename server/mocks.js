@@ -130,7 +130,7 @@ export const mocks = {
       "Never stop or switch a medicine without telling your doctor.",
       "See a doctor if blood sugar stays high, or you feel dizzy/breathless.",
     ],
-    disclaimer: "Sehat is not a doctor. This is general information — confirm any change with your doctor or pharmacist. Prices are rough estimates.",
+    disclaimer: "Asha is not a doctor. This is general information — confirm any change with your doctor or pharmacist. Prices are rough estimates.",
   },
 
   setu: {
@@ -207,7 +207,7 @@ export const mocks = {
       "Kisan Credit Card — low-interest credit for inputs",
     ],
     advisory: ["Check the 3-day forecast — avoid spraying before rain.", "Visit your nearest Krishi Vigyan Kendra (KVK) for a free check."],
-    disclaimer: "Krishi gives general guidance. Please confirm with your local KVK or agriculture officer before using any chemical.",
+    disclaimer: "Bhupati gives general guidance. Please confirm with your local KVK or agriculture officer before using any chemical.",
   },
 
   samay: {
@@ -273,7 +273,41 @@ export const mocks = {
       "File before the due date (usually 31 July) and keep your capital-gains statements handy.",
     ],
     regimeHint: "With few deductions, the new regime is usually better up to ~₹12L. Above that, compare both regimes if you have significant HRA/80C/home-loan.",
-    disclaimer: "Kar gives general guidance for FY 2025-26 and is not a substitute for a chartered accountant.",
+    disclaimer: "Lekh gives general guidance for FY 2025-26 and is not a substitute for a chartered accountant.",
+  },
+
+  raahat: {
+    _mock: true,
+    summary:
+      "Three days of intense rain over the upper catchment have pushed the Brahmaputra near its danger mark. Satellite imagery shows growing inundation in low-lying wards, and local posts report water entering homes in the eastern belt. Flood risk is High and rising over the next 24–48 hours.",
+    overallLevel: "High",
+    hazards: [
+      { type: "Flood", level: "Severe", window: "next 24-48 hrs", rationale: "River at/above danger level + saturated soil + continued IMD rain warning; satellite shows expanding water extent." },
+      { type: "Landslide", level: "Moderate", window: "next 72 hrs", rationale: "Saturated hill slopes around the catchment raise slip risk along highway cuttings." },
+    ],
+    immediateActions: [
+      "Move residents from low-lying eastern wards to higher-ground shelters before nightfall.",
+      "Stop vehicle movement on the riverside road and any submerged crossings.",
+      "Pre-position NDRF boats and pumps at the two worst-hit wards.",
+      "Broadcast alerts in local language via community radio and WhatsApp groups.",
+    ],
+    safeRoutes: [
+      "Use the NH ring-road (higher elevation) for evacuation — avoid the riverside arterial which is flooding.",
+      "Nearest shelters: government school (Ward 12) and the community hall (Ward 9), both above the flood line.",
+      "Do not cross causeways where water is over the road — even shallow flow can sweep a person.",
+    ],
+    resourcePlan: [
+      "Allocate ~60% of boats and medics to the eastern wards (highest affected population × severity).",
+      "Send food kits and clean-water units to the two largest shelters first.",
+      "Keep a medical reserve for snakebite and waterborne illness, which spike after floods.",
+    ],
+    vulnerableGroups: [
+      "Elderly and bed-ridden residents in kuccha homes near the bank.",
+      "Children and pregnant women in the inundated eastern belt.",
+      "Livestock-dependent families — plan cattle evacuation too.",
+    ],
+    advisory: "Follow NDMA helpline 1078 and emergency 112. Track IMD warnings at mausam.imd.gov.in and obey your State Disaster Management Authority's orders.",
+    disclaimer: "Narayan is decision-support, not an official warning. Always follow NDMA / SDMA / local administration instructions.",
   },
 
   form16: {

@@ -97,7 +97,7 @@ export function KavachConsole({ onBack }: { onBack: () => void }) {
         </div>
         <div>
           <div className="flex flex-wrap items-baseline gap-2.5">
-            <h1 className="display text-3xl font-bold deva">Kavach</h1>
+            <h1 className="display text-3xl font-bold deva">{t("k.name")}</h1>
             <span className="text-base font-medium deva" style={{ color: ACCENT }}>{t("kv.platform")}</span>
           </div>
           <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-muted deva">{t("kv.tagline")}</p>
