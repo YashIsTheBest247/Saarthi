@@ -47,6 +47,7 @@ function useCounterfeitMetrics(): Metrics {
 
 /* ============================ DASHBOARD ============================ */
 export function Dashboard({ go }: { go: (m: string) => void }) {
+  const { t } = useApp();
   const m = useDetectorMetrics();
   const topTactics = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -56,16 +57,16 @@ export function Dashboard({ go }: { go: (m: string) => void }) {
   const maxT = topTactics[0]?.[1] || 1;
 
   const tiles = [
-    { label: "Detections today", value: KPIS.detectionsToday.toLocaleString("en-IN") },
-    { label: "Fraud rings tracked", value: KPIS.ringsTracked },
-    { label: "Money protected", value: KPIS.rupeesProtected },
-    { label: "Avg. latency", value: `${KPIS.avgLatencyMs} ms` },
-    { label: "Citizen false-alarm rate", value: pct(m.fpRate), good: true },
+    { label: t("kv.t.detections"), value: KPIS.detectionsToday.toLocaleString("en-IN") },
+    { label: t("kv.t.rings"), value: KPIS.ringsTracked },
+    { label: t("kv.t.protected"), value: KPIS.rupeesProtected },
+    { label: t("kv.t.latency"), value: `${KPIS.avgLatencyMs} ms` },
+    { label: t("kv.t.fp"), value: pct(m.fpRate), good: true },
   ];
 
   return (
     <Wrap>
-      <H title="Command dashboard" sub="Unified situational picture across all detection modules." />
+      <H title={t("kv.dash.title")} sub={t("kv.dash.sub")} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {tiles.map((t, i) => (
           <div key={i} className="card p-5">
@@ -77,7 +78,7 @@ export function Dashboard({ go }: { go: (m: string) => void }) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <div className="card p-6">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">Top attack tactics (from analysed scams)</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.dash.tactics")}</h3>
           <div className="space-y-3">
             {topTactics.map(([cat, n]) => (
               <div key={cat}>
@@ -89,11 +90,11 @@ export function Dashboard({ go }: { go: (m: string) => void }) {
         </div>
         <div className="card flex flex-col justify-between p-6">
           <div>
-            <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Agentic threat fusion</h3>
-            <p className="text-[15px] leading-relaxed text-graphite">An orchestrator chains Triage → Escalation → Network correlation → Geo context → Response into one auditable pipeline that neutralises threats before money moves.</p>
+            <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.dash.fusion")}</h3>
+            <p className="text-[15px] leading-relaxed text-graphite deva">{t("kv.dash.fusionBody")}</p>
           </div>
-          <button onClick={() => go("fusion")} className="btn-accent mt-5 w-fit text-sm" style={{ background: ACCENT }}>
-            Open Threat Fusion <ArrowRight className="h-4 w-4" />
+          <button onClick={() => go("fusion")} className="btn-accent mt-5 w-fit text-sm deva" style={{ background: ACCENT }}>
+            {t("kv.dash.openFusion")} <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -131,14 +132,14 @@ export function Detector() {
 
   return (
     <Wrap>
-      <H title="Digital Arrest Detector" sub="Real-time, explainable classifier with an auditable evidence trail. 11 tactic categories." />
+      <H title={t("kv.det.title")} sub={t("kv.det.sub")} />
       <div className="card p-6">
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Paste a suspicious message or call transcript…" className="field resize-none" />
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder={t("kv.det.ph")} className="field resize-none deva" />
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <button onClick={run} disabled={!text.trim() || loading} className="btn-accent text-[15px]" style={{ background: ACCENT }}>
-            <ShieldAlert className="h-4 w-4" /> Analyse
+          <button onClick={run} disabled={!text.trim() || loading} className="btn-accent text-[15px] deva" style={{ background: ACCENT }}>
+            <ShieldAlert className="h-4 w-4" /> {t("kv.det.analyse")}
           </button>
-          <button onClick={() => setText(EX)} className="btn-ghost text-sm">Try an example</button>
+          <button onClick={() => setText(EX)} className="btn-ghost text-sm deva">{t("kv.det.example")}</button>
           <label className={`ml-auto flex items-center gap-2 text-sm ${health.live ? "text-graphite" : "text-faint"}`}>
             <button
               type="button"
@@ -149,13 +150,13 @@ export function Detector() {
             >
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${deep && health.live ? "left-[22px]" : "left-0.5"}`} />
             </button>
-            <Sparkles className="h-4 w-4" style={{ color: ACCENT }} /> Gemini AI deep analysis
+            <Sparkles className="h-4 w-4" style={{ color: ACCENT }} /> <span className="deva">{t("kv.det.deep")}</span>
           </label>
         </div>
-        {!health.live && <p className="mt-2 text-xs text-faint">Deep analysis auto-disabled — no Gemini key configured. The rule engine still runs fully.</p>}
+        {!health.live && <p className="mt-2 text-xs text-faint deva">{t("kv.det.noKey")}</p>}
       </div>
 
-      {loading && <div className="card mt-5 p-8"><Thinking label="Fusing rule + Gemini verdicts…" /></div>}
+      {loading && <div className="card mt-5 p-8"><Thinking label={t("kv.det.thinking")} /></div>}
 
       {rule && !loading && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="card mt-5 overflow-hidden">
@@ -165,12 +166,12 @@ export function Detector() {
               <RiskRing value={fused} />
               <div>
                 <div className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: vColor }}>{verdict}</div>
-                <div className="display text-2xl font-bold">{ai ? "Fused verdict" : "Rule verdict"}{ai ? " · rule 55% / AI 45%" : ""}</div>
+                <div className="display text-2xl font-bold deva">{ai ? t("kv.det.fused") : t("kv.det.rule")}{ai ? " · rule 55% / AI 45%" : ""}</div>
                 <div className="mt-1 text-sm text-muted">Rule score {rule.score}{ai ? ` · AI score ${ai.riskScore ?? "—"}` : ""}</div>
               </div>
             </div>
 
-            <h4 className="mt-6 mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Evidence trail · {rule.tactics.length} tactics detected</h4>
+            <h4 className="mt-6 mb-3 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.det.evidence")} · {rule.tactics.length} {t("kv.det.tacticsDetected")}</h4>
             {rule.tactics.length ? (
               <div className="space-y-2">
                 {rule.tactics.map((tt, i) => (
@@ -184,12 +185,12 @@ export function Detector() {
                   </div>
                 ))}
               </div>
-            ) : <p className="text-sm text-muted">No known scam tactics detected.</p>}
+            ) : <p className="text-sm text-muted deva">{t("kv.det.noTactics")}</p>}
 
             {ai && (
               <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: ACCENT, background: "#EAF1FF" }}>
-                <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: ACCENT_DARK }}>
-                  <Sparkles className="h-4 w-4" /> Gemini deep analysis · {ai.category}
+                <div className="flex items-center gap-2 text-sm font-semibold deva" style={{ color: ACCENT_DARK }}>
+                  <Sparkles className="h-4 w-4" /> {t("kv.det.aiTitle")} · {ai.category}
                 </div>
                 <p className="mt-2 deva text-[15px] text-graphite">{ai.headline}</p>
                 <p className="mt-1 deva text-sm text-muted">{ai.summary}</p>
@@ -198,7 +199,7 @@ export function Detector() {
             )}
 
             <div className="mt-6 flex items-center justify-between rounded-2xl bg-ink px-5 py-4 text-white">
-              <span className="text-xs uppercase tracking-wide" style={{ color: "#9FBCFF" }}>Citizen Fraud Shield · report now</span>
+              <span className="text-xs uppercase tracking-wide deva" style={{ color: "#9FBCFF" }}>{t("kv.det.report")}</span>
               <span className="font-semibold">1930 · cybercrime.gov.in</span>
             </div>
           </div>
@@ -210,6 +211,7 @@ export function Detector() {
 
 /* ===================== AGENTIC THREAT FUSION ===================== */
 export function ThreatFusion() {
+  const { t } = useApp();
   const [text, setText] = useState("");
   const [res, setRes] = useState<ReturnType<typeof classifyScam> | null>(null);
 
@@ -243,12 +245,12 @@ export function ThreatFusion() {
 
   return (
     <Wrap>
-      <H title="Agentic Threat Fusion" sub="An orchestrator that chains cooperating agents into one auditable brain." />
+      <H title={t("kv.fus.title")} sub={t("kv.fus.sub")} />
       <div className="card p-6">
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder="Paste a high-risk scam message to run the full pipeline…" className="field resize-none" />
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder={t("kv.fus.ph")} className="field resize-none deva" />
         <div className="mt-4 flex gap-3">
-          <button onClick={run} disabled={!text.trim()} className="btn-accent text-[15px]" style={{ background: ACCENT }}><Workflow className="h-4 w-4" /> Run fusion pipeline</button>
-          <button onClick={() => setText(EX)} className="btn-ghost text-sm">Example</button>
+          <button onClick={run} disabled={!text.trim()} className="btn-accent text-[15px] deva" style={{ background: ACCENT }}><Workflow className="h-4 w-4" /> {t("kv.fus.run")}</button>
+          <button onClick={() => setText(EX)} className="btn-ghost text-sm deva">{t("kv.det.example")}</button>
         </div>
       </div>
 
@@ -257,13 +259,13 @@ export function ThreatFusion() {
           <div className="card flex items-center gap-5 p-6">
             <RiskRing value={res.score} />
             <div>
-              <div className="text-xs font-bold uppercase tracking-wide" style={{ color: ACCENT }}>Fused threat score</div>
+              <div className="text-xs font-bold uppercase tracking-wide deva" style={{ color: ACCENT }}>{t("kv.fus.score")}</div>
               <div className="display text-2xl font-bold">{res.verdict}</div>
             </div>
           </div>
 
           <div className="card p-6">
-            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">Auditable agent chain</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.fus.chain")}</h4>
             <div className="space-y-3">
               {steps.map((s, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.12 }} className="flex gap-3">
@@ -282,9 +284,9 @@ export function ThreatFusion() {
 
           {escalate && (
             <div className="grid gap-4 lg:grid-cols-3">
-              {[{ t: "Citizen alert", v: citizen }, { t: "Telecom takedown", v: telecom }, { t: "MHA-NCRP package", v: ncrp }].map((d) => (
+              {[{ t: t("kv.fus.citizen"), v: citizen }, { t: t("kv.fus.telecom"), v: telecom }, { t: t("kv.fus.ncrp"), v: ncrp }].map((d) => (
                 <div key={d.t}>
-                  <div className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">{d.t}</div>
+                  <div className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted deva">{d.t}</div>
                   <CopyBlock text={d.v} />
                 </div>
               ))}
@@ -298,12 +300,13 @@ export function ThreatFusion() {
 
 /* ===================== VOICE-SPOOF / DEEPFAKE ==================== */
 export function VoiceSpoof() {
+  const { t } = useApp();
   const [sel, setSel] = useState(VOICE_SET[0]);
   const m = useVoiceMetrics();
   const synthetic = sel.spoofProb >= 0.5;
   return (
     <Wrap>
-      <H title="Voice-Spoof / Deepfake Detection" sub="Explainable audio forensics. Built-in labelled demo clips — no audio file needed." />
+      <H title={t("kv.voice.title")} sub={t("kv.voice.sub")} />
       <div className="grid gap-5 lg:grid-cols-[20rem_1fr]">
         <div className="card p-3">
           {VOICE_SET.map((c) => (
@@ -317,11 +320,11 @@ export function VoiceSpoof() {
           <div className="flex items-center gap-5">
             <RiskRing value={Math.round(sel.spoofProb * 100)} />
             <div>
-              <div className="text-xs font-bold uppercase tracking-wide" style={{ color: synthetic ? "#B23A2E" : "#2E6F52" }}>{synthetic ? "Likely AI-cloned voice" : "Likely human voice"}</div>
-              <div className="display text-2xl font-bold">Spoof probability {Math.round(sel.spoofProb * 100)}%</div>
+              <div className="text-xs font-bold uppercase tracking-wide deva" style={{ color: synthetic ? "#B23A2E" : "#2E6F52" }}>{synthetic ? t("kv.voice.synthetic") : t("kv.voice.human")}</div>
+              <div className="display text-2xl font-bold deva">{t("kv.voice.prob")} {Math.round(sel.spoofProb * 100)}%</div>
             </div>
           </div>
-          <h4 className="mt-6 mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Why — explainable features</h4>
+          <h4 className="mt-6 mb-3 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.voice.why")}</h4>
           <div className="space-y-3">
             {[
               { k: "Spectral flatness", v: sel.features.flatness, hi: "higher = synthetic" },
@@ -344,6 +347,7 @@ export function VoiceSpoof() {
 
 /* ===================== FRAUD NETWORK GRAPH ===================== */
 export function FraudGraph() {
+  const { t } = useApp();
   const pos = useMemo(() => {
     const map: Record<string, { x: number; y: number }> = { ring: { x: 50, y: 50 } };
     const others = FRAUD_GRAPH.nodes.filter((n) => n.id !== "ring");
@@ -358,7 +362,7 @@ export function FraudGraph() {
 
   return (
     <Wrap>
-      <H title="Fraud Network Graph" sub="Clusters victims, mule accounts, numbers & devices into coordinated rings. (Synthetic data modelled on NCRP/RBI patterns.)" />
+      <H title={t("kv.graph.title")} sub={t("kv.graph.sub")} />
       <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
         <div className="card p-4">
           <svg viewBox="0 0 100 100" className="h-[420px] w-full">
@@ -379,7 +383,7 @@ export function FraudGraph() {
           </div>
         </div>
         <div className="card p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">Intelligence package</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.graph.package")}</h3>
           <div className="display mt-2 text-lg font-bold">{FRAUD_GRAPH.ring}</div>
           <div className="mt-4 space-y-2 text-sm text-graphite">
             <div className="flex justify-between"><span className="text-muted">Victims linked</span><span className="font-semibold">{counts.victim || 0}</span></div>
@@ -396,6 +400,7 @@ export function FraudGraph() {
 
 /* ===================== COUNTERFEIT SCREEN ===================== */
 export function Counterfeit() {
+  const { t } = useApp();
   const [present, setPresent] = useState<boolean[]>(SECURITY_FEATURES.map(() => true));
   const [preview, setPreview] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -410,17 +415,17 @@ export function Counterfeit() {
 
   return (
     <Wrap>
-      <H title="Counterfeit Currency Screen" sub="Image-forensics + security-feature checklist → calibrated FICN risk score." />
+      <H title={t("kv.cf.title")} sub={t("kv.cf.sub")} />
       <div className="grid gap-5 lg:grid-cols-[1fr_18rem]">
         <div className="card p-6">
           {preview && <img src={preview} alt="note" className="mb-4 max-h-44 rounded-xl border border-line" />}
           <div className="mb-4 flex gap-2">
             <input ref={fileRef} type="file" accept="image/*" onChange={onFile} className="hidden" />
             <button onClick={() => fileRef.current?.click()} className="btn-ghost text-sm">
-              {preview ? <X className="h-4 w-4" /> : <ImagePlus className="h-4 w-4" />} {preview ? "Replace photo" : "Upload note photo (optional)"}
+              {preview ? <X className="h-4 w-4" /> : <ImagePlus className="h-4 w-4" />} <span className="deva">{preview ? t("kv.cf.replace") : t("kv.cf.upload")}</span>
             </button>
           </div>
-          <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Security-feature checklist — tick what you can verify</h4>
+          <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("kv.cf.checklist")}</h4>
           <div className="space-y-2">
             {SECURITY_FEATURES.map((f, i) => (
               <label key={f} className="flex cursor-pointer items-center gap-3 rounded-xl border border-line bg-mist px-4 py-2.5 text-sm">
@@ -434,13 +439,13 @@ export function Counterfeit() {
           <div className="flex items-center gap-4">
             <RiskRing value={risk} />
             <div>
-              <div className="text-xs font-bold uppercase tracking-wide" style={{ color: band }}>FICN risk</div>
+              <div className="text-xs font-bold uppercase tracking-wide deva" style={{ color: band }}>{t("kv.cf.risk")}</div>
               <div className="display text-xl font-bold">{risk >= 60 ? "High" : risk >= 30 ? "Check carefully" : "Likely genuine"}</div>
             </div>
           </div>
           {missing.length > 0 && (
             <div className="mt-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Missing features</div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted deva">{t("kv.cf.missing")}</div>
               <ul className="space-y-1.5 text-sm text-graphite">
                 {missing.map((f) => <li key={f} className="flex gap-2"><AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-none text-[#B23A2E]" />{f}</li>)}
               </ul>
@@ -455,10 +460,11 @@ export function Counterfeit() {
 
 /* ===================== GEOSPATIAL CRIME MAP ===================== */
 export function GeoMap() {
+  const { t } = useApp();
   const max = Math.max(...HOTSPOTS.map((h) => h.count));
   return (
     <Wrap>
-      <H title="Geospatial Crime Map" sub="Live hotspot view of fraud complaints for patrol prioritisation. (Synthetic, NCRP-style.)" />
+      <H title={t("kv.geo.title")} sub={t("kv.geo.sub")} />
       <div className="card p-6">
         <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-line bg-mist">
           <div className="absolute left-1/2 top-1/2 h-3/4 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-[40%_55%_45%_50%] bg-blue-50" />
@@ -494,6 +500,7 @@ function Confusion({ m }: { m: Metrics }) {
 }
 
 export function MetricsView() {
+  const { t } = useApp();
   const scam = useDetectorMetrics();
   const voice = useVoiceMetrics();
   const cf = useCounterfeitMetrics();
@@ -504,7 +511,7 @@ export function MetricsView() {
   ];
   return (
     <Wrap>
-      <H title="Measured performance" sub="Computed live from the bundled labelled hold-out sets — reproducible, not hard-coded." />
+      <H title={t("kv.met.title")} sub={t("kv.met.sub")} />
       <div className="card overflow-x-auto p-2">
         <table className="w-full min-w-[640px] text-sm">
           <thead>
@@ -546,6 +553,7 @@ export function MetricsView() {
 /* ===================== SCAM NEWS WATCH ===================== */
 interface NewsItem { title: string; link?: string; source?: string }
 export function NewsWatch() {
+  const { t } = useApp();
   const [items, setItems] = useState<NewsItem[]>([]);
   const [live, setLive] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -563,14 +571,14 @@ export function NewsWatch() {
 
   return (
     <Wrap>
-      <H title="Scam News Watch" sub="Live fraud & cyber-scam coverage from Economic Times RSS, keyword-filtered." />
+      <H title={t("kv.news.title")} sub={t("kv.news.sub")} />
       <div className="mb-4 flex items-center gap-3">
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${live ? "bg-[#E4F1EA] text-[#2E6F52]" : "bg-[#F7EEDB] text-[#B07A1E]"}`}>
-          <Radio className="h-3.5 w-3.5" /> {live ? "LIVE · Economic Times" : "Curated fallback"}
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold deva ${live ? "bg-[#E4F1EA] text-[#2E6F52]" : "bg-[#F7EEDB] text-[#B07A1E]"}`}>
+          <Radio className="h-3.5 w-3.5" /> {live ? t("kv.news.liveLabel") : t("kv.news.fallback")}
         </span>
-        <button onClick={load} className="btn-ghost text-sm"><RefreshCw className="h-4 w-4" /> Refresh</button>
+        <button onClick={load} className="btn-ghost text-sm deva"><RefreshCw className="h-4 w-4" /> {t("kv.news.refresh")}</button>
       </div>
-      {loading ? <div className="card p-8"><Thinking label="Fetching latest scam coverage…" /></div> : (
+      {loading ? <div className="card p-8"><Thinking label={t("kv.news.thinking")} /></div> : (
         <div className="space-y-2">
           {items.map((it, i) => (
             <a key={i} href={it.link || "#"} target="_blank" rel="noreferrer" className="card flex items-center justify-between gap-3 p-4 transition-all hover:-translate-y-0.5">

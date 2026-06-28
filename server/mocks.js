@@ -261,4 +261,27 @@ export const mocks = {
       { block: "Sunday, 5–6 PM", task: "Sales deck polish", focus: "Rehearse and tighten the demo flow." },
     ],
   },
+
+  kar: {
+    _mock: true,
+    summary: "On a ₹15,00,000 salary under the new regime, your taxable income is ₹14,25,000. Your total tax works out to about ₹97,500 — so with ₹50,000 TDS already paid, around ₹47,500 is still payable.",
+    answer: "Most classic deductions (80C, HRA) don't apply in the new regime, but you still have a few legitimate levers — the biggest is your employer's NPS contribution.",
+    tips: [
+      "Ask your employer to route part of your CTC as NPS u/s 80CCD(2) — it's deductible even in the new regime.",
+      "Compare the old regime: if you have large HRA, 80C and home-loan interest, it may save more.",
+      "Check your TDS in AIS / Form 26AS so you claim full credit and avoid a notice.",
+      "File before the due date (usually 31 July) and keep your capital-gains statements handy.",
+    ],
+    regimeHint: "With few deductions, the new regime is usually better up to ~₹12L. Above that, compare both regimes if you have significant HRA/80C/home-loan.",
+    disclaimer: "Kar gives general guidance for FY 2025-26 and is not a substitute for a chartered accountant.",
+  },
+
+  form16: {
+    _mock: true,
+    grossSalary: 1500000,
+    tds: 50000,
+    otherIncome: 0,
+    employerNps: 0,
+    note: "Parsed from a sample Form-16.",
+  },
 };

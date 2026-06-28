@@ -15,6 +15,7 @@ const JOBS = [
   { file: "setu.jpg", seed: 91, w: 760, h: 960, prompt: `headshot of a friendly, determined Indian man in his early 30s, approachable confident expression, wearing a light grey formal shirt, ${STYLE}` },
   { file: "paisa.jpg", seed: 92, w: 760, h: 960, prompt: `headshot of a smart, friendly Indian woman in her early 30s, warm confident smile, wearing a tailored blazer, ${STYLE}` },
   { file: "krishi.jpg", seed: 93, w: 760, h: 960, prompt: `headshot of a warm Indian man in his 40s with a light tan and kind eyes, wearing a simple checked collared shirt, friendly rural agricultural advisor, ${STYLE}` },
+  { file: "kar.jpg", seed: 95, w: 760, h: 960, prompt: `headshot of a professional Indian chartered accountant man in his late 30s, glasses, crisp formal shirt, competent friendly expression, ${STYLE}` },
   { file: "hero.jpg", seed: 201, w: 1280, h: 1040, prompt: `cinematic editorial photograph of a young Indian woman sitting by a large window in a warm minimal living room, holding a smartphone, soft natural morning light, generous negative space on the left, muted warm tones, premium lifestyle photography, 35mm, shallow depth of field, photorealistic` },
 ];
 

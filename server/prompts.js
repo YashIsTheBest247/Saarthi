@@ -498,4 +498,60 @@ ${langLine(language)}`,
   },
 };
 
-export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi };
+/* ------------------------------- KAR ------------------------------- */
+
+export const kar = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      summary: { type: Type.STRING, description: "Plain-language summary of the person's tax position" },
+      answer: { type: Type.STRING, description: "Direct answer to the user's question, if they asked one" },
+      tips: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Legitimate tax-saving / filing tips" },
+      regimeHint: { type: Type.STRING, description: "Whether old vs new regime may suit them, and why" },
+      disclaimer: { type: Type.STRING },
+    },
+    required: ["summary", "tips", "disclaimer"],
+  },
+  system: (language) => `You are Kar, a friendly Indian tax advisor for FY 2025-26 (AY 2026-27) under the NEW tax regime (Budget 2025: nil tax up to ₹12L taxable via 87A rebate, ₹75,000 standard deduction, slabs 0/5/10/15/20/25/30%, 4% cess; equity STCG 20%, equity LTCG 12.5% above ₹1.25L).
+
+The exact tax figures are ALREADY CALCULATED and given to you — do NOT recompute or contradict them. Your job: explain the position in plain language, answer any question, and give legitimate, practical advice. Useful, honest points you may raise when relevant: employer NPS contribution u/s 80CCD(2) is still deductible in the new regime; if they have large HRA / 80C / home-loan interest the OLD regime might save more — suggest comparing; verify TDS in AIS/Form 26AS; file before the due date (usually 31 July); keep capital-gains statements. Never invent deductions that don't exist in the new regime. Always add a short disclaimer that this is general guidance, not a substitute for a CA.
+
+${langLine(language)}`,
+  parts: ({ figures, question }) => [
+    {
+      text: `The user's calculated tax position (FY 2025-26, new regime):\n${figures || "(not provided)"}\n\nUser's question: ${question || "Give me a clear summary and how I could legally save tax."}`,
+    },
+  ],
+};
+
+/* ------------------------------ FORM-16 ---------------------------- */
+
+export const form16 = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      grossSalary: { type: Type.INTEGER, description: "Gross salary / total salary u/s 17(1), in whole rupees" },
+      tds: { type: Type.INTEGER, description: "Total tax deducted at source (TDS), in whole rupees" },
+      otherIncome: { type: Type.INTEGER, description: "Any other income reported, else 0" },
+      employerNps: { type: Type.INTEGER, description: "Employer NPS contribution u/s 80CCD(2) if shown, else 0" },
+      note: { type: Type.STRING },
+    },
+    required: ["grossSalary", "tds"],
+  },
+  system: (language) => `You extract figures from an Indian Form-16, salary certificate or salary slip (PDF or image). Return only the numbers, in whole rupees:
+- grossSalary: the gross / total salary (salary under section 17(1) + perquisites if shown).
+- tds: total income tax deducted at source.
+- otherIncome: any other income reported (else 0).
+- employerNps: employer NPS contribution u/s 80CCD(2) if present (else 0).
+Be precise and conservative — if a value is not clearly present, use 0. Do not guess wildly.
+
+${langLine(language)}`,
+  parts: ({ file }) => {
+    const parts = [];
+    if (file && file.data) parts.push({ inlineData: { mimeType: file.mimeType || "application/pdf", data: file.data } });
+    parts.push({ text: "Extract grossSalary, tds, otherIncome and employerNps from this document." });
+    return parts;
+  },
+};
+
+export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi, kar, form16 };

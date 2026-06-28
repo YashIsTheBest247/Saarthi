@@ -273,6 +273,58 @@ function Capabilities() {
   );
 }
 
+/* -------------------------- Kavach flagship ------------------------ */
+function KavachFlagship({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
+  const { t } = useApp();
+  const k = featureByKey("kavach");
+  const Icon = k.icon;
+  const modules = ["Arrest Detector", "Threat Fusion", "Voice-Spoof", "Fraud Network", "Counterfeit", "Crime Map", "Live Metrics", "Scam News"];
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-10">
+      <Reveal>
+        <div className="relative overflow-hidden rounded-[2rem] text-white" style={{ background: "#0E1733" }}>
+          <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full blur-3xl" style={{ background: "rgba(45,107,255,0.35)" }} />
+          <div className="absolute -bottom-24 -right-10 h-72 w-72 rounded-full blur-3xl" style={{ background: "rgba(45,107,255,0.18)" }} />
+          <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium">
+                <Icon className="h-3.5 w-3.5" /> {t("kflag.eyebrow")}
+              </span>
+              <h2 className="display mt-4 text-balance text-3xl font-bold leading-tight tracking-tight deva sm:text-[2.6rem]">{t("kflag.title")}</h2>
+              <p className="mt-3 max-w-xl leading-relaxed text-white/65 deva">{t("kflag.body")}</p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                {modules.map((m) => (
+                  <span key={m} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">{m}</span>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button onClick={() => onOpen("kavach")} className="btn bg-white px-5 py-3 text-[15px] text-ink hover:-translate-y-0.5">
+                  {t("kflag.cta")} <ArrowUpRight className="h-4 w-4" />
+                </button>
+                <span className="flex items-center gap-4 text-sm text-white/55">
+                  {k.stats.slice(0, 2).map((s) => (
+                    <span key={s.l}><b className="text-white">{s.v}</b> · {s.l}</span>
+                  ))}
+                </span>
+              </div>
+            </div>
+
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-xs">
+              <AgentAvatar photo={k.photo} name={t(k.nameKey)} tint={k.tint} accent={k.accent} rounded="rounded-3xl" className="h-full w-full ring-1 ring-white/20" />
+              <div className="absolute bottom-3 left-3 rounded-2xl bg-black/55 px-4 py-2.5 backdrop-blur-sm">
+                <div className="display text-sm font-bold">Kavach</div>
+                <div className="text-[11px] text-white/70">Digital Public Safety Platform</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 /* -------------------------- Samay flagship ------------------------- */
 function SamayFlagship({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
@@ -553,9 +605,10 @@ export function Landing({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
     <>
       <Hero onOpen={onOpen} />
       <Capabilities />
-      <SamayFlagship onOpen={(k) => onOpen(k)} />
+      <KavachFlagship onOpen={(k) => onOpen(k)} />
       <Trusted />
       <AgentsGrid onOpen={(k) => onOpen(k)} />
+      <SamayFlagship onOpen={(k) => onOpen(k)} />
       <QuietJobs onOpen={(k) => onOpen(k)} />
       <TeamPanel onOpen={(k) => onOpen(k)} />
       <How />

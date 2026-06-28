@@ -6,11 +6,12 @@ import { Landing } from "./components/Landing";
 import { KavachConsole } from "./features/kavach/KavachConsole";
 import { Samajh } from "./features/Samajh";
 import { Haq } from "./features/Haq";
-import { Sehat } from "./features/Sehat";
+import { SehatConsole } from "./features/sehat/SehatConsole";
 import { Paisa } from "./features/Paisa";
 import { Samay } from "./features/Samay";
 import { Setu } from "./features/Setu";
 import { Krishi } from "./features/Krishi";
+import { Kar } from "./features/kar/Kar";
 import { FeatureKey } from "./lib/api";
 
 type View = "home" | FeatureKey;
@@ -36,11 +37,12 @@ function Shell() {
           {view === "kavach" && <KavachConsole key="kavach" onBack={back} />}
           {view === "samajh" && <Samajh key="samajh" onBack={back} />}
           {view === "haq" && <Haq key="haq" onBack={back} />}
-          {view === "sehat" && <Sehat key="sehat" onBack={back} />}
+          {view === "sehat" && <SehatConsole key="sehat" onBack={back} />}
           {view === "paisa" && <Paisa key="paisa" onBack={back} />}
           {view === "samay" && <Samay key="samay" onBack={back} />}
           {view === "setu" && <Setu key="setu" onBack={back} />}
           {view === "krishi" && <Krishi key="krishi" onBack={back} />}
+          {view === "kar" && <Kar key="kar" onBack={back} />}
         </AnimatePresence>
       </main>
     </div>

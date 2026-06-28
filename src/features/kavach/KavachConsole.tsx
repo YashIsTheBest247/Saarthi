@@ -16,18 +16,19 @@ import {
 const ACCENT = "#2D6BFF";
 
 const MODULES = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "detector", label: "Arrest Detector", icon: ShieldAlert },
-  { id: "fusion", label: "Threat Fusion", icon: Workflow },
-  { id: "voice", label: "Voice-Spoof", icon: Waves },
-  { id: "graph", label: "Fraud Network", icon: Network },
-  { id: "counterfeit", label: "Counterfeit", icon: Banknote },
-  { id: "map", label: "Crime Map", icon: MapPin },
-  { id: "metrics", label: "Metrics", icon: BarChart3 },
-  { id: "news", label: "Scam News", icon: Newspaper },
+  { id: "dashboard", label: "kv.nav.dashboard", icon: LayoutDashboard },
+  { id: "detector", label: "kv.nav.detector", icon: ShieldAlert },
+  { id: "fusion", label: "kv.nav.fusion", icon: Workflow },
+  { id: "voice", label: "kv.nav.voice", icon: Waves },
+  { id: "graph", label: "kv.nav.graph", icon: Network },
+  { id: "counterfeit", label: "kv.nav.counterfeit", icon: Banknote },
+  { id: "map", label: "kv.nav.map", icon: MapPin },
+  { id: "metrics", label: "kv.nav.metrics", icon: BarChart3 },
+  { id: "news", label: "kv.nav.news", icon: Newspaper },
 ];
 
 function Ticker() {
+  const { t } = useApp();
   const [titles, setTitles] = useState<string[]>([]);
   const [live, setLive] = useState(false);
   useEffect(() => {
@@ -41,7 +42,7 @@ function Ticker() {
   return (
     <div className="mt-4 flex items-center gap-3 overflow-hidden rounded-full border border-line bg-mist py-2 pl-3">
       <span className="flex flex-none items-center gap-1.5 rounded-full bg-ink px-2.5 py-1 text-[11px] font-semibold text-white">
-        <Radio className="h-3 w-3" style={{ color: "#9FBCFF" }} /> {live ? "LIVE" : "WATCH"}
+        <Radio className="h-3 w-3" style={{ color: "#9FBCFF" }} /> {live ? t("kv.live") : t("kv.watch")}
       </span>
       <div className="relative flex-1 overflow-hidden">
         <div className="flex w-max animate-ticker gap-8 whitespace-nowrap pr-8">
@@ -97,12 +98,10 @@ export function KavachConsole({ onBack }: { onBack: () => void }) {
         </div>
         <div>
           <div className="flex flex-wrap items-baseline gap-2.5">
-            <h1 className="display text-3xl font-bold deva">Kavach AI</h1>
-            <span className="text-base font-medium" style={{ color: ACCENT }}>Digital Public Safety Platform</span>
+            <h1 className="display text-3xl font-bold deva">Kavach</h1>
+            <span className="text-base font-medium deva" style={{ color: ACCENT }}>{t("kv.platform")}</span>
           </div>
-          <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-muted">
-            From reactive case investigation to predictive threat neutralisation — detecting digital-arrest scams before money moves.
-          </p>
+          <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-muted deva">{t("kv.tagline")}</p>
         </div>
       </div>
 
@@ -122,7 +121,7 @@ export function KavachConsole({ onBack }: { onBack: () => void }) {
                 style={on ? { background: ACCENT } : undefined}
               >
                 <Icon className="h-4 w-4 flex-none" />
-                <span className="whitespace-nowrap">{mod.label}</span>
+                <span className="whitespace-nowrap deva">{t(mod.label)}</span>
               </button>
             );
           })}

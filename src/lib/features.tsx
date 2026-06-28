@@ -1,4 +1,4 @@
-import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, LucideIcon } from "lucide-react";
+import { ShieldCheck, ScanText, Landmark, HeartPulse, Wallet, Target, Scale, Sprout, Calculator, LucideIcon } from "lucide-react";
 import { FeatureKey } from "./api";
 
 export type Group = "protect" | "claim" | "automate";
@@ -89,6 +89,19 @@ export const FEATURES: FeatureMeta[] = [
       { v: "finds leaks", l: "unused subs & extra charges" },
       { v: "flags dues", l: "never miss a payment" },
       { v: "a save plan", l: "tailored to your spending" },
+    ],
+  },
+  {
+    key: "kar",
+    icon: Calculator,
+    nameKey: "tx.name", tagKey: "tx.tag", descKey: "tx.desc", personaKey: "tx.persona",
+    accent: "#A06A1F", accentDark: "#7C5115", tint: "#F5ECD9",
+    photo: "/agents/kar.jpg", index: "06", group: "claim", badge: "New",
+    stats: [
+      { v: "AY 2026-27", l: "new regime (FY 2025-26)" },
+      { v: "Form-16 PDF", l: "auto-extracted by AI" },
+      { v: "exact math", l: "computed on-device, not by AI" },
+      { v: "refund or payable", l: "with full breakdown" },
     ],
   },
   {
