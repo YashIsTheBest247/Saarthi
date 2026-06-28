@@ -11,12 +11,17 @@ export function FeatureShell({
   meta,
   onBack,
   children,
+  embedded,
 }: {
   meta: FeatureMeta;
-  onBack: () => void;
+  onBack?: () => void;
   children: ReactNode;
+  embedded?: boolean;
 }) {
   const { t, health } = useApp();
+
+  // Embedded mode: rendered inside a console tab — drop the outer chrome.
+  if (embedded) return <>{children}</>;
 
   return (
     <motion.div
@@ -33,7 +38,6 @@ export function FeatureShell({
           {t("common.back")}
         </button>
         <div className="flex items-center gap-2">
-          <StatusBadge live={health.live} label={health.live ? t("common.poweredReal") : t("common.poweredMock")} />
           <LanguagePicker compact />
         </div>
       </div>

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import {
   Send, ShieldAlert, Sparkles, AlertTriangle, Check, Workflow, ArrowRight,
   Waves, Banknote, ImagePlus, X, ExternalLink, RefreshCw, Radio,
@@ -27,11 +29,7 @@ function H({ title, sub }: { title: string; sub?: string }) {
 }
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-      {children}
-    </motion.div>
-  );
+  return <div>{children}</div>;
 }
 
 /* ------- shared metrics (computed live, reproducible) ------- */
@@ -346,19 +344,60 @@ export function VoiceSpoof() {
 }
 
 /* ===================== FRAUD NETWORK GRAPH ===================== */
+interface FNode { id: string; type: string; label: string; x: number; y: number; vx: number; vy: number; }
 export function FraudGraph() {
   const { t } = useApp();
-  const pos = useMemo(() => {
-    const map: Record<string, { x: number; y: number }> = { ring: { x: 50, y: 50 } };
-    const others = FRAUD_GRAPH.nodes.filter((n) => n.id !== "ring");
-    others.forEach((n, i) => {
-      const a = (i / others.length) * Math.PI * 2;
-      map[n.id] = { x: 50 + 38 * Math.cos(a), y: 50 + 38 * Math.sin(a) };
-    });
-    return map;
-  }, []);
   const color: Record<string, string> = { victim: "#C0453B", mule: "#B07A1E", number: "#2D6BFF", device: "#6D4AA6", ring: "#16140F" };
   const counts = FRAUD_GRAPH.nodes.reduce((a, n) => ((a[n.type] = (a[n.type] || 0) + 1), a), {} as Record<string, number>);
+
+  const sim = useRef<FNode[]>([]);
+  const [, force] = useState(0);
+
+  useEffect(() => {
+    const N: FNode[] = FRAUD_GRAPH.nodes.map((n, i) => {
+      const a = (i / FRAUD_GRAPH.nodes.length) * Math.PI * 2;
+      return { id: n.id, type: n.type, label: n.label, x: n.id === "ring" ? 50 : 50 + 22 * Math.cos(a), y: n.id === "ring" ? 50 : 50 + 22 * Math.sin(a), vx: 0, vy: 0 };
+    });
+    const by: Record<string, FNode> = Object.fromEntries(N.map((n) => [n.id, n]));
+    let alpha = 1;
+    let raf = 0;
+    const step = () => {
+      // repulsion
+      for (let a = 0; a < N.length; a++) for (let b = a + 1; b < N.length; b++) {
+        let dx = N[a].x - N[b].x, dy = N[a].y - N[b].y;
+        let d2 = dx * dx + dy * dy; if (d2 < 0.01) d2 = 0.01;
+        const d = Math.sqrt(d2), rep = 190 / d2;
+        N[a].vx += (dx / d) * rep; N[a].vy += (dy / d) * rep;
+        N[b].vx -= (dx / d) * rep; N[b].vy -= (dy / d) * rep;
+      }
+      // springs along edges
+      for (const e of FRAUD_GRAPH.edges) {
+        const a = by[e.a], b = by[e.b];
+        const dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        const k = 0.03 * (d - 24);
+        a.vx += (dx / d) * k; a.vy += (dy / d) * k;
+        b.vx -= (dx / d) * k; b.vy -= (dy / d) * k;
+      }
+      // gravity + integrate
+      for (const n of N) {
+        const g = n.id === "ring" ? 0.05 : 0.01;
+        n.vx += (50 - n.x) * g; n.vy += (50 - n.y) * g;
+        n.vx *= 0.82; n.vy *= 0.82;
+        n.x += n.vx * alpha; n.y += n.vy * alpha;
+        n.x = Math.max(10, Math.min(90, n.x)); n.y = Math.max(12, Math.min(90, n.y));
+      }
+      alpha *= 0.97;
+      sim.current = N;
+      force((v) => v + 1);
+      if (alpha > 0.03) raf = requestAnimationFrame(step);
+    };
+    sim.current = N;
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const nodes = sim.current.length ? sim.current : FRAUD_GRAPH.nodes.map((n) => ({ ...n, x: 50, y: 50, vx: 0, vy: 0 }));
+  const pos: Record<string, { x: number; y: number }> = Object.fromEntries(nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
 
   return (
     <Wrap>
@@ -369,10 +408,10 @@ export function FraudGraph() {
             {FRAUD_GRAPH.edges.map((e, i) => (
               <line key={i} x1={pos[e.a].x} y1={pos[e.a].y} x2={pos[e.b].x} y2={pos[e.b].y} stroke="#DCD6CA" strokeWidth="0.4" />
             ))}
-            {FRAUD_GRAPH.nodes.map((n) => (
+            {nodes.map((n) => (
               <g key={n.id}>
-                <circle cx={pos[n.id].x} cy={pos[n.id].y} r={n.type === "ring" ? 4.5 : 3} fill={color[n.type]} />
-                <text x={pos[n.id].x} y={pos[n.id].y - 4.5} textAnchor="middle" fontSize="2.4" fill="#34322C">{n.label}</text>
+                <circle cx={n.x} cy={n.y} r={n.type === "ring" ? 4.5 : 3} fill={color[n.type]} />
+                <text x={n.x} y={n.y - 4.5} textAnchor="middle" fontSize="2.4" fill="#34322C">{n.label}</text>
               </g>
             ))}
           </svg>
@@ -461,24 +500,34 @@ export function Counterfeit() {
 /* ===================== GEOSPATIAL CRIME MAP ===================== */
 export function GeoMap() {
   const { t } = useApp();
-  const max = Math.max(...HOTSPOTS.map((h) => h.count));
+  const ref = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+    if (!ref.current || mapRef.current) return;
+    const map = L.map(ref.current, { scrollWheelZoom: false, zoomControl: true }).setView([22.8, 80.5], 4.4);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap &copy; CARTO",
+    }).addTo(map);
+    const max = Math.max(...HOTSPOTS.map((h) => h.count));
+    HOTSPOTS.forEach((h) => {
+      const radius = 9 + (h.count / max) * 22;
+      L.circleMarker([h.lat, h.lng], { radius, color: ACCENT, weight: 1.5, fillColor: ACCENT, fillOpacity: 0.35 })
+        .addTo(map)
+        .bindPopup(`<b>${h.city}</b><br>${h.count} fraud complaints`)
+        .bindTooltip(`${h.city} · ${h.count}`, { direction: "top", offset: [0, -4] });
+    });
+    mapRef.current = map;
+    const tid = setTimeout(() => map.invalidateSize(), 280);
+    return () => { clearTimeout(tid); map.remove(); mapRef.current = null; };
+  }, []);
+
   return (
     <Wrap>
       <H title={t("kv.geo.title")} sub={t("kv.geo.sub")} />
-      <div className="card p-6">
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-line bg-mist">
-          <div className="absolute left-1/2 top-1/2 h-3/4 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-[40%_55%_45%_50%] bg-blue-50" />
-          {HOTSPOTS.map((h) => {
-            const size = 10 + (h.count / max) * 34;
-            return (
-              <div key={h.city} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${h.x}%`, top: `${h.y}%` }}>
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ width: size, height: size, background: ACCENT, opacity: 0.22 }} />
-                <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: ACCENT }} />
-                <span className="absolute left-1/2 top-3 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-graphite">{h.city} · {h.count}</span>
-              </div>
-            );
-          })}
-        </div>
+      <div className="card overflow-hidden p-2">
+        <div ref={ref} className="h-[480px] w-full rounded-2xl" style={{ zIndex: 0 }} />
       </div>
     </Wrap>
   );

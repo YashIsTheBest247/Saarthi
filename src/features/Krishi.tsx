@@ -24,7 +24,7 @@ const EXAMPLE =
 
 const sevColor = (s?: string) => (s === "High" ? "#B23A2E" : s === "Medium" ? "#B07A1E" : "#2E6F52");
 
-export function Krishi({ onBack }: { onBack: () => void }) {
+export function Krishi({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("krishi");
   const { t, lang } = useApp();
   const [text, setText] = useState("");
@@ -56,7 +56,7 @@ export function Krishi({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         {preview && (
           <div className="relative mb-4 inline-block">

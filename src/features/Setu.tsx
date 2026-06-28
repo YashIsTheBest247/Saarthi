@@ -21,7 +21,7 @@ interface SetuResult {
 const EXAMPLE =
   "I ordered a phone online for ₹15,000. It arrived with a cracked screen. The seller is refusing a refund or replacement.";
 
-export function Setu({ onBack }: { onBack: () => void }) {
+export function Setu({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("setu");
   const { t, lang } = useApp();
   const [problem, setProblem] = useState("");
@@ -53,7 +53,7 @@ export function Setu({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         {preview && (
           <div className="relative mb-4 inline-block">

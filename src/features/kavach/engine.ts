@@ -206,15 +206,15 @@ export const FRAUD_GRAPH: { nodes: GNode[]; edges: GEdge[]; ring: string } = {
 
 /* --------------------------- Geo hotspots (synthetic) ------------------- */
 export const HOTSPOTS = [
-  { city: "Delhi NCR", x: 42, y: 26, count: 184 },
-  { city: "Mumbai", x: 30, y: 56, count: 156 },
-  { city: "Bengaluru", x: 42, y: 74, count: 121 },
-  { city: "Hyderabad", x: 46, y: 64, count: 98 },
-  { city: "Kolkata", x: 70, y: 47, count: 88 },
-  { city: "Chennai", x: 50, y: 80, count: 76 },
-  { city: "Jaipur", x: 36, y: 34, count: 64 },
-  { city: "Patna", x: 64, y: 38, count: 52 },
-  { city: "Ahmedabad", x: 26, y: 46, count: 49 },
+  { city: "Delhi NCR", lat: 28.61, lng: 77.21, count: 184 },
+  { city: "Mumbai", lat: 19.07, lng: 72.87, count: 156 },
+  { city: "Bengaluru", lat: 12.97, lng: 77.59, count: 121 },
+  { city: "Hyderabad", lat: 17.38, lng: 78.49, count: 98 },
+  { city: "Kolkata", lat: 22.57, lng: 88.36, count: 88 },
+  { city: "Chennai", lat: 13.08, lng: 80.27, count: 76 },
+  { city: "Jaipur", lat: 26.91, lng: 75.79, count: 64 },
+  { city: "Patna", lat: 25.59, lng: 85.14, count: 52 },
+  { city: "Ahmedabad", lat: 23.02, lng: 72.57, count: 49 },
 ];
 
 /* ------------------------------ Curated news ---------------------------- */

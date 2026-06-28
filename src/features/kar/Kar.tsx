@@ -18,10 +18,10 @@ interface Advice {
   _mock?: boolean;
 }
 
-export function Kar({ onBack }: { onBack: () => void }) {
+export function Kar({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("kar");
   const { t, lang } = useApp();
-  const [f, setF] = useState({ salary: "1500000", tds: "50000", other: "0", stcg: "0", ltcg: "0", deductions: "0" });
+  const [f, setF] = useState({ salary: "", tds: "", other: "", stcg: "", ltcg: "", deductions: "" });
   const [res, setRes] = useState<TaxResult | null>(null);
   const [cmp, setCmp] = useState<Comparison | null>(null);
   const [q, setQ] = useState("");
@@ -148,7 +148,7 @@ export function Kar({ onBack }: { onBack: () => void }) {
   );
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <span className="pill" style={{ color: ACCENT }}><Calculator className="h-3.5 w-3.5" /> {t("tx.regime")}</span>

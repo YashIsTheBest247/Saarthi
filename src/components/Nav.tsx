@@ -6,6 +6,7 @@ import { LanguagePicker } from "./LanguagePicker";
 import { FEATURES, FeatureMeta } from "../lib/features";
 import { FeatureKey } from "../lib/api";
 import { AgentAvatar } from "./AgentAvatar";
+import { BrandMark } from "./Logo";
 
 /* ------------------------------ Mega-menu ------------------------------ */
 function AgentsMega({ onOpen, dark }: { onOpen: (k: FeatureKey) => void; dark: boolean }) {
@@ -21,7 +22,7 @@ function AgentsMega({ onOpen, dark }: { onOpen: (k: FeatureKey) => void; dark: b
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <button
         onClick={() => setOpen((o) => !o)}
         className={`flex items-center gap-1 text-[15px] transition-colors ${
@@ -35,13 +36,13 @@ function AgentsMega({ onOpen, dark }: { onOpen: (k: FeatureKey) => void; dark: b
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute left-1/2 z-50 mt-5 w-[40rem] max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-3xl border border-line bg-paper shadow-float"
+            className="absolute left-1/2 top-full z-50 w-[40rem] max-w-[92vw] -translate-x-1/2 pt-3"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-[15rem_1fr]">
+            <div className="grid grid-cols-1 overflow-hidden rounded-3xl border border-line bg-paper shadow-float sm:grid-cols-[15rem_1fr]">
               {/* left: agent list */}
               <div className="border-b border-line p-3 sm:max-h-[24rem] sm:overflow-y-auto sm:border-b-0 sm:border-r">
                 <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-faint">
@@ -134,10 +135,8 @@ export function Nav({ onHome, onOpen }: { onHome: () => void; onOpen: (k?: Featu
         }`}
       >
         {/* logo */}
-        <button onClick={onHome} className="flex items-center gap-2">
-          <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${dark ? "bg-white text-ink" : "bg-ink text-clay-300"}`}>
-            <span className="display text-base font-bold">स</span>
-          </span>
+        <button onClick={onHome} className="flex items-center gap-2.5">
+          <BrandMark className="h-9 w-9" />
           <span className={`display text-xl font-bold tracking-tight ${dark ? "text-white" : "text-ink"}`}>Saarthi</span>
         </button>
 

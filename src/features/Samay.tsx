@@ -36,7 +36,7 @@ const EXAMPLE =
 const prio = (p: string) =>
   p === "High" ? { c: "#B23A2E", bg: "#F7E7E5" } : p === "Medium" ? { c: "#B07A1E", bg: "#F7EEDB" } : { c: "#2E6F52", bg: "#E4F1EA" };
 
-export function Samay({ onBack }: { onBack: () => void }) {
+export function Samay({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("samay");
   const { t, lang } = useApp();
   const [text, setText] = useState("");
@@ -69,7 +69,7 @@ export function Samay({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         {preview && (
           <div className="relative mb-4 inline-block">

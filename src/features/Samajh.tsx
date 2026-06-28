@@ -22,7 +22,7 @@ interface SamajhResult {
 const EXAMPLE =
   "FINAL NOTICE: Premium of Rs 18,500 due on policy LIC-8841. Grace period ends 15th. Policy will lapse and bonus forfeited if unpaid. Revival charges Rs 450 + interest 9.5% p.a. applicable thereafter.";
 
-export function Samajh({ onBack }: { onBack: () => void }) {
+export function Samajh({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("samajh");
   const { t, lang } = useApp();
   const [text, setText] = useState("");
@@ -55,7 +55,7 @@ export function Samajh({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         {preview && (
           <div className="relative mb-4 inline-block">

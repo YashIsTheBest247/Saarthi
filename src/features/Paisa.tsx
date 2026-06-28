@@ -21,7 +21,7 @@ interface PaisaResult {
 const EXAMPLE =
   "Swiggy 450, Zomato 380, Netflix 199, Spotify 119, rent 12000, electricity 1800, petrol 1500, shopping 2200, credit card bill due 5th";
 
-export function Paisa({ onBack }: { onBack: () => void }) {
+export function Paisa({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("paisa");
   const { t, lang } = useApp();
   const [text, setText] = useState("");
@@ -53,7 +53,7 @@ export function Paisa({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         {preview && (
           <div className="relative mb-4 inline-block">

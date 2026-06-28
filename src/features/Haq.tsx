@@ -33,7 +33,7 @@ const SPECIAL = ["Woman","Farmer","Student","Senior citizen","Person with disabi
 
 const confColor = (c: string) => (/high/i.test(c) ? "#1F6F5C" : /likely/i.test(c) ? "#C2641F" : "#7A7264");
 
-export function Haq({ onBack }: { onBack: () => void }) {
+export function Haq({ onBack, embedded }: { onBack?: () => void; embedded?: boolean }) {
   const meta = featureByKey("haq");
   const { t, lang } = useApp();
   const [form, setForm] = useState({ age: "", gender: "Female", state: "Maharashtra", occupation: "Farmer", income: "Below ₹1 lakh", category: "General" });
@@ -72,7 +72,7 @@ export function Haq({ onBack }: { onBack: () => void }) {
   );
 
   return (
-    <FeatureShell meta={meta} onBack={onBack}>
+    <FeatureShell meta={meta} onBack={onBack} embedded={embedded}>
       <div className="card p-6 sm:p-7">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="block">

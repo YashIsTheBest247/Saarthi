@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
+  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Mic,
+  Camera,
+  Sparkles,
   Languages as LangIcon,
   MessageSquare,
   CheckCircle2,
@@ -15,6 +18,7 @@ import { FEATURES, FeatureMeta, featureByKey } from "../lib/features";
 import { FeatureKey } from "../lib/api";
 import { Reveal, Eyebrow } from "./ui";
 import { AgentAvatar } from "./AgentAvatar";
+import { BrandMark } from "./Logo";
 
 /* Risk ring kept here for Kavach to import */
 export function RiskRing({ value }: { value: number }) {
@@ -113,7 +117,7 @@ function StepList({ steps }: { steps: { label: string; state: StepState }[] }) {
           {s.state === "done" ? (
             <CheckCircle2 className="h-[18px] w-[18px] flex-none text-verdant" />
           ) : s.state === "active" ? (
-            <Loader2 className="h-[18px] w-[18px] flex-none animate-spin text-clay-500" />
+            <Loader2 className="h-[18px] w-[18px] flex-none animate-spin text-[#2D6BFF]" />
           ) : (
             <Circle className="h-[18px] w-[18px] flex-none text-faint/50" />
           )}
@@ -164,7 +168,7 @@ function CapCard({
             <div className="overflow-hidden rounded-xl border border-line bg-paper">
               <WinHeader />
               <div className="space-y-2.5 p-4">
-                <div className="h-1.5 w-1/3 rounded-full bg-clay-500" />
+                <div className="h-1.5 w-1/3 rounded-full bg-[#2D6BFF]" />
                 <div className="h-1.5 w-full rounded-full bg-line" />
                 <div className="h-1.5 w-5/6 rounded-full bg-line" />
                 <div className="flex items-center gap-2 pt-1">
@@ -182,12 +186,12 @@ function CapCard({
                   <span
                     key={i}
                     className="w-[3px] rounded-full"
-                    style={{ height: h, background: i % 2 ? "#C2641F" : "#16140F", opacity: i % 2 ? 0.8 : 0.35 }}
+                    style={{ height: h, background: i % 2 ? "#2D6BFF" : "#16140F", opacity: i % 2 ? 0.85 : 0.3 }}
                   />
                 ))}
               </div>
               <div className="mt-3 flex items-center gap-2 rounded-lg bg-mist px-3 py-2">
-                <Mic className="h-3.5 w-3.5 flex-none text-clay-500" />
+                <Mic className="h-3.5 w-3.5 flex-none text-[#2D6BFF]" />
                 <span className="truncate text-[11px] text-graphite deva">{t("cap.voiceMsg")}</span>
               </div>
             </div>
@@ -200,10 +204,10 @@ function CapCard({
                 <div className="text-[11px] text-muted deva">{t("cap.canvasTag")}</div>
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   <div className="h-10 rounded-lg bg-mist" />
-                  <div className="h-10 rounded-lg bg-clay-100" />
+                  <div className="h-10 rounded-lg bg-[#D6E4FF]" />
                   <div className="h-10 rounded-lg bg-mist" />
                 </div>
-                <div className="mt-3 h-1.5 w-1/2 rounded-full bg-clay-500" />
+                <div className="mt-3 h-1.5 w-1/2 rounded-full bg-[#2D6BFF]" />
               </div>
             </div>
           )}
@@ -212,7 +216,7 @@ function CapCard({
         {/* title + desc */}
         <div className="mt-auto">
           <div className="flex items-center gap-2">
-            <Icon className="h-5 w-5 text-clay-600" />
+            <Icon className="h-5 w-5 text-[#1A49BD]" />
             <h3 className="display text-xl font-bold deva">{title}</h3>
           </div>
           <p className="mt-2 text-[15px] leading-relaxed text-muted deva">{desc}</p>
@@ -273,95 +277,119 @@ function Capabilities() {
   );
 }
 
-/* -------------------------- Kavach flagship ------------------------ */
-function KavachFlagship({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
+/* -------------------------- Flagship carousel --------------------- */
+const KAVACH_MODULES = ["Arrest Detector", "Threat Fusion", "Voice-Spoof", "Fraud Network", "Counterfeit", "Crime Map", "Live Metrics", "Scam News"];
+
+function FlagshipCard({ f, onOpen }: { f: FeatureMeta; onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
-  const k = featureByKey("kavach");
-  const Icon = k.icon;
-  const modules = ["Arrest Detector", "Threat Fusion", "Voice-Spoof", "Fraud Network", "Counterfeit", "Crime Map", "Live Metrics", "Scam News"];
+  const Icon = f.icon;
+  const isKavach = f.key === "kavach";
+  const chips = isKavach ? KAVACH_MODULES : f.stats.map((s) => s.v);
   return (
-    <section className="mx-auto max-w-6xl px-5 py-10">
-      <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] text-white" style={{ background: "#0E1733" }}>
-          <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full blur-3xl" style={{ background: "rgba(45,107,255,0.35)" }} />
-          <div className="absolute -bottom-24 -right-10 h-72 w-72 rounded-full blur-3xl" style={{ background: "rgba(45,107,255,0.18)" }} />
-          <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium">
-                <Icon className="h-3.5 w-3.5" /> {t("kflag.eyebrow")}
-              </span>
-              <h2 className="display mt-4 text-balance text-3xl font-bold leading-tight tracking-tight deva sm:text-[2.6rem]">{t("kflag.title")}</h2>
-              <p className="mt-3 max-w-xl leading-relaxed text-white/65 deva">{t("kflag.body")}</p>
+    <div className="relative h-full overflow-hidden rounded-[2rem] text-white" style={{ background: `linear-gradient(135deg, ${f.accentDark} 0%, #14110D 92%)` }}>
+      <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full blur-3xl" style={{ background: f.accent, opacity: 0.3 }} />
+      <div className="absolute -bottom-24 -right-10 h-72 w-72 rounded-full blur-3xl" style={{ background: f.accent, opacity: 0.15 }} />
+      <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium deva">
+            <Icon className="h-3.5 w-3.5" /> {isKavach ? t("kflag.eyebrow") : t(f.tagKey)}
+          </span>
+          <h2 className="display mt-4 text-balance text-3xl font-bold leading-tight tracking-tight deva sm:text-[2.6rem]">
+            {isKavach ? t("kflag.title") : t(f.nameKey)}
+          </h2>
+          <p className="mt-3 max-w-xl leading-relaxed text-white/65 deva">{isKavach ? t("kflag.body") : t(f.descKey)}</p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {modules.map((m) => (
-                  <span key={m} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">{m}</span>
-                ))}
-              </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {chips.map((m) => (
+              <span key={m} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">{m}</span>
+            ))}
+          </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <button onClick={() => onOpen("kavach")} className="btn bg-white px-5 py-3 text-[15px] text-ink hover:-translate-y-0.5">
-                  {t("kflag.cta")} <ArrowUpRight className="h-4 w-4" />
-                </button>
-                <span className="flex items-center gap-4 text-sm text-white/55">
-                  {k.stats.slice(0, 2).map((s) => (
-                    <span key={s.l}><b className="text-white">{s.v}</b> · {s.l}</span>
-                  ))}
-                </span>
-              </div>
-            </div>
-
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-xs">
-              <AgentAvatar photo={k.photo} name={t(k.nameKey)} tint={k.tint} accent={k.accent} rounded="rounded-3xl" className="h-full w-full ring-1 ring-white/20" />
-              <div className="absolute bottom-3 left-3 rounded-2xl bg-black/55 px-4 py-2.5 backdrop-blur-sm">
-                <div className="display text-sm font-bold">Kavach</div>
-                <div className="text-[11px] text-white/70">Digital Public Safety Platform</div>
-              </div>
-            </div>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button onClick={() => onOpen(f.key)} className="btn bg-white px-5 py-3 text-[15px] text-ink hover:-translate-y-0.5">
+              {isKavach ? t("kflag.cta") : `${t("common.meet")} ${t(f.nameKey)}`} <ArrowUpRight className="h-4 w-4" />
+            </button>
+            <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/55">
+              {f.stats.slice(0, 2).map((s) => (
+                <span key={s.l}><b className="text-white">{s.v}</b> · {s.l}</span>
+              ))}
+            </span>
           </div>
         </div>
-      </Reveal>
-    </section>
+
+        <div className="relative mx-auto aspect-[4/5] w-full max-w-xs">
+          <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-3xl" className="h-full w-full ring-1 ring-white/20" />
+          <div className="absolute bottom-3 left-3 rounded-2xl bg-black/55 px-4 py-2.5 backdrop-blur-sm">
+            <div className="display text-sm font-bold deva">{t(f.nameKey)}</div>
+            <div className="text-[11px] text-white/70 deva">{t(f.tagKey)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
-/* -------------------------- Samay flagship ------------------------- */
-function SamayFlagship({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
+function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
-  const s = featureByKey("samay");
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = FEATURES.length;
+  const go = (n: number) => setIdx(((n % count) + count) % count); // wraps both ways
+
+  // auto-advance through the agents; pauses on hover/focus
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % count), 4000);
+    return () => clearInterval(id);
+  }, [paused, count]);
+
   return (
     <section className="mx-auto max-w-6xl px-5 py-10">
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] text-white" style={{ background: s.accent }}>
-          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl" style={{ background: s.accentDark }} />
-          <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium">
-                <s.icon className="h-3.5 w-3.5" /> {t("flag.eyebrow")}
-              </span>
-              <h2 className="display mt-4 text-balance text-3xl font-bold leading-tight tracking-tight deva sm:text-4xl">
-                {t("flag.title")}
-              </h2>
-              <p className="mt-3 max-w-md leading-relaxed text-white/70 deva">{t(s.descKey)}</p>
-
-              <div className="mt-6 grid max-w-md grid-cols-2 gap-3">
-                {s.stats.map((st, i) => (
-                  <div key={i} className="rounded-2xl bg-white/10 p-3">
-                    <div className="display text-base font-bold">{st.v}</div>
-                    <div className="mt-0.5 text-[11px] leading-snug text-white/60">{st.l}</div>
-                  </div>
-                ))}
-              </div>
-
-              <button onClick={() => onOpen("samay")} className="btn mt-6 bg-white px-5 py-3 text-[15px] text-ink hover:-translate-y-0.5">
-                {t("common.meet")} {t(s.nameKey)} <ArrowUpRight className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-xs">
-              <AgentAvatar photo={s.photo} name={t(s.nameKey)} tint={s.tint} accent={s.accent} rounded="rounded-3xl" className="h-full w-full ring-1 ring-white/20" />
+        <div
+          className="relative"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocusCapture={() => setPaused(true)}
+          onBlurCapture={() => setPaused(false)}
+        >
+          <div className="overflow-hidden">
+            <div className="flex" style={{ transform: `translateX(-${idx * 100}%)`, transition: "transform 0.5s cubic-bezier(.22,1,.36,1)" }}>
+              {FEATURES.map((f) => (
+                <div key={f.key} className="w-full flex-none">
+                  <FlagshipCard f={f} onOpen={onOpen} />
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* arrow controls */}
+          <button
+            onClick={() => go(idx - 1)}
+            aria-label="Previous agent"
+            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition hover:bg-black/55 sm:left-4"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => go(idx + 1)}
+            aria-label="Next agent"
+            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition hover:bg-black/55 sm:right-4"
+          >
+            <ArrowRight className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          {FEATURES.map((f, i) => (
+            <button
+              key={f.key}
+              onClick={() => setIdx(i)}
+              aria-label={`Show ${t(f.nameKey)}`}
+              className="h-2.5 rounded-full transition-all duration-300"
+              style={{ width: i === idx ? 26 : 10, background: i === idx ? f.accent : "#D9D4CB" }}
+            />
+          ))}
         </div>
       </Reveal>
     </section>
@@ -369,15 +397,14 @@ function SamayFlagship({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
 }
 
 /* ------------------------- Eight quiet jobs ------------------------ */
-function QuietJobs({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
+function QuietJobs() {
   const { t } = useApp();
-  const sehat = featureByKey("sehat");
   const roman = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"];
   return (
     <section className="bg-mist py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal className="max-w-2xl">
-          <Eyebrow color={sehat.accent}>{t("quiet.eyebrow")}</Eyebrow>
+          <Eyebrow>{t("quiet.eyebrow")}</Eyebrow>
           <h2 className="display mt-4 text-balance text-4xl font-bold tracking-tight deva sm:text-5xl">
             {t("quiet.titleA")} <span className="serif-italic font-normal text-muted">{t("quiet.titleB")}</span>
           </h2>
@@ -388,7 +415,7 @@ function QuietJobs({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
           {roman.map((r, i) => (
             <Reveal key={i} delay={(i % 4) * 0.06}>
               <div className="border-t border-line pt-4">
-                <div className="serif-italic text-2xl" style={{ color: sehat.accent }}>{r}</div>
+                <div className="serif-italic text-2xl" style={{ color: "#2D6BFF" }}>{r}</div>
                 <h3 className="display mt-2 text-lg font-bold deva">{t(`quiet.${i + 1}.t`)}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted deva">{t(`quiet.${i + 1}.d`)}</p>
               </div>
@@ -397,9 +424,9 @@ function QuietJobs({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
         </div>
 
         <Reveal className="mt-12">
-          <button onClick={() => onOpen("sehat")} className="btn-primary text-[15px]">
+          <a href="#agents" className="btn-primary text-[15px]">
             {t("quiet.cta")} <ArrowUpRight className="h-4 w-4" />
-          </button>
+          </a>
         </Reveal>
       </div>
     </section>
@@ -439,7 +466,7 @@ function AgentsGrid({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
         {FEATURES.map((f, i) => {
           const Icon = f.icon;
           return (
-            <Reveal key={f.key} delay={i * 0.08}>
+            <Reveal key={f.key} delay={(i % 4) * 0.06}>
               <button
                 onClick={() => onOpen(f.key)}
                 className="group relative block aspect-[3/4] w-full overflow-hidden rounded-[1.5rem] border border-line text-left shadow-soft transition-all duration-500 hover:-translate-y-1.5 hover:shadow-float"
@@ -529,12 +556,110 @@ function TeamPanel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
 }
 
 /* --------------------------- How it works -------------------------- */
+// small workflow-node style mockups, one per step
+function HowVisual({ i }: { i: number }) {
+  const { t } = useApp();
+  const node = "flex items-center gap-2 rounded-xl border border-line bg-paper px-2.5 py-2 shadow-soft";
+  const sq = "flex h-6 w-6 flex-none items-center justify-center rounded-lg text-white";
+
+  if (i === 0) {
+    // capture: text / photo / voice feeding an input bar
+    const caps = [
+      { Icon: MessageSquare, c: "#2D6BFF" },
+      { Icon: Camera, c: "#138A72" },
+      { Icon: Mic, c: "#C0453B" },
+    ];
+    return (
+      <div className="flex h-32 flex-col justify-center gap-2 rounded-2xl border border-line bg-mist/50 p-3">
+        <div className="flex gap-2">
+          {caps.map(({ Icon, c }, k) => (
+            <div key={k} className="flex flex-1 items-center justify-center rounded-xl border border-line bg-paper py-2 shadow-soft">
+              <Icon className="h-4 w-4" style={{ color: c }} />
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-paper px-3 py-2 shadow-soft">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2D6BFF]" />
+          <span className="text-[11px] text-faint">Paste · snap · speak…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (i === 1) {
+    // routing: a hub fanning out to specialist agent nodes
+    const picks = ["kavach", "paisa", "kar"].map((k) => featureByKey(k as FeatureKey));
+    return (
+      <div className="relative flex h-32 items-center gap-3 rounded-2xl border border-line bg-mist/50 p-3">
+        <div className="flex flex-none flex-col items-center gap-1">
+          <BrandMark className="h-9 w-9" />
+          <span className="text-[10px] font-semibold text-faint">Saarthi</span>
+        </div>
+        <svg className="h-16 w-7 flex-none text-line" viewBox="0 0 28 64" fill="none">
+          <path d="M2 32 H14 V12 H26" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+          <path d="M2 32 H26" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+          <path d="M2 32 H14 V52 H26" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+        </svg>
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          {picks.map((f) => (
+            <div key={f.key} className={node}>
+              <span className={sq} style={{ background: f.accent }}>
+                <f.icon className="h-3.5 w-3.5" />
+              </span>
+              <span className="truncate text-[11px] font-semibold text-ink deva">{t(f.nameKey)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (i === 2) {
+    // verified math: reasoning trace resolving to an exact figure
+    return (
+      <div className="flex h-32 flex-col justify-center gap-2 rounded-2xl border border-line bg-mist/50 p-3">
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-paper px-3 py-2 shadow-soft">
+          <Sparkles className="h-4 w-4 flex-none text-[#2D6BFF]" />
+          <span className="text-[11px] text-graphite">Gemini reasoning…</span>
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-line bg-paper px-3 py-2 shadow-soft">
+          <span className="text-[11px] text-faint">Tax payable (new regime)</span>
+          <span className="display text-sm font-bold text-ink">₹74,200</span>
+        </div>
+        <div className="flex items-center gap-1.5 px-1">
+          <CheckCircle2 className="h-3.5 w-3.5 text-[#138A72]" />
+          <span className="text-[10px] font-medium text-[#138A72]">Verified by engine</span>
+        </div>
+      </div>
+    );
+  }
+
+  // i === 3 — dashboard tiles
+  return (
+    <div className="flex h-32 flex-col gap-2 rounded-2xl border border-line bg-mist/50 p-3">
+      <div className="grid flex-1 grid-cols-3 gap-2">
+        {["#2D6BFF", "#138A72", "#A06A1F"].map((c, k) => (
+          <div key={k} className="flex flex-col justify-between rounded-xl border border-line bg-paper p-2 shadow-soft">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />
+            <span className="h-1.5 w-3/4 rounded-full bg-line" />
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between rounded-xl bg-ink px-3 py-2">
+        <span className="text-[11px] font-semibold text-linen">Next step</span>
+        <ArrowRight className="h-3.5 w-3.5 text-linen" />
+      </div>
+    </div>
+  );
+}
+
 function How() {
   const { t } = useApp();
   const steps = [
-    { t: t("how.s1.t"), d: t("how.s1.d"), icon: MessageSquare },
-    { t: t("how.s2.t"), d: t("how.s2.d"), icon: LangIcon },
-    { t: t("how.s3.t"), d: t("how.s3.d"), icon: ArrowRight },
+    { t: t("how.s1.t"), d: t("how.s1.d") },
+    { t: t("how.s2.t"), d: t("how.s2.d") },
+    { t: t("how.s3.t"), d: t("how.s3.d") },
+    { t: t("how.s4.t"), d: t("how.s4.d") },
   ];
   return (
     <section id="how" className="scroll-mt-24 bg-panel py-20">
@@ -544,12 +669,13 @@ function How() {
           <h2 className="display mt-4 text-balance text-3xl font-bold tracking-tight deva sm:text-5xl">{t("how.title")}</h2>
           <p className="mt-3 text-lg text-muted deva">{t("how.sub")}</p>
         </Reveal>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className="card h-full p-7">
-                <span className="display text-4xl font-bold text-clay-500/30">0{i + 1}</span>
-                <h3 className="display mt-4 text-xl font-bold deva">{s.t}</h3>
+              <div className="card flex h-full flex-col p-5">
+                <HowVisual i={i} />
+                <span className="display mt-5 text-4xl font-bold text-[#2D6BFF]/35">0{i + 1}</span>
+                <h3 className="display mt-2 text-xl font-bold deva">{s.t}</h3>
                 <p className="mt-2 leading-relaxed text-muted deva">{s.d}</p>
               </div>
             </Reveal>
@@ -588,9 +714,7 @@ function Footer() {
     <footer className="border-t border-line">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-muted sm:flex-row">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-ink text-clay-300">
-            <span className="display text-sm font-bold">स</span>
-          </span>
+          <BrandMark className="h-7 w-7" />
           <span className="display text-base font-bold text-ink">Saarthi</span>
           <span className="text-faint deva">· {t("brand.tag")}</span>
         </div>
@@ -604,14 +728,13 @@ export function Landing({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
   return (
     <>
       <Hero onOpen={onOpen} />
-      <Capabilities />
-      <KavachFlagship onOpen={(k) => onOpen(k)} />
-      <Trusted />
       <AgentsGrid onOpen={(k) => onOpen(k)} />
-      <SamayFlagship onOpen={(k) => onOpen(k)} />
-      <QuietJobs onOpen={(k) => onOpen(k)} />
-      <TeamPanel onOpen={(k) => onOpen(k)} />
       <How />
+      <FlagshipCarousel onOpen={(k) => onOpen(k)} />
+      <Capabilities />
+      <TeamPanel onOpen={(k) => onOpen(k)} />
+      <QuietJobs />
+      <Trusted />
       <Closing onOpen={() => onOpen()} />
       <Footer />
     </>

@@ -4,14 +4,14 @@ import { AppProvider } from "./app/AppContext";
 import { Nav } from "./components/Nav";
 import { Landing } from "./components/Landing";
 import { KavachConsole } from "./features/kavach/KavachConsole";
-import { Samajh } from "./features/Samajh";
-import { Haq } from "./features/Haq";
 import { SehatConsole } from "./features/sehat/SehatConsole";
-import { Paisa } from "./features/Paisa";
-import { Samay } from "./features/Samay";
-import { Setu } from "./features/Setu";
-import { Krishi } from "./features/Krishi";
-import { Kar } from "./features/kar/Kar";
+import { SamajhConsole } from "./features/console/SamajhConsole";
+import { HaqConsole } from "./features/console/HaqConsole";
+import { PaisaConsole } from "./features/console/PaisaConsole";
+import { SamayConsole } from "./features/console/SamayConsole";
+import { SetuConsole } from "./features/console/SetuConsole";
+import { KrishiConsole } from "./features/console/KrishiConsole";
+import { KarConsole } from "./features/console/KarConsole";
 import { FeatureKey } from "./lib/api";
 
 type View = "home" | FeatureKey;
@@ -29,20 +29,20 @@ function Shell() {
 
   return (
     <div className="page-bg relative min-h-screen">
-      {view === "home" && <Nav onHome={() => setView("home")} onOpen={() => open()} />}
+      {view === "home" && <Nav onHome={() => setView("home")} onOpen={open} />}
 
       <main className="relative z-10">
         <AnimatePresence mode="wait">
           {view === "home" && <Landing key="home" onOpen={open} />}
           {view === "kavach" && <KavachConsole key="kavach" onBack={back} />}
-          {view === "samajh" && <Samajh key="samajh" onBack={back} />}
-          {view === "haq" && <Haq key="haq" onBack={back} />}
+          {view === "samajh" && <SamajhConsole key="samajh" onBack={back} />}
+          {view === "haq" && <HaqConsole key="haq" onBack={back} />}
           {view === "sehat" && <SehatConsole key="sehat" onBack={back} />}
-          {view === "paisa" && <Paisa key="paisa" onBack={back} />}
-          {view === "samay" && <Samay key="samay" onBack={back} />}
-          {view === "setu" && <Setu key="setu" onBack={back} />}
-          {view === "krishi" && <Krishi key="krishi" onBack={back} />}
-          {view === "kar" && <Kar key="kar" onBack={back} />}
+          {view === "paisa" && <PaisaConsole key="paisa" onBack={back} />}
+          {view === "samay" && <SamayConsole key="samay" onBack={back} />}
+          {view === "setu" && <SetuConsole key="setu" onBack={back} />}
+          {view === "krishi" && <KrishiConsole key="krishi" onBack={back} />}
+          {view === "kar" && <KarConsole key="kar" onBack={back} />}
         </AnimatePresence>
       </main>
     </div>

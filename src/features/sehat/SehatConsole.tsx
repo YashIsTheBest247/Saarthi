@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, LayoutDashboard, ScanText, Pill, Activity, ClipboardList,
   Send, ImagePlus, X, Plus, Trash2, Stethoscope, IndianRupee, Info, HeartPulse, Calendar,
@@ -37,7 +37,7 @@ function H({ title, sub }: { title: string; sub?: string }) {
   );
 }
 function Wrap({ children }: { children: React.ReactNode }) {
-  return <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>{children}</motion.div>;
+  return <div>{children}</div>;
 }
 
 function Sparkline({ values, color }: { values: number[]; color: string }) {
@@ -324,7 +324,6 @@ export function SehatConsole({ onBack }: { onBack: () => void }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button onClick={onBack} className="btn-ghost px-4 py-2 text-sm"><ArrowLeft className="h-4 w-4" />{t("common.back")}</button>
         <div className="flex items-center gap-2">
-          <StatusBadge live={health.live} label={health.live ? t("common.poweredReal") : t("common.poweredMock")} />
           <LanguagePicker compact />
         </div>
       </div>
@@ -354,7 +353,13 @@ export function SehatConsole({ onBack }: { onBack: () => void }) {
             );
           })}
         </nav>
-        <div className="min-w-0">{render()}</div>
+        <div className="min-w-0">
+          <AnimatePresence mode="wait">
+            <motion.div key={active} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+              {render()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   );
