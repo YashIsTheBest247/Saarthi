@@ -68,6 +68,7 @@ app.post("/api/emergency", makeHandler("emergency"));
 app.post("/api/manager", makeHandler("manager"));
 app.post("/api/study", makeHandler("study"));
 app.post("/api/intake", makeHandler("intake"));
+app.post("/api/assist", makeHandler("assist"));
 
 // Export Acharya's content as a real document: Times New Roman, 12pt, formatted.
 app.post("/api/study/export", async (req, res) => {

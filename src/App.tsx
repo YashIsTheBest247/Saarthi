@@ -28,6 +28,7 @@ function Shell() {
   const homeScroll = useRef(0);   // remembered landing scroll position
   const wantRestore = useRef(false); // restore it when returning via Back
   const [wfInitial, setWfInitial] = useState<string | undefined>(undefined); // preselected workflow id
+  const [wfBuild, setWfBuild] = useState(false); // open straight into the builder canvas
 
   // deep links (e.g. from the Telegram bot): ?agent=kavach opens that console,
   // ?q=... opens the chat pre-filled. URL is cleaned afterwards.
@@ -47,6 +48,7 @@ function Shell() {
     const h = (e: Event) => {
       if (view === "home") homeScroll.current = window.scrollY;
       setWfInitial((e as CustomEvent).detail?.id);
+      setWfBuild(!!(e as CustomEvent).detail?.build);
       setView("workflows");
     };
     window.addEventListener("saarthi:workflows", h);
@@ -89,7 +91,7 @@ function Shell() {
           {view === "raahat" && <RaahatConsole key={`raahat-${L}`} onBack={back} />}
           {view === "disha" && <DishaConsole key={`disha-${L}`} onBack={back} />}
           {view === "study" && <StudyConsole key={`study-${L}`} onBack={back} />}
-          {view === "workflows" && <WorkflowsView key={`workflows-${L}`} onBack={back} initialId={wfInitial} />}
+          {view === "workflows" && <WorkflowsView key={`workflows-${L}`} onBack={back} initialId={wfInitial} initialBuild={wfBuild} />}
         </AnimatePresence>
       </main>
 

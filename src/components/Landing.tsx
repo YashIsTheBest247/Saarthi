@@ -9,6 +9,7 @@ import {
   Camera,
   Siren,
   CloudRain,
+  Plus,
   Workflow,
   Languages as LangIcon,
   MessageSquare,
@@ -498,6 +499,7 @@ function FlowChain({ agents }: { agents: string[] }) {
 function TrulyAgentic() {
   const open = () => window.dispatchEvent(new Event("saarthi:workflows"));
   const openWf = (id: string) => window.dispatchEvent(new CustomEvent("saarthi:workflows", { detail: { id } }));
+  const openBuilder = () => window.dispatchEvent(new CustomEvent("saarthi:workflows", { detail: { build: true } }));
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
       <Reveal className="max-w-2xl">
@@ -522,8 +524,9 @@ function TrulyAgentic() {
         ))}
       </div>
 
-      <Reveal className="mt-8">
+      <Reveal className="mt-8 flex flex-wrap gap-3">
         <button onClick={open} className="btn-primary text-[15px]"><Workflow className="h-4 w-4" /> Run an agentic workflow <ArrowRight className="h-4 w-4" /></button>
+        <button onClick={openBuilder} className="btn border border-line bg-paper px-5 py-3 text-[15px] text-ink hover:-translate-y-0.5"><Plus className="h-4 w-4" /> Build your own workflow</button>
       </Reveal>
     </section>
   );
@@ -931,13 +934,19 @@ function Footer({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
             <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-linen/45 deva">{t("footer.tagline")}</p>
           </div>
 
-          <FooterCol title={t("footer.agents")}>
-            {FEATURES.map((f) => (
-              <button key={f.key} onClick={() => onOpen(f.key)} className={link}>
-                {t(f.nameKey)}
-              </button>
-            ))}
-          </FooterCol>
+          <div>
+            <div className="grid grid-cols-2 gap-x-6">
+              <div className="display text-base font-bold text-[#2D6BFF]">{t("footer.agents")}</div>
+              <div className="text-[15px] leading-snug text-linen/40 deva">{t("footer.agentsTag")}</div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-[17px]">
+              {[...FEATURES].sort((a, b) => t(a.nameKey).length - t(b.nameKey).length).map((f) => (
+                <button key={f.key} onClick={() => onOpen(f.key)} className={link}>
+                  {t(f.nameKey)}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <FooterCol title={t("footer.explore")}>
             <a href="#how" className={link}>{t("nav.how")}</a>

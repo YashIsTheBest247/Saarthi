@@ -8,6 +8,8 @@ import { LanguagePicker } from "../components/LanguagePicker";
 import { AgentAvatar } from "../components/AgentAvatar";
 import { CopyBlock, ListBlock } from "../components/ui";
 import { notify } from "../lib/reminders";
+import { WorkflowBuilder } from "./WorkflowBuilder";
+import { Plus } from "lucide-react";
 
 interface WfMeta { id: string; title: string; desc: string; accent: string; seedLabel: string; agents: string[]; example: string }
 
@@ -105,10 +107,11 @@ function Chain({ agents }: { agents: string[] }) {
   );
 }
 
-export function WorkflowsView({ onBack, initialId }: { onBack: () => void; initialId?: string }) {
+export function WorkflowsView({ onBack, initialId, initialBuild }: { onBack: () => void; initialId?: string; initialBuild?: boolean }) {
   const { t, lang } = useApp();
   const preset = initialId ? WF.find((w) => w.id === initialId) ?? null : null;
   const [sel, setSel] = useState<WfMeta | null>(preset);
+  const [building, setBuilding] = useState(!!initialBuild);
   const [seed, setSeed] = useState(preset?.example ?? "");
   const [running, setRunning] = useState(false);
   const [active, setActive] = useState(-1); // index currently executing (-1 = none)
@@ -156,6 +159,8 @@ export function WorkflowsView({ onBack, initialId }: { onBack: () => void; initi
     return "pending";
   };
 
+  if (building) return <WorkflowBuilder onBack={() => setBuilding(false)} />;
+
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="mx-auto max-w-6xl px-5 pb-24 pt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -174,6 +179,15 @@ export function WorkflowsView({ onBack, initialId }: { onBack: () => void; initi
       {/* picker */}
       {!sel && (
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <button onClick={() => setBuilding(true)} className="group flex flex-col items-start rounded-2xl border-2 border-dashed border-line bg-paper/50 p-5 text-left transition-all hover:-translate-y-1 hover:border-[#2D6BFF] hover:shadow-float sm:col-span-2">
+            <div className="flex w-full items-center gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white" style={{ background: "#2D6BFF" }}><Plus className="h-5 w-5" /></span>
+              <div>
+                <div className="display text-lg font-bold deva">Build your own workflow</div>
+                <p className="text-sm text-muted deva">Drag agents onto a canvas, connect them into a chain, and run it.</p>
+              </div>
+            </div>
+          </button>
           {WF.map((wf) => (
             <button key={wf.id} onClick={() => { setSel(wf); setSeed(wf.example); setSteps([]); setDone(false); setError(""); }} className="card p-5 text-left transition-all hover:-translate-y-1 hover:shadow-float">
               <div className="display text-lg font-bold deva">{wf.title}</div>

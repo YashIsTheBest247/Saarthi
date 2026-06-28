@@ -1,4 +1,4 @@
-export type FeatureKey = "kavach" | "samajh" | "haq" | "sehat" | "paisa" | "samay" | "setu" | "krishi" | "kar" | "raahat" | "disha" | "study" | "resume" | "extract" | "route" | "emergency" | "form16" | "manager" | "intake";
+export type FeatureKey = "kavach" | "samajh" | "haq" | "sehat" | "paisa" | "samay" | "setu" | "krishi" | "kar" | "raahat" | "disha" | "study" | "resume" | "extract" | "route" | "emergency" | "form16" | "manager" | "intake" | "assist";
 
 export interface ApiMeta {
   _mock?: boolean;
