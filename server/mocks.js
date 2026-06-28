@@ -340,6 +340,13 @@ export const mocks = {
     reassurance: "Acting quickly matters far more than acting perfectly. Take the first step now — Saarthi will guide the rest.",
   },
 
+  assist: {
+    _mock: true,
+    agent: "samajh",
+    agentName: "Vidya",
+    reply: "I can help with that. Tell me a bit more — what exactly happened, and any amount, date or reference number? Meanwhile: never share OTPs or passwords, and if money was lost to fraud call 1930 immediately. Open the Saarthi app and I'll guide you step by step.",
+  },
+
   form16: {
     _mock: true,
     grossSalary: 1500000,

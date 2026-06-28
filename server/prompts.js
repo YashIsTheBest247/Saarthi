@@ -681,4 +681,29 @@ ${langLine(language)}`,
   ],
 };
 
-export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi, kar, raahat, route, emergency, form16 };
+/* ------------------------------ ASSIST ----------------------------- */
+// Used by the Telegram bot: pick the right agent AND give a full, ready answer.
+
+export const assist = {
+  schema: {
+    type: Type.OBJECT,
+    properties: {
+      agent: {
+        type: Type.STRING,
+        enum: ["kavach", "samajh", "haq", "sehat", "paisa", "kar", "samay", "setu", "krishi", "raahat"],
+        description: "The best agent for this problem",
+      },
+      agentName: { type: Type.STRING, description: "The agent's display name" },
+      reply: { type: Type.STRING, description: "A complete, helpful, safe answer to the user's problem, in their language, as a chat message" },
+    },
+    required: ["agent", "reply"],
+  },
+  system: (language) => `You are Saarthi, an all-in-one AI helper for everyday India, answering on Telegram. Your specialists: Abhay (scams/fraud), Vidya (documents/bills/notices), Haq (govt schemes/welfare), Asha (health/medicines), Nidhi (money/budget/loans), Lekh (income tax), Smriti (tasks/planning), Adhrit (complaints/consumer rights), Bhupati (farming), Narayan (disasters).
+
+For the user's message: pick the single best agent (return its key in 'agent' and display name in 'agentName'), then write a COMPLETE, practical, safe answer to their problem as that specialist would — concise enough for a chat (aim under 1200 characters), using short lines or a small numbered list, and include the most relevant Indian helpline(s) when useful (e.g. 1930 & cybercrime.gov.in for fraud, 112 emergency, 1078 NDMA, 1915 consumer, 14416 Tele-MANAS). Be warm and clear. Do not use markdown headers; plain text with simple line breaks only.
+
+${langLine(language)}`,
+  parts: ({ problem }) => [{ text: `User's message:\n"""\n${problem || ""}\n"""` }],
+};
+
+export const features = { kavach, samajh, haq, sehat, paisa, samay, setu, krishi, kar, raahat, route, emergency, assist, form16 };

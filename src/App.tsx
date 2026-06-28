@@ -28,6 +28,18 @@ function Shell() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [view]);
 
+  // deep links (e.g. from the Telegram bot): ?agent=kavach opens that console,
+  // ?q=... opens the chat pre-filled. URL is cleaned afterwards.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const a = p.get("agent");
+    const q = p.get("q");
+    const valid = ["kavach", "samajh", "haq", "sehat", "paisa", "samay", "setu", "krishi", "kar", "raahat"];
+    if (a && valid.includes(a)) setView(a as FeatureKey);
+    else if (q) window.dispatchEvent(new CustomEvent("saarthi:openchat", { detail: { q } }));
+    if (a || q) window.history.replaceState({}, "", window.location.pathname);
+  }, []);
+
   const open = (k?: FeatureKey) => setView(k ?? "kavach");
   const back = () => setView("home");
 

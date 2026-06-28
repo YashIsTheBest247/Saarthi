@@ -94,4 +94,35 @@ npm run build && npm start   # serves the API; host dist/ on any static host
 
 ---
 
+## Deploy (Vercel) + Telegram bot
+
+Frontend **and** the `/api` Gemini backend deploy together on Vercel — the Express
+app is wrapped as a serverless function (`api/index.js`, routed via `vercel.json`).
+
+### 1. Deploy on Vercel
+1. Push the repo to GitHub and **Import Project** on Vercel (framework auto-detects **Vite**).
+2. Add **Environment Variables** (Project → Settings → Environment Variables):
+   - `GEMINI_API_KEY` — your Google AI Studio key (required for live AI)
+   - `GEMINI_MODEL` — `gemini-2.5-flash` (optional)
+   - `TELEGRAM_BOT_TOKEN` — from @BotFather (only if using the bot)
+   - `APP_URL` — your deployed URL, e.g. `https://saarthi.vercel.app` (for deep links)
+3. **Deploy.** The site is live; agents / chatbot / helplines all work via `/api/*`.
+
+> Without `GEMINI_API_KEY` the app still runs in demo (mock) mode.
+
+### 2. Telegram bot
+1. In Telegram, open **@BotFather** → `/newbot` → copy the **token**.
+2. Add `TELEGRAM_BOT_TOKEN` (and `APP_URL`) to Vercel env vars, then redeploy.
+3. **Register the webhook** once (replace `<TOKEN>` and your domain):
+   ```
+   https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://<your-app>.vercel.app/api/telegram
+   ```
+   Open that URL in a browser — it should return `{"ok":true}`.
+4. Message your bot. It picks the right agent, answers in chat (English/Hindi auto-detected),
+   and links back to that agent in the web app via a `?agent=…&q=…` deep link.
+
+To remove the webhook later: `…/bot<TOKEN>/deleteWebhook`.
+
+---
+
 *Made for India · Powered by Gemini.*
