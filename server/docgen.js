@@ -1,9 +1,7 @@
 // Turn Acharya's structured content into a polished, professional document.
-// Pure-JS generators (no native binaries) so they run on Vercel serverless:
-//   DOCX  -> docx        PDF -> pdfkit (built-in Times)     PPTX -> pptxgenjs
-import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, LevelFormat } from "docx";
-import PDFDocument from "pdfkit";
-import pptxgen from "pptxgenjs";
+// The doc libraries (docx / pdfkit / pptxgenjs) are imported LAZILY inside each
+// builder so that merely importing this module never loads them — keeping the
+// Vercel serverless cold-start (and the Telegram webhook + all agents) safe.
 
 export const slug = (s) => (String(s || "").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "") || "Document");
 
@@ -25,6 +23,7 @@ const norm = (c = {}) => ({
 /* ------------------------------- DOCX ------------------------------- */
 // Word document: Times New Roman, 12pt body, justified, 1.5 spacing, 1" margins.
 export async function buildDocx(content, { font = "Times New Roman", size = 12 } = {}) {
+  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, LevelFormat } = await import("docx");
   const c = norm(content);
   const half = size * 2; // docx sizes are in half-points
   const children = [];
@@ -76,7 +75,8 @@ export async function buildDocx(content, { font = "Times New Roman", size = 12 }
 /* -------------------------------- PDF ------------------------------- */
 // PDFKit ships Times-Roman/Times-Bold/Times-Italic as built-in standard fonts,
 // so we get clean Times New Roman-style output with no external font files.
-export function buildPdf(content, { size = 12 } = {}) {
+export async function buildPdf(content, { size = 12 } = {}) {
+  const { default: PDFDocument } = await import("pdfkit");
   const c = norm(content);
   return new Promise((resolve, reject) => {
     try {
@@ -111,6 +111,7 @@ export function buildPdf(content, { size = 12 } = {}) {
 /* -------------------------------- PPTX ------------------------------ */
 // Presentation: a title slide + one content slide per outline entry, Times New Roman.
 export async function buildPptx(content, { font = "Times New Roman" } = {}) {
+  const { default: pptxgen } = await import("pptxgenjs");
   const c = norm(content);
   const pptx = new pptxgen();
   pptx.defineLayout({ name: "WIDE", width: 13.333, height: 7.5 });

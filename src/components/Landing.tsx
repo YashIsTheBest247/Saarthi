@@ -268,7 +268,7 @@ function CapCard({
 function Capabilities() {
   const { t } = useApp();
   return (
-    <section className="mx-auto max-w-6xl px-5 pt-16 pb-6 sm:pt-24">
+    <section className="mx-auto max-w-6xl px-5 pt-6 pb-6 sm:pt-10">
       <Reveal className="mx-auto max-w-2xl text-center">
         <h2 className="display text-balance text-3xl font-bold tracking-tight deva sm:text-5xl">{t("cap.title")}</h2>
         <p className="mt-4 text-lg text-muted deva">{t("cap.sub")}</p>
@@ -410,8 +410,8 @@ function FlagshipCarousel({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   }, [count]);
 
   return (
-    <section ref={sectionRef} id="flagship" className="relative" style={{ minHeight: "135vh" }}>
-      <div className="sticky top-0 mx-auto flex h-screen w-full max-w-6xl items-center px-5 py-24">
+    <section ref={sectionRef} id="flagship" className="relative" style={{ minHeight: "112vh" }}>
+      <div className="sticky top-0 mx-auto flex h-screen w-full max-w-6xl items-center px-5 py-16">
         <div className="w-full">
         <div
           ref={wrapRef}
