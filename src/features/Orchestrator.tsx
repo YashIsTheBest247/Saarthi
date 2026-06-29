@@ -109,6 +109,23 @@ export function Orchestrator({ onBack }: { onBack: () => void }) {
     setDone(new Set()); setFeed([]);
     const datedTasks: { title: string; deadline: string }[] = [];
 
+    // 1) weather FIRST — Smriti checks live weather for any outdoor/weather-dependent goal
+    let weatherCtx = "";
+    const wTask = tasks.find((t) => t.weatherSensitive && t.location);
+    if (wTask) {
+      const wfid = idc.current++;
+      setFeed((p) => [...p, { id: wfid, agent: "weather", title: `Live weather — ${wTask.location}`, status: "running" }]);
+      await new Promise((r) => setTimeout(r, 550));
+      try {
+        const w = await (await fetch(`/api/weather?place=${encodeURIComponent(wTask.location)}`)).json();
+        weatherCtx = w.summary ? `Live weather for ${wTask.location}: ${w.summary}. If conditions are hazardous (storm, heavy rain, extreme heat), warn the user and suggest a safer time or precautions.` : "";
+        setFeed((p) => p.map((x) => x.id === wfid ? { ...x, status: "done", agentName: "Live weather", text: w.summary || "Weather data is unavailable right now." } : x));
+      } catch {
+        setFeed((p) => p.map((x) => x.id === wfid ? { ...x, status: "done", agentName: "Live weather", text: "Weather data is unavailable right now." } : x));
+      }
+    }
+
+    // 2) delegate each task to its specialist (sharing the weather context where relevant)
     for (const tk of tasks) {
       const key = (tk.suggestedAgent && tk.suggestedAgent !== "none") ? tk.suggestedAgent : "samay";
       const fid = idc.current++;
@@ -117,15 +134,7 @@ export function Orchestrator({ onBack }: { onBack: () => void }) {
       // let the control-flow animation breathe
       await new Promise((r) => setTimeout(r, 650));
 
-      // agentic weather check for outdoor / weather-dependent tasks
-      let ctx = "";
-      if (tk.weatherSensitive && tk.location) {
-        try {
-          const w = await (await fetch(`/api/weather?place=${encodeURIComponent(tk.location)}`)).json();
-          if (w.summary) ctx = `Live weather for ${tk.location}${tk.deadline ? ` around ${tk.deadline}` : ""}: ${w.summary}. If conditions are hazardous, warn the user and suggest a safer time.`;
-        } catch { /* no weather */ }
-      }
-
+      const ctx = tk.weatherSensitive ? weatherCtx : "";
       try {
         const r = await callFeature<any>("manager", { task: tk.detail ? `${tk.title} — ${tk.detail}` : tk.title, deadline: tk.deadline || "", context: ctx, today, language: lang.name });
         const owner = r.canDelegate ? r.agent : "samay";
@@ -324,7 +333,8 @@ export function Orchestrator({ onBack }: { onBack: () => void }) {
                 return (
                   <motion.div key={it.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="card p-4">
                     <div className="flex items-center gap-2.5">
-                      {f ? <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-lg" className="h-8 w-8 flex-none" />
+                      {it.agent === "weather" ? <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg" style={{ background: "#E8F0FE" }}><CloudRain className="h-4 w-4 text-[#2D6BFF]" /></span>
+                        : f ? <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-lg" className="h-8 w-8 flex-none" />
                         : <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-mist"><UserCheck className="h-4 w-4 text-muted" /></span>}
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-semibold text-ink deva">{f ? t(f.nameKey) : it.agentName || "You"}</div>
