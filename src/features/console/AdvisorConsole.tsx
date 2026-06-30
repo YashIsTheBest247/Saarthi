@@ -8,7 +8,7 @@ import { featureByKey } from "../../lib/features";
 import { callFeature, FeatureKey } from "../../lib/api";
 import { useVoice } from "../../hooks/useVoice";
 import { Thinking, VoiceButton, ListBlock, ResultCard, MockNote } from "../../components/ui";
-import { NotifyMe } from "../../components/NotifyMe";
+import { ActionBar } from "../../components/ActionBar";
 
 interface Resource { name: string; type: string; detail?: string; link?: string }
 interface AdvResult {
@@ -153,7 +153,7 @@ function Advisor({ agentKey, placeholder, example }: { agentKey: FeatureKey; pla
               {result.tips?.length ? <ListBlock title={t("adv.tips")} items={result.tips} tone="good" /> : null}
             </div>
 
-            <NotifyMe accent={meta.accent} getPayload={() => composeEmail(meta, t(meta.nameKey), result)} />
+            <ActionBar title={composeEmail(meta, t(meta.nameKey), result).title} text={composeEmail(meta, t(meta.nameKey), result).message} accent={meta.accent} />
 
             {result._mock && <MockNote text={t("common.sample")} />}
           </ResultCard>

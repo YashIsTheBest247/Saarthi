@@ -13,6 +13,7 @@ import { buildICS, downloadICS, parseWhen } from "../lib/reminders";
 import { clean } from "../lib/text";
 import { linkify } from "../lib/linkify";
 import { SosAlert, SOS_RE } from "../components/SosAlert";
+import { ActionBar } from "../components/ActionBar";
 
 const SMRITI = featureByKey("samay");
 const OTHERS = FEATURES.filter((f) => f.key !== "samay");
@@ -359,7 +360,7 @@ export function Orchestrator({ onBack }: { onBack: () => void }) {
                         : <span className="rounded-full bg-[#F7EEDB] px-2 py-0.5 text-[10px] font-semibold text-[#B07A1E]">You</span>}
                     </div>
                     {it.text && it.status !== "running" && (ok
-                      ? <div className="mt-2"><CopyBlock text={clean(it.text)} /></div>
+                      ? <div className="mt-2"><CopyBlock text={clean(it.text)} /><ActionBar title={it.title} text={clean(it.text)} deadline={dated.find((d) => d.title === it.title)?.deadline} accent={f?.accent} /></div>
                       : <p className="mt-2 whitespace-pre-wrap text-sm text-graphite deva">{linkify(clean(it.text))}</p>)}
                   </motion.div>
                 );

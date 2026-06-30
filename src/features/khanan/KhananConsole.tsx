@@ -14,6 +14,7 @@ import { AgentAvatar } from "../../components/AgentAvatar";
 import { BrandMark, LogoIcon } from "../../components/Logo";
 import { Thinking, ListBlock, CopyBlock, MockNote } from "../../components/ui";
 import { NotifyMe } from "../../components/NotifyMe";
+import { ActionBar } from "../../components/ActionBar";
 import { downloadICS, sendToSmriti } from "../../lib/reminders";
 import { clean } from "../../lib/text";
 import { linkify } from "../../lib/linkify";
@@ -184,6 +185,7 @@ function Copilot() {
                   <div key={i}>
                     <div className="mb-1.5 text-sm font-semibold text-graphite deva">{d.title}</div>
                     <CopyBlock text={d.body} />
+                    <ActionBar title={d.title} text={d.body} accent={ACCENT} />
                   </div>
                 ))}
               </div>

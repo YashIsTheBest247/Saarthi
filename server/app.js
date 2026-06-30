@@ -142,6 +142,32 @@ app.post("/api/study/export", async (req, res) => {
 });
 app.post("/api/form16", makeHandler("form16"));
 
+// Turn ANY agent deliverable into a downloadable document (PDF / Word / PPT).
+// Lets agents "produce a document", not just text.
+app.post("/api/doc", async (req, res) => {
+  try {
+    const { title = "Saarthi document", text = "", format = "pdf" } = req.body || {};
+    if (!String(text).trim()) return res.status(400).json({ error: "Missing text." });
+    const fmt = ["pdf", "docx", "pptx"].includes(format) ? format : "pdf";
+    // synthesize structured content from plain text (blank-line = paragraph break)
+    const paragraphs = String(text).split(/\n{2,}/).map((p) => p.replace(/\n/g, " ").trim()).filter(Boolean);
+    const content = {
+      title,
+      kind: "document",
+      sections: [{ heading: "", paragraphs: paragraphs.length ? paragraphs : [String(text)] }],
+      slides: [{ title, points: paragraphs.slice(0, 6) }],
+      wordCount: String(text).split(/\s+/).length,
+    };
+    const buf = await buildDoc(fmt, content, { font: "Times New Roman", size: 12 });
+    res.setHeader("Content-Type", MIME[fmt]);
+    res.setHeader("Content-Disposition", `attachment; filename="${slug(title)}.${fmt}"`);
+    res.send(Buffer.from(buf));
+  } catch (err) {
+    console.error("[doc]", err?.message || err);
+    res.status(500).json({ error: String(err?.message || err) });
+  }
+});
+
 app.get("/api/news", async (_req, res) => {
   try {
     res.json(await getNews());

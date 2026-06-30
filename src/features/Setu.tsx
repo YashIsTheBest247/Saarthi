@@ -6,6 +6,7 @@ import { callFeature, fileToInlineData } from "../lib/api";
 import { useVoice } from "../hooks/useVoice";
 import { FeatureShell } from "../components/FeatureShell";
 import { Thinking, VoiceButton, ListBlock, ResultCard, MockNote, CopyBlock } from "../components/ui";
+import { ActionBar } from "../components/ActionBar";
 
 interface SetuResult {
   summary: string;
@@ -102,6 +103,7 @@ export function Setu({ onBack, embedded }: { onBack?: () => void; embedded?: boo
             <div className="mt-5">
               <div className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted deva">{t("st.draftLabel")}</div>
               <CopyBlock text={result.draftComplaint} />
+              <ActionBar title="Complaint" text={result.draftComplaint} accent={meta.accent} />
             </div>
 
             {result.escalation?.length ? (
