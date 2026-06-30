@@ -626,6 +626,91 @@ function Trusted() {
   );
 }
 
+/* ----------------------- Orchestrator intro ----------------------- */
+function OrchestratorIntro() {
+  const { t } = useApp();
+  const open = () => window.dispatchEvent(new Event("saarthi:orchestrator"));
+  const fan = ["khanan", "haq", "setu", "paisa", "sehat", "samay"]
+    .map((k) => featureByKey(k as FeatureKey))
+    .filter(Boolean) as FeatureMeta[];
+  const steps = [
+    { n: "01", t: t("orch.s1.t"), d: t("orch.s1.d") },
+    { n: "02", t: t("orch.s2.t"), d: t("orch.s2.d") },
+    { n: "03", t: t("orch.s3.t"), d: t("orch.s3.d") },
+  ];
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <span id="orchestrator" className="block scroll-mt-28" />
+      <Reveal className="max-w-2xl">
+        <Eyebrow>{t("orch.eyebrow")}</Eyebrow>
+        <h2 className="display mt-4 text-balance text-3xl font-bold tracking-tight deva sm:text-5xl">{t("orch.title")}</h2>
+        <p className="mt-4 text-lg text-muted deva">{t("orch.sub")}</p>
+      </Reveal>
+
+      <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        {/* left: orchestration visual */}
+        <Reveal>
+          <div className="card p-6 sm:p-8">
+            {/* the ask */}
+            <div className="flex items-start gap-2.5 rounded-2xl border border-line bg-mist/60 px-4 py-3">
+              <MessageSquare className="mt-0.5 h-4 w-4 flex-none text-[#2D6BFF]" />
+              <p className="text-sm leading-relaxed text-graphite deva">“{t("orch.ask")}”</p>
+            </div>
+
+            <div className="flex justify-center py-1"><span className="h-5 w-px bg-line" /></div>
+
+            {/* Smriti hub */}
+            <div className="flex items-center gap-3 rounded-2xl border border-[#2D6BFF]/25 bg-[#2D6BFF]/5 px-4 py-3">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-ink text-white"><BrandMark className="h-6 w-6" /></span>
+              <div className="min-w-0">
+                <div className="display text-[15px] font-bold deva">{t("orch.hub")}</div>
+                <div className="text-xs text-muted deva">{t("orch.hubSub")}</div>
+              </div>
+            </div>
+
+            <div className="flex justify-center py-1"><span className="h-5 w-px bg-line" /></div>
+
+            {/* fan-out to specialists */}
+            <div className="flex flex-wrap gap-2">
+              {fan.map((f, i) => (
+                <span key={f.key} className="flex items-center gap-1.5 rounded-full border border-line bg-paper py-1 pl-1 pr-2.5">
+                  <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-full" className="h-6 w-6 flex-none" />
+                  <span className="whitespace-nowrap text-xs font-semibold text-ink deva">{t(f.nameKey)}</span>
+                  {i < fan.length - 1 && <span className="ml-0.5 text-faint">·</span>}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex justify-center py-1"><span className="h-5 w-px bg-line" /></div>
+
+            {/* delivered */}
+            <div className="flex items-center gap-2 rounded-2xl bg-ink px-4 py-3 text-linen">
+              <CheckCircle2 className="h-4 w-4 flex-none text-verdant" />
+              <span className="text-sm font-medium deva">{t("orch.delivers")}</span>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* right: how it coordinates + CTA */}
+        <Reveal delay={0.08}>
+          <div className="space-y-5">
+            {steps.map((s) => (
+              <div key={s.n} className="flex gap-4">
+                <span className="display text-2xl font-bold text-[#2D6BFF]/35">{s.n}</span>
+                <div>
+                  <h3 className="display text-lg font-bold deva">{s.t}</h3>
+                  <p className="mt-1 text-[15px] leading-relaxed text-muted deva">{s.d}</p>
+                </div>
+              </div>
+            ))}
+            <button onClick={open} className="btn-primary text-[15px]">{t("orch.cta")} <ArrowUpRight className="h-4 w-4" /></button>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 /* ---------------------- Big agent photo cards ---------------------- */
 function AgentsGrid({ onOpen }: { onOpen: (k: FeatureKey) => void }) {
   const { t } = useApp();
@@ -993,6 +1078,7 @@ export function Landing({ onOpen }: { onOpen: (k?: FeatureKey) => void }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
       <Hero onOpen={onOpen} />
       <Trusted />
+      <OrchestratorIntro />
       <AgentsGrid onOpen={(k) => onOpen(k)} />
       <How />
       <FlagshipCarousel onOpen={(k) => onOpen(k)} />
