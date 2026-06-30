@@ -7,7 +7,7 @@ for women's safety, write your homework, make educational videos, launch a busin
 compliant mine, and get you hired. By **voice or text, in English and Hindi**, on web **and Telegram**.
 
 > Hackathon track: *Track 1 — AI Systems & Workflow Innovation Challenge.*
-> Real AI (Google **Gemini 2.5 Flash**), premium responsive UI, deterministic on-device
+> Real AI (Google **Gemini 2.5 Flash**)-rotatable, Groq, premium responsive UI, deterministic on-device
 > maths where correctness matters — not a generic chatbot.
 
 ### Try it live
