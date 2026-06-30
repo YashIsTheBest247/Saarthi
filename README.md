@@ -118,8 +118,9 @@ The same agents, in Telegram (`server/telegram.js`):
   (English/Hindi auto-detected), plus an **"Open in app"** deep link.
 - **Pick an agent** (`/agents` or the menu) → reply to talk **directly** to that specialist.
 - **Emergency SMS** — set a contact with **`/sos +91…`**; when a message looks urgent the bot asks
-  *"Shall I text your emergency contact?"* and, on **Yes**, sends a real SMS (with the situation) via
-  a free provider — **Fast2SMS** (set `FAST2SMS_KEY`) or a **TextBelt** free fallback.
+  *"Shall I text your emergency contact?"*, offers a **📍 Share location** button, and on **Yes** sends
+  a real SMS with the situation **and a Google-Maps location link** via a free provider — **Fast2SMS**
+  (set `FAST2SMS_KEY`) or a **TextBelt** free fallback.
 - Powered by one Gemini `assist` call that routes **and** writes the full answer; falls back to
   mock replies if no key is set.
 

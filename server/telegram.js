@@ -6,7 +6,9 @@ import { sendSMS } from "./sms.js";
 // Per-chat emergency contact + a pending "shall I text?" alert.
 // (In-memory: fine within a warm instance; a cold start clears it — re-set with /sos.)
 const emergencyNum = new Map(); // chatId -> "+91…"
-const pendingSos = new Map();   // chatId -> { num, message }
+const pendingSos = new Map();   // chatId -> { num, situation }
+const lastLoc = new Map();      // chatId -> { lat, lng, ts }
+const recentLoc = (id) => { const l = lastLoc.get(id); return l && Date.now() - l.ts < 15 * 60 * 1000 ? l : null; };
 const SOS_RE = /\b(accident|emergency|injured|injury|bleeding|unconscious|collapse|trapped|fire|drowning|attack|assault|harass(?:ing|ed|ment)?|stalk(?:ing|er)?|following me|unsafe|molest|kidnap|abduct|suicide|fainted|heart attack|stroke|snake ?bite|electrocut|gas leak|landslide|flood|save me|help me)\b|दुर्घटना|आपातकाल|घायल|बचाओ|आग लग|हादसा|पीछा कर|छेड़|असुरक्षित/i;
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
@@ -106,10 +108,14 @@ async function runAssist(chatId, text, agentHint) {
   if (SOS_RE.test(text)) {
     const num = emergencyNum.get(String(chatId));
     if (num) {
-      pendingSos.set(String(chatId), { num, message: `EMERGENCY (via Saarthi): "${text.slice(0, 280)}". Please reach me now — or call 112.` });
+      pendingSos.set(String(chatId), { num, situation: text.slice(0, 280) });
       await send(chatId, `⚠️ This sounds urgent. Shall I text your emergency contact (${num}) now?`, {
         reply_markup: { inline_keyboard: [[{ text: "✅ Yes, text them", callback_data: "sos:yes" }, { text: "No", callback_data: "sos:no" }]] },
       });
+      if (!recentLoc(String(chatId)))
+        await send(chatId, "📍 Optional: tap below to share your live location and I'll include it in the alert.", {
+          reply_markup: { keyboard: [[{ text: "📍 Share my location", request_location: true }]], resize_keyboard: true, one_time_keyboard: true },
+        });
     } else {
       await send(chatId, "⚠️ This sounds urgent. Tip: save an emergency contact with  /sos +91XXXXXXXXXX  and I'll offer to text them in emergencies. If you're in danger, call 112 now.");
     }
@@ -169,9 +175,11 @@ export async function handleTelegram(req, res) {
         const p = pendingSos.get(String(chatId));
         if (!p) { await send(chatId, "No pending alert to send."); return; }
         pendingSos.delete(String(chatId));
-        await send(chatId, `📨 Texting ${p.num}…`);
-        const r = await sendSMS({ to: p.num, message: p.message });
-        await send(chatId, r.ok ? `✅ SMS sent to ${p.num} via ${r.provider}. Stay safe.` : `❌ Couldn't send the SMS (${r.error}). Please call ${p.num} directly, or dial 112.`);
+        const loc = recentLoc(String(chatId));
+        const message = `EMERGENCY (via Saarthi): "${p.situation}". ${loc ? `My location: https://maps.google.com/?q=${loc.lat},${loc.lng}. ` : ""}Please reach me now — or call 112.`;
+        await send(chatId, `📨 Texting ${p.num}…`, { reply_markup: { remove_keyboard: true } });
+        const r = await sendSMS({ to: p.num, message });
+        await send(chatId, r.ok ? `✅ SMS sent to ${p.num} via ${r.provider}${loc ? " — with your location" : ""}. Stay safe.` : `❌ Couldn't send the SMS (${r.error}). Please call ${p.num} directly, or dial 112.`);
       } else if (data === "sos:no") {
         pendingSos.delete(String(chatId));
         await send(chatId, "Okay — I won't text anyone. If you're in danger, call 112.");
@@ -195,8 +203,19 @@ export async function handleTelegram(req, res) {
     // ---- normal messages ----
     const msg = req.body?.message || req.body?.edited_message;
     const chatId = msg?.chat?.id;
-    const text = (msg?.text || "").trim();
     if (!chatId) return;
+
+    // user shared their live location (for an emergency alert)
+    if (msg.location) {
+      lastLoc.set(String(chatId), { lat: msg.location.latitude, lng: msg.location.longitude, ts: Date.now() });
+      const p = pendingSos.get(String(chatId));
+      await send(chatId, p
+        ? `📍 Got your location. Tap "✅ Yes, text them" above to alert ${p.num} with it.`
+        : "📍 Location saved — I'll include it if you send an emergency alert.", { reply_markup: { remove_keyboard: true } });
+      return;
+    }
+
+    const text = (msg?.text || "").trim();
 
     if (text === "/start" || text === "/help") {
       await send(chatId, WELCOME, { reply_markup: mainKeyboard() });
