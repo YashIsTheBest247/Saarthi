@@ -30,10 +30,11 @@ export function parseForm16Text(text: string): Form16Fields {
     g(/salary\s*(?:under|as per)[^\d]{0,20}([\d,]{4,})/i);
   const tds =
     g(/(?:tds\s*deducted|total\s*tax\s*deducted|tax\s*deducted\s*at\s*source)[^\d]{0,12}([\d,]{3,})/i);
-  const ded80c =
-    g(/deduction[s]?[^\d]{0,8}\(?\s*80c[^\d]{0,12}([\d,]{3,})/i) ||
-    g(/(?:chapter\s*vi-?a|total\s*deduction[s]?)[^\d]{0,12}([\d,]{3,})/i);
-  const exempt = g(/exemption[s]?[^\d]{0,12}([\d,]{3,})/i);
+  // Chapter VI-A / "Deductions (80C …)" — skip the "(80C…)" parenthetical so we don't grab the "80".
+  // We deliberately do NOT add the "Exemptions"/standard-deduction line (the engine applies that itself).
+  const deductions =
+    g(/deduction[s]?\s*(?:\([^)]*\))?[^\d]{0,12}([\d][\d,]{2,})/i) ||
+    g(/chapter\s*vi-?a[^\d]{0,12}([\d][\d,]{2,})/i);
   const otherIncome = g(/other\s*income[^\d]{0,12}([\d,]{3,})/i);
-  return { grossSalary, tds, deductions: ded80c + exempt, otherIncome };
+  return { grossSalary, tds, deductions, otherIncome };
 }
