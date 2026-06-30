@@ -44,7 +44,7 @@ compliant mine, and get you hired. By **voice or text, in English and Hindi**, o
 | **Haq** | Scheme Finder | Share a short profile → central + state schemes you likely qualify for, with how-to-apply steps. |
 | **Asha** | Health Saver | Decode a prescription → cheaper **generic** equivalents + Jan Aushadhi savings; symptom guidance; vitals & visit-prep. |
 | **Nidhi** | Money Autopilot | Make sense of spends, find leaks, budget (50/30/20), and live EMI / SIP calculators. |
-| **Lekh** | Tax Filing Copilot | FY 2025-26 (new regime) tax computed **exactly on-device**; Form-16 PDF auto-extract; old-vs-new compare; PDF export. |
+| **Lekh** | Tax Filing Copilot | FY 2025-26 (new regime) tax computed **exactly on-device**; **Form-16 PDF parsed client-side (keyless)** with AI vision fallback for scans/photos; 87A rebate, old-vs-new compare; PDF export. |
 | **Smriti** | Chief of Staff | Dump tasks by text/photo/voice → plan, prioritise, schedule focus blocks, forecast deadlines, Pomodoro, goals & habits, calendar/ICS export. |
 | **Adhrit** | Grievance Autopilot | Describe a problem → the right authority, a ready complaint, the escalation ladder, and a rights library. |
 | **Bhupati** | Kisan Saathi | Snap a crop photo → diagnosis, action plan, farm schemes, timely advisory. |
@@ -100,6 +100,10 @@ helplines), a ready script, and what the agent will do for you.
 - **Deterministic engines** — tax, EMI/SIP, the scam classifier, Smriti's forecasts/ICS, and
   Khanan's royalty/DMF/NMET maths run **on-device** for reproducible, defensible numbers; the
   LLM is used for understanding, extraction and language.
+- **Works even with no/low AI quota** — Lekh parses a **text-based Form-16 entirely in the browser**
+  (pdf.js + regex) and all the maths above are on-device, so tax computation, calculators and the
+  checklist keep working with zero API calls. When Gemini quota *is* hit, keys auto-rotate and a
+  clear *"fallback initiated"* notice appears instead of silent wrong data.
 - **Premium, responsive UI** — floating glass navbar (hamburger menu on phones), smooth
   page/route transitions, language cross-fade.
 
@@ -179,7 +183,7 @@ npm start            # runs the local API server (server/index.js)
 |-----|----------|---------|
 | `GEMINI_API_KEY` | for live AI | Google AI Studio key (else demo/mock mode) |
 | `GEMINI_API_KEY_2/3…` | optional | extra keys — auto-**rotated** when one hits its free-tier quota (or use `GEMINI_API_KEYS=k1,k2,k3`) |
-| `GEMINI_MODEL` | optional | defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | optional | defaults to `gemini-2.5-flash`; set `gemini-2.5-flash-lite` for a higher free **daily** request limit |
 | `PORT` | optional | local API port (default `8787`) |
 | `PEXELS_API_KEY` | optional | nicer Pragyan stock images (keyless Pollinations fallback) |
 | `TELEGRAM_BOT_TOKEN` | for the bot | from @BotFather |
@@ -227,21 +231,24 @@ Vercel serverless function (`api/index.js`, routed via `vercel.json`).
 api/
   index.js          Vercel serverless wrapper (exports the Express app)
 server/
-  app.js            Express app + all /api routes (+ telegram webhook)
+  app.js            Express app + all /api routes (+ telegram webhook, notify)
   index.js          local dev server (listens on PORT)
-  gemini.js         Gemini client wrapper (structured JSON)
+  gemini.js         Gemini client wrapper (structured JSON, multi-key rotation)
   prompts.js        per-feature system prompts + JSON schemas (the "brains")
   mocks.js          demo-safe sample responses
-  telegram.js       Telegram bot webhook (buttons, agent menu, routing)
-  news.js           live scam-news RSS (with fallback)
+  telegram.js       Telegram bot webhook (buttons, agent menu, routing, /sos SMS)
+  notify.js         email (Gmail SMTP) with .ics attachment
+  sms.js            emergency SMS (Fast2SMS / TextBelt)
+  docgen.js         PDF / Word / PPTX generation (lazy-imported)
+  workflows.js      multi-agent chains + planner;  news.js / jobs.js  live feeds
 src/
   App.tsx           view switching, deep links, scroll restore
   app/AppContext    language + health context, i18n helper
-  components/       Nav, Landing, FloatingChat, Helplines, Select, Logo,
-                    AgentAvatar, LanguagePicker, FeatureShell, ui primitives
-  features/         per-agent tools + console/ (dashboards) + kavach/ sehat/ kar/
-  lib/              api client, features metadata, languages, i18n (en/hi),
-                    route (keyword classifier), confetti
+  components/       Nav, Landing, FloatingChat, Notepad, SosAlert, NotifyMe,
+                    Helplines, Select, Logo, AgentAvatar, LanguagePicker, ui
+  features/         per-agent tools + console/ (dashboards) + kavach/ sehat/ kar/ khanan/ pragyan/
+  lib/              api client, features metadata, i18n (en/hi), route classifier,
+                    linkify (tel: links), form16 (keyless PDF parse), reminders (ICS), text
   hooks/            useVoice
 vercel.json         build + /api routing + function config
 ```
