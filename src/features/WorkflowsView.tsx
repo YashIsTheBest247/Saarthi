@@ -27,9 +27,9 @@ const WF: WfMeta[] = [
 const agentMeta = (k: string) => FEATURES.find((f) => f.key === (k as FeatureKey));
 
 // non-face nodes (utility steps that aren't one of the 11 agents)
-const nonFace: Record<string, { icon: typeof Siren; color: string; label: string }> = {
-  weather: { icon: CloudRain, color: "#0E8FA8", label: "Weather" },
-  emergency: { icon: Siren, color: "#C0453B", label: "SOS" },
+const nonFace: Record<string, { icon: typeof Siren; color: string; labelKey: string }> = {
+  weather: { icon: CloudRain, color: "#0E8FA8", labelKey: "wf.node.weather" },
+  emergency: { icon: Siren, color: "#C0453B", labelKey: "wf.node.sos" },
 };
 
 interface StepResult { key: string; agent: string; label: string; data: any }
@@ -46,6 +46,7 @@ function Node({ agent, size = "h-8 w-8" }: { agent: string; size?: string }) {
 
 /* compact per-agent rendering of a step's output */
 function StepBody({ agent, data }: { agent: string; data: any }) {
+  const { t } = useApp();
   if (!data) return null;
   const head = data.summary || data.headline || data.title || data.diagnosis || "";
   return (
@@ -61,38 +62,38 @@ function StepBody({ agent, data }: { agent: string; data: any }) {
           {data.helpline && <span className="text-sm text-muted">{data.helpline}</span>}
         </div>
       )}
-      {agent === "samajh" && data.watchOuts?.length ? <ListBlock title="Watch-outs" items={data.watchOuts} tone="warn" /> : null}
+      {agent === "samajh" && data.watchOuts?.length ? <ListBlock title={t("wf.body.watchOuts")} items={data.watchOuts} tone="warn" /> : null}
       {agent === "setu" && (
         <>
-          {data.authority && <div className="rounded-xl bg-mist p-3 text-sm deva"><b>Authority:</b> {data.authority}</div>}
+          {data.authority && <div className="rounded-xl bg-mist p-3 text-sm deva"><b>{t("wf.body.authority")}:</b> {data.authority}</div>}
           {data.draftComplaint && <CopyBlock text={data.draftComplaint} />}
         </>
       )}
       {agent === "emergency" && data.immediateSteps?.length ? (
-        <ListBlock title="Do this now" items={data.immediateSteps.map((s: any) => s.step || s)} tone="warn" />
+        <ListBlock title={t("wf.body.doNow")} items={data.immediateSteps.map((s: any) => s.step || s)} tone="warn" />
       ) : null}
       {agent === "emergency" && data.contacts?.length ? (
         <div className="flex flex-wrap gap-2">{data.contacts.map((c: any, i: number) => <span key={i} className="rounded-full border border-line bg-mist px-3 py-1 text-xs">{c.name}: {c.contact}</span>)}</div>
       ) : null}
-      {agent === "krishi" && data.actionPlan?.length ? <ListBlock title="Action plan" items={data.actionPlan.map((a: any) => a.step || a)} tone="good" /> : null}
-      {agent === "haq" && data.schemes?.length ? <ListBlock title="Schemes you may qualify for" items={data.schemes.map((s: any) => s.name || s)} accent="#2F6F8F" /> : null}
+      {agent === "krishi" && data.actionPlan?.length ? <ListBlock title={t("wf.body.actionPlan")} items={data.actionPlan.map((a: any) => a.step || a)} tone="good" /> : null}
+      {agent === "haq" && data.schemes?.length ? <ListBlock title={t("wf.body.schemes")} items={data.schemes.map((s: any) => s.name || s)} accent="#2F6F8F" /> : null}
       {agent === "disha" && data.output && <CopyBlock text={data.output} />}
-      {agent === "paisa" && data.plan?.length ? <ListBlock title="Save plan" items={data.plan} tone="good" /> : null}
-      {agent === "paisa" && data.savingEstimate && <div className="text-sm font-semibold text-[#138A72]">Possible saving: {data.savingEstimate}</div>}
+      {agent === "paisa" && data.plan?.length ? <ListBlock title={t("wf.body.savePlan")} items={data.plan} tone="good" /> : null}
+      {agent === "paisa" && data.savingEstimate && <div className="text-sm font-semibold text-[#138A72]">{t("wf.body.saving")} {data.savingEstimate}</div>}
       {agent === "sehat" && data.medicines?.length ? (
-        <ListBlock title="Cheaper generics" items={data.medicines.map((m: any) => `${m.brandName} → ${m.genericName}${m.savingsNote ? ` (${m.savingsNote})` : ""}`)} accent="#C0453B" />
+        <ListBlock title={t("wf.body.generics")} items={data.medicines.map((m: any) => `${m.brandName} → ${m.genericName}${m.savingsNote ? ` (${m.savingsNote})` : ""}`)} accent="#C0453B" />
       ) : null}
       {agent === "study" && (
         <div className="space-y-2">
-          {data.wordCount ? <div className="text-sm text-muted">{data.kind ? `${data.kind} · ` : ""}~{data.wordCount} words written.</div> : null}
+          {data.wordCount ? <div className="text-sm text-muted">{data.kind ? `${data.kind} · ` : ""}~{data.wordCount} {t("wf.body.words")}</div> : null}
           {data.sections?.[0]?.paragraphs?.[0] && <p className="text-sm leading-relaxed text-graphite deva line-clamp-3">{data.sections[0].paragraphs[0]}</p>}
-          <div className="text-xs text-faint">Open Acharya to export as PDF / Word / PPT.</div>
+          <div className="text-xs text-faint">{t("wf.body.exportNote")}</div>
         </div>
       )}
       {agent === "samay" && data.tasks?.length ? (
         <div className="space-y-2">
-          <ListBlock title="Scheduled actions" items={data.tasks.map((tk: any) => `${tk.title}${tk.deadline ? ` — ${tk.deadline}` : ""}`)} tone="good" />
-          <button onClick={() => downloadTasksICS(data.tasks)} className="btn-ghost text-sm"><CalendarPlus className="h-4 w-4" /> Add to calendar (.ics)</button>
+          <ListBlock title={t("wf.body.scheduled")} items={data.tasks.map((tk: any) => `${tk.title}${tk.deadline ? ` — ${tk.deadline}` : ""}`)} tone="good" />
+          <button onClick={() => downloadTasksICS(data.tasks)} className="btn-ghost text-sm"><CalendarPlus className="h-4 w-4" /> {t("wf.body.addCal")}</button>
         </div>
       ) : null}
     </div>
@@ -150,13 +151,20 @@ export function WorkflowsView({ onBack, initialId, initialBuild }: { onBack: () 
         setSteps([...acc]);
       }
       setDone(true);
-      notify("Workflow complete ✅", `${t(`${wf.k}.t`)} — ${acc.length} agents finished.`);
+      notify(t("wf.notify"), `${t(`${wf.k}.t`)} — ${acc.length} ${t("wf.notifyB")}`);
     } catch {
-      setError("Couldn't finish the workflow. Please try again.");
+      setError(t("wf.err"));
     } finally {
       setActive(-1); setRunning(false);
     }
   }
+
+  // translated step label, falling back to the server's English label
+  const stepLabel = (key: string, fallback: string): string => {
+    const k = `wf.step.${sel?.id ?? ""}.${key}`;
+    const v = t(k);
+    return v === k ? fallback : v;
+  };
 
   // status of a node in the live pipeline: done / active / pending
   const statusOf = (i: number): "done" | "active" | "pending" => {
@@ -241,7 +249,7 @@ export function WorkflowsView({ onBack, initialId, initialBuild }: { onBack: () 
                         style={{ borderColor: st === "pending" ? "var(--line,#e7e3da)" : sel.accent, background: st === "done" ? "rgba(19,138,114,0.06)" : st === "active" ? `${sel.accent}10` : "transparent", opacity: st === "pending" ? 0.5 : 1 }}
                       >
                         <Node agent={a} />
-                        <span className="line-clamp-1 text-[11px] font-medium text-graphite deva">{nonFace[a]?.label || t(agentMeta(a)?.nameKey || "")}</span>
+                        <span className="line-clamp-1 text-[11px] font-medium text-graphite deva">{nonFace[a] ? t(nonFace[a].labelKey) : t(agentMeta(a)?.nameKey || "")}</span>
                         <span className="absolute -right-1.5 -top-1.5">
                           {st === "done" && <CheckCircle2 className="h-4 w-4 text-[#138A72]" fill="white" />}
                           {st === "active" && <Loader2 className="h-4 w-4 animate-spin" style={{ color: sel.accent }} />}
@@ -266,7 +274,7 @@ export function WorkflowsView({ onBack, initialId, initialBuild }: { onBack: () 
                   <div className="flex items-center gap-3">
                     <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-xs font-bold text-white" style={{ background: sel.accent }}>{i + 1}</span>
                     <Node agent={s.agent} />
-                    <span className="font-semibold text-ink deva">{s.label}</span>
+                    <span className="font-semibold text-ink deva">{stepLabel(s.key, s.label)}</span>
                     <CheckCircle2 className="ml-auto h-5 w-5 text-[#138A72]" />
                   </div>
                   <StepBody agent={s.agent} data={s.data} />

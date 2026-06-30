@@ -202,14 +202,14 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
         setActive(n.id);
         if (n.type === "weather") {
           const w = await (await fetch(`/api/weather?place=${encodeURIComponent(seed)}`)).json();
-          const txt = w.summary || "Live weather unavailable.";
+          const txt = w.summary || t("wb.weatherNA");
           acc[n.id] = { type: "weather", text: txt }; context += `\n\nLive weather: ${txt}`;
         } else if (n.type === "upload") {
           if (n.file) {
             const r = await callFeature<{ summary?: string }>("samajh", { image: n.file, text: "Read this document and summarise what it says and what needs doing, for the next step.", language: lang.name });
-            const txt = r.summary || "(could not read the document)";
+            const txt = r.summary || t("wb.docNA");
             acc[n.id] = { type: "upload", text: txt }; context += `\n\nFrom the uploaded document: ${txt}`;
-          } else acc[n.id] = { type: "upload", text: "No file uploaded — select one in the inspector." };
+          } else acc[n.id] = { type: "upload", text: t("wb.noFile") };
         } else if (n.type === "agent") {
           const r = await callFeature<{ agentName?: string; reply: string }>("assist", { problem: context, agentHint: n.agent, language: lang.name });
           lastText = r.reply; context += `\n\n${r.agentName || t(agentMeta(n.agent)!.nameKey)} said: ${r.reply}`;
@@ -221,7 +221,7 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
           const when = parseWhen(n.deadline).toISOString();   // always a valid date/time
           sendToSmriti({ title, deadline: when, priority: n.priority, estimateMins: 30, source: "Workflow" });
           scheduleReminder(title, when);
-          await notify("Saved to Smriti ✅", `Reminder set for ${fmtWhen(when)}.`);
+          await notify(t("wb.savedSmriti"), `${t("wb.reminderSet")} ${fmtWhen(when)}.`);
           acc[n.id] = { type: "reminder", deadline: when, priority: n.priority, title, text: lastText };
         }
         setResults({ ...acc });
@@ -374,8 +374,8 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
               </div>
               {isActive ? <Loader2 className="h-4 w-4 flex-none animate-spin" style={{ color }} /> : isDone ? <CheckCircle2 className="h-4 w-4 flex-none text-[#2E6F52]" /> : null}
 
-              {term ? <span title="Final step" className="absolute -right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-white" style={{ background: color }}><Flag className="h-3 w-3" /></span>
-                : <span onPointerDown={(e) => { e.stopPropagation(); begin({ kind: "link", from: n.id }, e); }} title="Drag to another node to connect" className="absolute -right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 cursor-crosshair items-center justify-center rounded-full border-2 bg-white" style={{ borderColor: color }}><span className="h-2 w-2 rounded-full" style={{ background: color }} /></span>}
+              {term ? <span title={t("wb.finalStep")} className="absolute -right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-white" style={{ background: color }}><Flag className="h-3 w-3" /></span>
+                : <span onPointerDown={(e) => { e.stopPropagation(); begin({ kind: "link", from: n.id }, e); }} title={t("wb.dragConnect")} className="absolute -right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 cursor-crosshair items-center justify-center rounded-full border-2 bg-white" style={{ borderColor: color }}><span className="h-2 w-2 rounded-full" style={{ background: color }} /></span>}
 
               <button onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); removeNode(n.id); }} className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-white"><Trash2 className="h-3 w-3" /></button>
             </div>
@@ -450,7 +450,7 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
           <div className="pointer-events-none fixed z-50 inline-flex items-center gap-2 rounded-full border border-line bg-white py-1 pl-1 pr-3 shadow-float" style={{ left: pt.vx + 12, top: pt.vy + 12 }}>
             {f ? <AgentAvatar photo={f.photo} name={t(f.nameKey)} tint={f.tint} accent={f.accent} rounded="rounded-full" className="h-6 w-6 flex-none" />
               : <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-white" style={{ background: u!.color }}>{u && <u.Icon className="h-3.5 w-3.5" />}</span>}
-            <span className="text-xs font-semibold text-ink deva">{f ? t(f.nameKey) : u!.label}</span>
+            <span className="text-xs font-semibold text-ink deva">{f ? t(f.nameKey) : t(ULAB[spec.type])}</span>
           </div>
         );
       })()}
@@ -485,8 +485,8 @@ export function WorkflowBuilder({ onBack }: { onBack: () => void }) {
 
                 {r.type === "reminder" ? (
                   <div className="mt-2 space-y-2">
-                    <p className="text-[15px] text-graphite deva">{t("wb.sentSmriti")} — <b>{r.title}</b>{r.deadline ? <> · {fmtWhen(r.deadline)}</> : ""} · {r.priority}. Smriti will remind you.</p>
-                    <button onClick={() => downloadTasksICS([{ title: r.title || "Reminder", deadline: r.deadline }], "saarthi-reminder.ics")} className="btn-ghost text-sm"><CalendarPlus className="h-4 w-4" /> Add to calendar (.ics)</button>
+                    <p className="text-[15px] text-graphite deva">{t("wb.sentSmriti")} — <b>{r.title}</b>{r.deadline ? <> · {fmtWhen(r.deadline)}</> : ""} · {r.priority}. {t("wb.willRemind")}</p>
+                    <button onClick={() => downloadTasksICS([{ title: r.title || "Reminder", deadline: r.deadline }], "saarthi-reminder.ics")} className="btn-ghost text-sm"><CalendarPlus className="h-4 w-4" /> {t("wf.body.addCal")}</button>
                   </div>
                 ) : r.type === "output" ? (
                   <div className="mt-2 space-y-3">
