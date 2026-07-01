@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { FileDown, Mail, MessageCircle, Smartphone, CalendarPlus, Copy, Check, Loader2, Send } from "lucide-react";
 import { sendToSmriti, downloadICS, parseWhen } from "../lib/reminders";
+import { useApp } from "../app/AppContext";
 
 /**
  * Turns any agent deliverable into ACTIONS, not just text — so Saarthi *does*
  * things: save a PDF, email it, WhatsApp/SMS it, or set a reminder.
  */
 export function ActionBar({ title, text, deadline, accent = "#2D6BFF" }: { title: string; text: string; deadline?: string; accent?: string }) {
+  const { t } = useApp();
   const [copied, setCopied] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
   const [reminded, setReminded] = useState(false);
@@ -58,30 +60,30 @@ export function ActionBar({ title, text, deadline, accent = "#2D6BFF" }: { title
 
   return (
     <div className="mt-3 border-t border-line pt-3">
-      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-faint">Do it →</div>
+      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-faint deva">{t("act.doit")}</div>
       <div className="flex flex-wrap items-center gap-2">
-        <button onClick={savePdf} disabled={pdfBusy} className={btn}>{pdfBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" style={{ color: accent }} />} Save PDF</button>
-        <button onClick={() => setOpen(open === "email" ? "" : "email")} className={btn}><Mail className="h-3.5 w-3.5" style={{ color: accent }} /> Email</button>
+        <button onClick={savePdf} disabled={pdfBusy} className={btn}>{pdfBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" style={{ color: accent }} />} {t("act.savePdf")}</button>
+        <button onClick={() => setOpen(open === "email" ? "" : "email")} className={btn}><Mail className="h-3.5 w-3.5" style={{ color: accent }} /> {t("act.email")}</button>
         <button onClick={() => openMsg("wa")} className={btn}><MessageCircle className="h-3.5 w-3.5" style={{ color: accent }} /> WhatsApp</button>
         <button onClick={() => openMsg("sms")} className={btn}><Smartphone className="h-3.5 w-3.5" style={{ color: accent }} /> SMS</button>
-        <button onClick={saveReminder} className={btn}>{reminded ? <Check className="h-3.5 w-3.5 text-[#2E6F52]" /> : <CalendarPlus className="h-3.5 w-3.5" style={{ color: accent }} />} {reminded ? "Saved" : "Remind me"}</button>
-        <button onClick={copy} className={btn}>{copied ? <Check className="h-3.5 w-3.5 text-[#2E6F52]" /> : <Copy className="h-3.5 w-3.5" />} {copied ? "Copied" : "Copy"}</button>
+        <button onClick={saveReminder} className={btn}>{reminded ? <Check className="h-3.5 w-3.5 text-[#2E6F52]" /> : <CalendarPlus className="h-3.5 w-3.5" style={{ color: accent }} />} {reminded ? t("act.saved") : t("act.remind")}</button>
+        <button onClick={copy} className={btn}>{copied ? <Check className="h-3.5 w-3.5 text-[#2E6F52]" /> : <Copy className="h-3.5 w-3.5" />} {copied ? t("act.copied") : t("act.copy")}</button>
       </div>
 
       {open === "email" && (
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <input value={email} onChange={(e) => { setEmail(e.target.value); setMail(""); }} placeholder="your@email.com" className="min-w-[12rem] flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-[#2D6BFF]" />
           <button onClick={sendEmail} disabled={mail === "sending" || mail === "sent" || mail === "mock"} className="btn-accent text-sm" style={{ background: accent }}>
-            {mail === "sending" ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : mail === "sent" || mail === "mock" ? <><Check className="h-4 w-4" /> Sent</> : <><Send className="h-4 w-4" /> Send</>}
+            {mail === "sending" ? <><Loader2 className="h-4 w-4 animate-spin" /> {t("act.sending")}</> : mail === "sent" || mail === "mock" ? <><Check className="h-4 w-4" /> {t("act.sent")}</> : <><Send className="h-4 w-4" /> {t("act.send")}</>}
           </button>
-          {mail === "mock" && <span className="text-xs text-faint">(demo — set SMTP to send for real)</span>}
-          {mail === "err" && <span className="text-xs text-danger">Enter a valid email.</span>}
+          {mail === "mock" && <span className="text-xs text-faint deva">{t("act.demo")}</span>}
+          {mail === "err" && <span className="text-xs text-danger deva">{t("act.badEmail")}</span>}
         </div>
       )}
       {(open === "wa" || open === "sms") && (
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone (+91…)" className="min-w-[10rem] flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-[#2D6BFF]" />
-          <button onClick={() => openMsg(open)} className="btn-accent text-sm" style={{ background: accent }}>{open === "wa" ? <MessageCircle className="h-4 w-4" /> : <Smartphone className="h-4 w-4" />} Open {open === "wa" ? "WhatsApp" : "SMS"}</button>
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t("act.phonePh")} className="min-w-[10rem] flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-[#2D6BFF]" />
+          <button onClick={() => openMsg(open)} className="btn-accent text-sm" style={{ background: accent }}>{open === "wa" ? <MessageCircle className="h-4 w-4" /> : <Smartphone className="h-4 w-4" />} {t("act.open").replace("{x}", open === "wa" ? "WhatsApp" : "SMS")}</button>
         </div>
       )}
     </div>
